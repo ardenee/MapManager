@@ -1,145 +1,71 @@
-# MapManager - build components in RAD Studio 37.0
+# MapManager components - RAD Studio 37.0
 
-## Repositories and locations
+## Active development source layout
 
-The active app source is `C:\Users\arden\source\repos\MapManager`.
-Its GitHub origin remains `https://github.com/ardenee/MapManager.git`.
+- Application: `C:\Users\arden\source\repos\MapManager`
+- Unreal package reader: `C:\Users\arden\source\repos\TUTPackage`
+- Archive wrapper: `C:\Users\arden\source\repos\d7zip`
+- Virtual TreeView: `C:\Users\arden\source\repos\Virtual-TreeView`
 
-| Component | GUI project file |
+Open **MapManager-All.groupproj** for application and components, or
+**MapManager-Components.groupproj** for only dependencies, in RAD Studio.
+Choose **Win64 Modern / Release**.
+
+## Active Win64 Modern project group
+
+| Project | GUI project |
 | --- | --- |
-| TUTPackage (local source, no standalone GitHub) | `C:\Users\arden\source\repos\TUTPackage\TUTPackageNative.dproj` |
-| d7zip, patched for MapManager | `C:\Users\arden\source\repos\d7zip\MapManagerArchiveNative.dproj` |
-| JAM Virtual TreeView | `C:\Users\arden\source\repos\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj` |
-| MapManager app | `C:\Users\arden\source\repos\MapManager\Project1.cbproj` |
+| Unreal package reader | `..\TUTPackage\TUTPackageNative.dproj` |
+| Archive wrapper | `..\d7zip\MapManagerArchiveNative.dproj` |
+| Virtual TreeView runtime | `..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.dproj` |
+| MapManager | `Project1.cbproj` |
 
-Open `C:\Users\arden\source\repos\MapManager\MapManager-All.groupproj` in RAD Studio.
-Choose **Win64 Modern / Release** and select Build All Projects. The
-`MapManager-Components.groupproj` group builds only the dependencies.
-You may also open and build each component project independently.
+The Virtual TreeView runtime now uses a **native Delphi** .dproj and .dpk,
+not the older VirtualTreesCR.cbproj C++Builder runtime wrapper. The native
+package is named VirtualTreesCR, includes the exact 22 original Pascal units
+and requires rtl, vcl, vclx and vclimg. C/C++ file generation is enabled
+for the required BPL, BPI, LIB and HPP outputs.
 
-## Generated files
+Why: the C++Builder wrapper's RAD Studio Win64x GUI build consistently failed
+to generate 22 Delphi object files before linking; object-path and build-order
+workarounds did not resolve it. The native Delphi package uses the same
+package format that works for TUTPackage and d7zip. The new native VTV
+package is not yet build-verified; the user will test from the IDE.
 
-- TUTPackage Pascal object/DCU/HPP: `TUTPackage\Win64x\Release`.
-- d7zip Pascal object/DCU/HPP: `d7zip\Win64x\Release`.
-- Virtual TreeView: its own `Packages\CBuilder 13\Win64x\Release`.
-- RAD Studio default shared outputs: `C:\Users\Public\Documents\Embarcadero\Studio\37.0\hpp`, `Bpl`, and `Dcp`.
-- Package link libraries `TUTPackageNative.lib` and `MapManagerArchiveNative.lib`: Embarcadero shared `Dcp\Win64x`.
-- MapManager application `Win64x\Release\Project1.exe` and its C++ objects: the MapManager project folder.
+The older VirtualTreesCR.cbproj and VirtualTreesCD.cbproj remain in the
+Virtual TreeView source tree, untouched by this switch, for other targets.
 
-The temporary MapManagerDeps and MapManagerAudit directories are not needed for
-builds and were removed after build verification. Win64x uses COFF libraries,
-not old Win64 ELF .a libraries. The legacy Win32/Win64 helper
-`build\compile-archive-units.cmd` has also been updated for sibling sources.
+## Output locations
 
-## Notes about separate projects
+- TUTPackage and d7zip: their source project output and RAD Studio's default
+  shared DCP/BPL folders.
+- Native VTV generated headers and DCUs: under
+  `Virtual-TreeView\Packages\CBuilder 13\Win64x\Release`.
+- Shared package BPL/BPI and Delphi package static LIB:
+  `C:\Users\Public\Documents\Embarcadero\Studio\37.0\Bpl\Win64x`
+  and `...\Dcp\Win64x`.
+- MapManager: `MapManager\Win64x\Release\Project1.exe`.
 
-Virtual TreeView and d7zip are separate upstream Git checkouts, with local RAD Studio
-modifications preserved. Their upstream remotes were not pushed.
-TUTPackage is local-only without its own Git repository.
+MapManager's Win64x compiler include path includes the native VTV header
+output directory. The VirtualTreesCR package name is unchanged, so the
+existing references to VirtualTreesCR.lib and VirtualTreesCR.bpi remain.
 
-MapManager's own Git history still contains the earlier copies of those sources;
-the current checkout references the sibling trees, so a fresh clone requires
-setting them up on the new machine. The patch in external d7zip's `sevenzip.pas`
-and its MapManager-specific `.dproj` / `.dpk` belong to that local checkout.
+## Fresh checkout
 
-Keep the application DelphiCompile entries for `MMArchiveEngine.pas` and
-`..\d7zip\sevenzip.pas`. Removing them previously caused linker failures.
+Virtual TreeView is a separate Git checkout. From the clean Virtual
+TreeView root, apply MapManager's
+`build/patches/VirtualTreesCR-Native-Win64x.patch` if the native project
+is missing. Do not apply this patch to DEV, where the files already exist.
 
-## Correct GUI build configurations and project-saving
+TUTPackage is local-only; d7zip and Virtual TreeView have separate Git
+histories. MapManager's GitHub push does not push external upstream repos.
 
-All three components in the project group are configured for **Win64 Modern (Win64x) / Release**.
-TUTPackageNative.dproj and MapManagerArchiveNative.dproj use standard RAD Studio
-BuildConfiguration entries (Base, Debug, Release) and Delphi project metadata.
-VirtualTreesCR.cbproj defaults to Win64x and builds VirtualTreesCR.bpl with no
-version suffix, matching its runtime output.
+## Static project validation
 
-If the IDE previously showed Base/Win64x for Delphi packages, Win32/Release for
-Virtual TreeView, VirtualTreesCR370.bpl missing, or crashed while saving a Delphi
-project in Xml.XMLIniFile, close and reopen the project group so RAD Studio
-reloads the corrected project files. Save modified .cpp/.pas/.dfm source files
-individually before closing any IDE session with unsaved edits.
+From the MapManager root, use `py -3 build\validate-rad-projects.py` to
+check that the Delphi projects have exactly one Base, Debug and Release
+configuration, C/C++ output enabled, the native VTV group references, and
+all 22 VTV source units present. This is not a build test.
 
-Win64x Release component-group and full-application group MSBuild builds passed,
-but the *IDE's own Save All action* still needs interactive confirmation.
-
-If the IDE shows Duplicate configuration 'Release', close the failed group and
-reopen the project group after updating the external Delphi .dproj files. The
-previous error arose from two PropertyGroup declarations per Release/Debug
-configuration and has been corrected locally on DEV. To validate the projects
-before opening RAD Studio, run:
-
-    py -3 build\validate-rad-projects.py
-
-Command-line builds do not test the IDE's own project-loading or Save All path.
-
-## Virtual TreeView Win64 Modern package and static library
-
-The VirtualTreesCR.cbproj project generates VirtualTreesCR.bpl and also
-Win64x/Release/VirtualTreesCR.lib, needed by the MapManager executable.
-Do not disable the Generate static package library option. RAD Studio
-uses its TLIB task (llvm-ar.exe for Win64 Modern) to build the library.
-
-The dependency checkout contains a StageVirtualTreesCRResourceWin64x
-pre-link target. It stages the project-root resource compiled by RC
-into Win64x/Release/VirtualTreesCR.res, where the Win64x linker expects
-it. This fixes a reproducible full-rebuild error.
-
-The full VTV Rebuild and complete MapManager-All group Build passed
-in the RAD Studio command-line environment with zero errors, including
-the TLIB static library generation. The earlier GUI TLIB exit-code-1
-error was not reproduced separately; retry in the IDE to confirm.
-If it recurs, preserve the first llvm-ar or tlib stderr line.
-
-
-For a fresh clone of the standalone Virtual TreeView Git checkout,
-apply the MapManager-owned RAD Studio 37.0 integration patch
-(build/patches/VirtualTreesCR-Win64x-RAD37.patch) from the clean
-Virtual-TreeView source checkout. It captures the default Win64x platform,
-the runtime BPL naming fix, local SDK include path and the resource staging
-target. Do not reapply it to the already modified DEV checkout.
-
-The Delphi component packages must have Delphi Compiler / Output - C/C++
-set to All. RAD Studio's IDE can regenerate the .dproj files during Save All,
-so this option is now stored in their Base configuration (the standard
-IDE-native location). build/validate-rad-projects.py checks that both
-packages still have the setting and their Release/Debug configurations
-remain unique. Both .lib files were regenerated in a clean Win64x Release
-build on 29 October 2026.
-
-### Virtual TreeView Delphi objects missing during GUI linking
-
-When ld.lld cannot find VirtualTrees.Accessibility.o and related Delphi
-objects under Win64x/Release, do not copy older .o files from the
-Virtual-TreeView/Source directory. The runtime Delphi package pass can
-refresh .dcu files without emitting the required dynamic-link .o files.
-
-The local VirtualTreesCR.cbproj now invokes RAD Studio's native
-MakeStaticPackage pass before the Win64x runtime link. This is intended
-to generate current Delphi objects in the configured output directory before
-ld.lld needs them; it is guarded to avoid recursion in the static build.
-This GUI build change has NOT yet been tested.
-
-
-### Native Win64x static-package compilation order
-
-The RAD Studio 37.0 CodeGear.Cpp.Targets standard package build invokes
-MakeStaticPackage after Link, but the Win64x runtime linker already needs
-the objects generated by that pass. The first custom BeforeTargets hook
-did not resolve this in the IDE.
-
-The local VirtualTreesCR.cbproj now explicitly includes MakeStaticPackage
-before _PerformLink in LinkDependsOnTargets, guarded so the nested static
-package project is unaffected. This update is unverified; test it from
-the IDE before declaring the GUI linker issue resolved.
-
-
-### Win64x static-object dependency ordering
-
-For RAD Studio 37.0, the MSBuild property LinkDependsOnTargets must be
-initialized BEFORE importing CodeGear.Cpp.Targets. A previous property group
-placed after the import had no effect in the IDE build. The updated local
-VirtualTreesCR.cbproj prepends the native MakeStaticPackage target before
-the import, then RAD Studio appends its normal link targets. The nested static
-build is excluded from this override to prevent recursion.
-
-This change has not been build-tested; the next IDE build is the verification.
+Save any source edits individually, then close and reopen
+MapManager-All.groupproj to load the new project structure in RAD Studio.

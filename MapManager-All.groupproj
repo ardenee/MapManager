@@ -11,7 +11,7 @@
     <Projects Include="..\d7zip\MapManagerArchiveNative.dproj">
       <Dependencies />
     </Projects>
-    <Projects Include="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj">
+    <Projects Include="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.dproj">
       <Dependencies />
     </Projects>
     <Projects Include="Project1.cbproj">
@@ -35,10 +35,10 @@
     <MSBuild Projects="..\d7zip\MapManagerArchiveNative.dproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" />
   </Target>
   <Target Name="VirtualTreesCR">
-    <MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" />
+    <MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.dproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" />
   </Target>
   <Target Name="VirtualTreesCR:Clean">
-    <MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" />
+    <MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.dproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" />
   </Target>
   <Target Name="MapManagerApp">
     <MSBuild Projects="Project1.cbproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" />
@@ -53,7 +53,7 @@
     <MSBuild Projects="..\d7zip\MapManagerArchiveNative.dproj" Targets="Make" Properties="Config=$(Config);Platform=$(Platform)" />
   </Target>
   <Target Name="VirtualTreesCR:Make">
-    <MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Make" Properties="Config=$(Config);Platform=$(Platform)" />
+    <MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.dproj" Targets="Make" Properties="Config=$(Config);Platform=$(Platform)" />
   </Target>
   <Target Name="Project1:Make">
     <MSBuild Projects="Project1.cbproj" Targets="Make" Properties="Config=$(Config);Platform=$(Platform)" />

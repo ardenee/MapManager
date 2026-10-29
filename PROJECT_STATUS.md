@@ -1,3 +1,13 @@
+### Native Delphi VirtualTreesCR Win64 Modern runtime - 29 October 2026 (awaiting IDE verification)
+
+- Successive GUI build logs repeated 22 missing VirtualTrees.*.o object errors from the mixed C++Builder package. Output path fixes, custom target-order changes and standalone command-line successes had not fixed GUI building.
+- Retired the failing VirtualTreesCR.cbproj from both active MapManager groups (old project/source preserved in the separate upstream checkout). Created VirtualTreesCR.dproj and VirtualTreesCR.dpk alongside it using the existing native Delphi package structure and TUTPackage's working Delphi project format.
+- Package name VirtualTreesCR is preserved. The new DPK references the exact same 22 upstream Pascal units and the required rtl, vcl, vclx and vclimg packages. Win64x Release, C++ static library/header generation, unique Base/Debug/Release configurations and normal Delphi build targets are configured.
+- Updated both .groupproj files and Project1.cbproj's Win64x header path to this source-local native package output directory. Existing VirtualTreesCR.lib and .bpi references remain unchanged.
+- Added reproducible build/patches/VirtualTreesCR-Native-Win64x.patch for the two new external project files; retired the obsolete C++Builder runtime workaround patch from the current MapManager repository.
+- Revised COMPONENT_BUILD_GUIDE.md and build/validate-rad-projects.py for this native project. Native project XML, source references and patch against the clean upstream Git index were checked. NO build was run; user's next GUI build is the acceptance check.
+- All nine existing uncommitted MapManager source edits and unrelated upstream Virtual TreeView edits remain untouched.
+
 ### Virtual TreeView Win64 Modern MSBuild target evaluation correction - 29 October 2026 (untested GUI)
 
 - Latest user IDE build still reports missing VirtualTrees.*.o files. The prior LinkDependsOnTargets override was AFTER CodeGear.Cpp.Targets Import and did not affect the already established Link target dependencies.

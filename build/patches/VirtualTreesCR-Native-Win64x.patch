@@ -1,0 +1,178 @@
+diff --git a/Packages/CBuilder 13/VirtualTreesCR.dpk b/Packages/CBuilder 13/VirtualTreesCR.dpk
+new file mode 100644
+index 0000000..0cedab0
+--- /dev/null
++++ b/Packages/CBuilder 13/VirtualTreesCR.dpk
+@@ -0,0 +1,35 @@
++package VirtualTreesCR;
++
++{$RUNONLY}
++
++requires
++  rtl,
++  vcl,
++  vclx,
++  vclimg;
++
++contains
++  VirtualTrees.Accessibility in '..\..\Source\VirtualTrees.Accessibility.pas',
++  VirtualTrees.AccessibilityFactory in '..\..\Source\VirtualTrees.AccessibilityFactory.pas',
++  VirtualTrees.Actions in '..\..\Source\VirtualTrees.Actions.pas',
++  VirtualTrees.AncestorVcl in '..\..\Source\VirtualTrees.AncestorVcl.pas',
++  VirtualTrees.BaseAncestorVcl in '..\..\Source\VirtualTrees.BaseAncestorVcl.pas',
++  VirtualTrees.BaseTree in '..\..\Source\VirtualTrees.BaseTree.pas',
++  VirtualTrees.Classes in '..\..\Source\VirtualTrees.Classes.pas',
++  VirtualTrees.ClipBoard in '..\..\Source\VirtualTrees.ClipBoard.pas',
++  VirtualTrees.Colors in '..\..\Source\VirtualTrees.Colors.pas',
++  VirtualTrees.DataObject in '..\..\Source\VirtualTrees.DataObject.pas',
++  VirtualTrees.DragImage in '..\..\Source\VirtualTrees.DragImage.pas',
++  VirtualTrees.DragnDrop in '..\..\Source\VirtualTrees.DragnDrop.pas',
++  VirtualTrees.DrawTree in '..\..\Source\VirtualTrees.DrawTree.pas',
++  VirtualTrees.EditLink in '..\..\Source\VirtualTrees.EditLink.pas',
++  VirtualTrees.Export in '..\..\Source\VirtualTrees.Export.pas',
++  VirtualTrees.Header in '..\..\Source\VirtualTrees.Header.pas',
++  VirtualTrees.HeaderPopup in '..\..\Source\VirtualTrees.HeaderPopup.pas',
++  VirtualTrees in '..\..\Source\VirtualTrees.pas',
++  VirtualTrees.StyleHooks in '..\..\Source\VirtualTrees.StyleHooks.pas',
++  VirtualTrees.Types in '..\..\Source\VirtualTrees.Types.pas',
++  VirtualTrees.Utils in '..\..\Source\VirtualTrees.Utils.pas',
++  VirtualTrees.WorkerThread in '..\..\Source\VirtualTrees.WorkerThread.pas';
++
++end.
+diff --git a/Packages/CBuilder 13/VirtualTreesCR.dproj b/Packages/CBuilder 13/VirtualTreesCR.dproj
+new file mode 100644
+index 0000000..58e4fc1
+--- /dev/null
++++ b/Packages/CBuilder 13/VirtualTreesCR.dproj
+@@ -0,0 +1,131 @@
++<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++    <PropertyGroup>
++        <ProjectGuid>{AEBF21B8-807D-4ABF-8A2D-F1C38D1C9F28}</ProjectGuid>
++        <MainSource>VirtualTreesCR.dpk</MainSource>
++        <ProjectVersion>20.3</ProjectVersion>
++        <FrameworkType>VCL</FrameworkType>
++        <Base>True</Base>
++        <Config Condition="'$(Config)'==''">Release</Config>
++        <Platform Condition="'$(Platform)'==''">Win64x</Platform>
++        <TargetedPlatforms>1048576</TargetedPlatforms>
++        <AppType>Package</AppType>
++        <GenPackage>true</GenPackage>
++        <GenDll>true</GenDll>
++        <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
++        <ProjectName Condition="'$(ProjectName)'==''">VirtualTreesCR</ProjectName>
++    </PropertyGroup>
++    <PropertyGroup>
++        <DCC_Namespace>Winapi;System;System.Win;Vcl;Data;Xml;Datasnap;$(DCC_Namespace)</DCC_Namespace>
++        <DCC_UnitSearchPath>..\..\Source;.;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
++        <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
++        <DCC_ExeOutput>$(Platform)\$(Config)</DCC_ExeOutput>
++        <DCC_HppOutput>$(Platform)\$(Config)</DCC_HppOutput>
++    </PropertyGroup>
++    <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
++        <Base>true</Base>
++    </PropertyGroup>
++    <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
++        <Cfg_1>true</Cfg_1>
++        <CfgParent>Base</CfgParent>
++        <Base>true</Base>
++    </PropertyGroup>
++    <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
++        <Cfg_2>true</Cfg_2>
++        <CfgParent>Base</CfgParent>
++        <Base>true</Base>
++    </PropertyGroup>
++    <PropertyGroup Condition="'$(Base)'!=''">
++        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
++        <GenDll>true</GenDll>
++        <GenPackage>true</GenPackage>
++        <SanitizedProjectName>VirtualTreesCR</SanitizedProjectName>
++    </PropertyGroup>
++    <ItemGroup>
++        <DelphiCompile Include="$(MainSource)">
++            <MainSource>MainSource</MainSource>
++        </DelphiCompile>
++        <DCCReference Include="rtl.dcp" />
++        <DCCReference Include="vcl.dcp" />
++        <DCCReference Include="vclimg.dcp" />
++        <DCCReference Include="vclx.dcp" />
++        <DCCReference Include="..\..\Source\VirtualTrees.Accessibility.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.AccessibilityFactory.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.Actions.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.AncestorVcl.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.BaseAncestorVcl.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.BaseTree.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.Classes.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.ClipBoard.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.Colors.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.DataObject.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.DragImage.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.DragnDrop.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.DrawTree.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.EditLink.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.Export.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.Header.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.HeaderPopup.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.StyleHooks.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.Types.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.Utils.pas" />
++        <DCCReference Include="..\..\Source\VirtualTrees.WorkerThread.pas" />
++        <BuildConfiguration Include="Base">
++            <Key>Base</Key>
++        </BuildConfiguration>
++        <BuildConfiguration Include="Debug">
++            <Key>Cfg_1</Key>
++            <CfgParent>Base</CfgParent>
++        </BuildConfiguration>
++        <BuildConfiguration Include="Release">
++            <Key>Cfg_2</Key>
++            <CfgParent>Base</CfgParent>
++        </BuildConfiguration>
++    </ItemGroup>
++    <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" />
++    <ProjectExtensions>
++        <Borland.Personality>Delphi.Personality.12</Borland.Personality>
++        <Borland.ProjectType>Package</Borland.ProjectType>
++        <BorlandProject>
++            <Delphi.Personality>
++                <Source>
++                    <Source Name="MainSource">VirtualTreesCR.dpk</Source>
++                </Source>
++                <VersionInfo>
++                    <VersionInfo Name="IncludeVerInfo">True</VersionInfo>
++                    <VersionInfo Name="AutoIncBuild">False</VersionInfo>
++                    <VersionInfo Name="MajorVer">1</VersionInfo>
++                    <VersionInfo Name="MinorVer">0</VersionInfo>
++                    <VersionInfo Name="Release">0</VersionInfo>
++                    <VersionInfo Name="Build">0</VersionInfo>
++                    <VersionInfo Name="Debug">False</VersionInfo>
++                    <VersionInfo Name="PreRelease">False</VersionInfo>
++                    <VersionInfo Name="Special">False</VersionInfo>
++                    <VersionInfo Name="Private">False</VersionInfo>
++                    <VersionInfo Name="DLL">False</VersionInfo>
++                    <VersionInfo Name="Locale">1033</VersionInfo>
++                    <VersionInfo Name="CodePage">1252</VersionInfo>
++                </VersionInfo>
++                <VersionInfoKeys>
++                    <VersionInfoKeys Name="CompanyName" />
++                    <VersionInfoKeys Name="FileDescription" />
++                    <VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
++                    <VersionInfoKeys Name="InternalName" />
++                    <VersionInfoKeys Name="LegalCopyright" />
++                    <VersionInfoKeys Name="LegalTrademarks" />
++                    <VersionInfoKeys Name="OriginalFilename" />
++                    <VersionInfoKeys Name="ProductName" />
++                    <VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
++                    <VersionInfoKeys Name="Comments" />
++                </VersionInfoKeys>
++            </Delphi.Personality>
++            <Platforms>
++                <Platform value="Win32">False</Platform>
++                <Platform value="Win64">False</Platform>
++                <Platform value="Win64x">True</Platform>
++            </Platforms>
++        </BorlandProject>
++        <ProjectFileVersion>12</ProjectFileVersion>
++    </ProjectExtensions>
++    <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" />
++</Project>

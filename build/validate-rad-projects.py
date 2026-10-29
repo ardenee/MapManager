@@ -11,6 +11,7 @@ ns = "{http://schemas.microsoft.com/developer/msbuild/2003}"
 packages = (
     repos / "TUTPackage" / "TUTPackageNative.dproj",
     repos / "d7zip" / "MapManagerArchiveNative.dproj",
+    repos / "Virtual-TreeView" / "Packages" / "CBuilder 13" / "VirtualTreesCR.dproj",
 )
 groups = (root / "MapManager-Components.groupproj", root / "MapManager-All.groupproj")
 
@@ -61,9 +62,31 @@ for p in groups:
     doc = ET.parse(p).getroot()
     projects = doc.findall(".//" + ns + "Projects")
     assert projects, f"{p}: project group is empty"
+    expected = (repos / "Virtual-TreeView" / "Packages" /
+                "CBuilder 13" / "VirtualTreesCR.dproj").resolve()
+    found_native = 0
     for project in projects:
         src = (p.parent / project.get("Include")).resolve()
         assert src.is_file(), f"{p}: missing project {src}"
-    print("PASS", p.name, "project references exist")
+        if src == expected:
+            found_native += 1
+        assert src.name != "VirtualTreesCR.cbproj", (
+            f"{p}: obsolete C++Builder Virtual TreeView runtime package selected"
+        )
+    assert found_native == 1, f"{p}: expected one native Delphi VTV package"
+    print("PASS", p.name, "native Delphi package and project references exist")
 
 print("RAD Studio project configuration validation passed.")
+
+
+vtv = repos / "Virtual-TreeView" / "Packages" / "CBuilder 13"
+dpk = (vtv / "VirtualTreesCR.dpk").read_text(encoding="utf-8")
+unit_list = re.findall(
+    r"(?m)^\s*VirtualTrees(?:\.[A-Za-z0-9_]+)?\s+in\s+'([^']+)'",
+    dpk,
+)
+assert len(unit_list) == 22, f"Native VTV package needs all 22 units: {len(unit_list)}"
+assert len(set(unit_list)) == len(unit_list), "Duplicate VTV source reference"
+for ref in unit_list:
+    assert (vtv / ref.replace("\\", "/")).is_file(), f"Missing VTV unit {ref}"
+print("PASS VirtualTreesCR.dpk: all 22 original Pascal units referenced")

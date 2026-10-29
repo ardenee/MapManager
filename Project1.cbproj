@@ -190,7 +190,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64x)'!=''">
         <ILINK_LibraryPath>..\Virtual-TreeView\Packages\CBuilder 13\Win64x\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
-        <BCC_IncludePath>..\TUTPackage\Win64x\Release;..\d7zip\Win64x\Release;..\TUTPackage\generated\Win64x;..\d7zip\generated\Win64x;..\TUTPackage;..\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
+        <BCC_IncludePath>..\Virtual-TreeView\Packages\CBuilder 13\Win64x\Release;..\TUTPackage\Win64x\Release;..\d7zip\Win64x\Release;..\TUTPackage\generated\Win64x;..\d7zip\generated\Win64x;..\TUTPackage;..\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <LinkPackageStatics>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackageNative.lib;MapManagerArchiveNative.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</LinkPackageStatics>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
