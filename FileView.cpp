@@ -41,7 +41,7 @@ void __fastcall TForm3::SetFile(AnsiString pFileName)
         TMM_FileInfo file = Form1->MapManager1->DisplayFiles->GetFileInfo(pFileName);
 
         Label4->Caption  = file.FileLocation + file.FileName;
-        Label5->Caption  = file.FileSize + " Bytes";
+        Label5->Caption  = AnsiString(file.FileSize) + " Bytes";
         Label6->Caption  = file.FileDate;
         Label8->Caption  = file.CRC32;
 		Label10->Caption = file.Installed;

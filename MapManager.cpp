@@ -618,6 +618,7 @@ void __fastcall TForm1::OnGotFileListEvent(TObject *Sender, PFileList pFileList,
 		case MM_FLT_ScreenShots : DisplayScreenShots(MapManager1->ScreenShots->FileList); break;
 		case MM_FLT_Textures    : DisplayTextures(MapManager1->Textures->FileList);    break;
 		case MM_FLT_Music       : DisplayMusic(MapManager1->Music->FileList);       break;
+		default                 : DisplayMaps(MapManager1->Maps->FileList);
 	}
 
 }
@@ -923,6 +924,8 @@ void __fastcall TForm1::PageControl1Change(TObject *Sender)
 					MapManager1->DisplayFiles->MakeTreeViewDisplay(VirtualStringTree1, MM_IT_Maps);
 					ListBox1->Items->AddStrings(MapManager1->Maps->FileDiscriptions);
 					ListBox1->Items->Insert(0, "All Maps");
+                    //StatusBar1->Panels->Items[1]->Text = IntToStr(ListBox1->Items->Count) + " " + GroupBox1->Caption.Trim() + " Found.";
+
                     break;
 				  }
 		case  1 : { //Archives
@@ -944,9 +947,9 @@ void __fastcall TForm1::PageControl1Change(TObject *Sender)
 					MapManager1->Cache->GetFiles();
 
 
-					ShowMessage(MapManager1->Cache->FileTypes->Text);
-					ShowMessage(MapManager1->Cache->FileFilters->Text);
-					ShowMessage(MapManager1->Cache->FileDiscriptions->Text);
+					//ShowMessage(MapManager1->Cache->FileTypes->Text);
+					//ShowMessage(MapManager1->Cache->FileFilters->Text);
+					//ShowMessage(MapManager1->Cache->FileDiscriptions->Text);
 
 					MapManager1->DisplayFiles->MakeTreeViewDisplay(VirtualStringTree1, MM_IT_Cache);
 					ListBox1->Items->AddStrings(MapManager1->Cache->FileDiscriptions);

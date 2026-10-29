@@ -20,7 +20,8 @@ void __fastcall TMMBuddie::SetSectionMarker(TMM_GameType Value)
     	case MM_GT_Unreal               : FSectionMarker="";                                         break;
     	case MM_GT_Unreal2              : FSectionMarker="";                                         break;
     	case MM_GT_UnrealTournament     : FSectionMarker="";                                         break;
-        case MM_GT_UnrealTournament2003 : FSectionMarker="[XInterface.Browser_ServerListPageBuddy]"; break;
+		case MM_GT_UnrealTournament2003 : FSectionMarker="[XInterface.Browser_ServerListPageBuddy]"; break;
+		default                         : FSectionMarker="[XInterface.Browser_ServerListPageBuddy]"; // MM_GT_UnrealTournament2003
     }
 }
 //----------------------------------------------------------------------------
@@ -31,7 +32,8 @@ void __fastcall TMMBuddie::SetBuddieStringFormat(TMM_GameType Value)
     	case MM_GT_Unreal               : FBuddieStringFormat="<:BUDDIE:>";         break;
     	case MM_GT_Unreal2              : FBuddieStringFormat="<:BUDDIE:>";         break;
     	case MM_GT_UnrealTournament     : FBuddieStringFormat="<:BUDDIE:>";         break;
-        case MM_GT_UnrealTournament2003 : FBuddieStringFormat="Buddies=<:BUDDIE:>"; break;
+		case MM_GT_UnrealTournament2003 : FBuddieStringFormat="Buddies=<:BUDDIE:>"; break;
+		default                         : FBuddieStringFormat="Buddies=<:BUDDIE:>"; //  MM_GT_UnrealTournament2003
     }
 }
 //----------------------------------------------------------------------------

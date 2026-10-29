@@ -33,9 +33,8 @@ __fastcall TMMCache::TMMCache(TMMEventManager* pEventManager)
 
 
 
-	fFileDiscriptions->Sorted = true;
+	fFileDiscriptions->Sorted     = true;
 	fFileDiscriptions->Duplicates = System::Types::dupIgnore;
-
 }
 //----------------------------------------------------------------------------
 __fastcall TMMCache::TMMCache()
@@ -78,21 +77,22 @@ void __fastcall TMMCache::GetCacheFolderFileList(TStrings* FileList)
 UnicodeString __fastcall TMMCache::GetStr1FromCacheString(UnicodeString FileName)
 {
 
+	return "";
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TMMCache::GetStr2FromCacheString(UnicodeString FileName)
 {
-
+	return "";
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TMMCache::GetFilesFolder(UnicodeString FileName)
 {
-
+	return "";
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TMMCache::GetStr3FromCacheString(UnicodeString FileName)
 {
-
+	return "";
 }
 //---------------------------------------------------------------------------
 void __fastcall TMMCache::RefreshSettings()

@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 1471
   Top = 725
   Caption = 'Map Manager 1.5'
-  ClientHeight = 404
-  ClientWidth = 732
+  ClientHeight = 493
+  ClientWidth = 864
   Color = clBtnFace
   Constraints.MinHeight = 463
   Constraints.MinWidth = 741
@@ -46,7 +46,7 @@ object Form1: TForm1
     Left = 140
     Top = 0
     Width = 1
-    Height = 385
+    Height = 474
     Beveled = True
     MinSize = 10
     ResizeStyle = rsUpdate
@@ -54,8 +54,8 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 385
-    Width = 732
+    Top = 474
+    Width = 864
     Height = 19
     Panels = <
       item
@@ -70,21 +70,21 @@ object Form1: TForm1
         Width = 89
       end>
     OnDrawPanel = StatusBar1DrawPanel
-    ExplicitTop = 368
-    ExplicitWidth = 726
+    ExplicitTop = 377
+    ExplicitWidth = 730
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
     Width = 140
-    Height = 385
+    Height = 474
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitHeight = 368
+    ExplicitHeight = 377
     object Splitter2: TSplitter
       Left = 0
-      Top = 244
+      Top = 333
       Width = 140
       Height = 1
       Cursor = crVSplit
@@ -98,49 +98,49 @@ object Form1: TForm1
       Left = 0
       Top = 0
       Width = 140
-      Height = 244
+      Height = 333
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitHeight = 227
+      ExplicitHeight = 236
       DesignSize = (
         140
-        244)
+        333)
       object GroupBox1: TGroupBox
         Left = 8
         Top = 8
         Width = 129
-        Height = 236
+        Height = 325
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = '  Lists  '
         TabOrder = 0
-        ExplicitHeight = 219
+        ExplicitHeight = 228
         DesignSize = (
           129
-          236)
+          325)
         object ListBox1: TListBox
           Left = 8
           Top = 16
           Width = 113
-          Height = 212
+          Height = 301
           Anchors = [akLeft, akTop, akRight, akBottom]
           ItemHeight = 13
           PopupMenu = PopupMenu2
           TabOrder = 0
           OnClick = ListBox1Click
-          ExplicitHeight = 195
+          ExplicitHeight = 204
         end
       end
     end
     object Panel4: TPanel
       Left = 0
-      Top = 245
+      Top = 334
       Width = 140
       Height = 140
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 1
-      ExplicitTop = 228
+      ExplicitTop = 237
       DesignSize = (
         140
         140)
@@ -173,28 +173,26 @@ object Form1: TForm1
   object Panel2: TPanel
     Left = 141
     Top = 0
-    Width = 591
-    Height = 385
+    Width = 723
+    Height = 474
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitWidth = 585
-    ExplicitHeight = 368
+    ExplicitWidth = 589
+    ExplicitHeight = 377
     DesignSize = (
-      591
-      385)
+      723
+      474)
     object PageControl1: TPageControl
-      Left = 4
+      Left = 2
       Top = 8
-      Width = 578
-      Height = 371
-      ActivePage = TabSheet3
+      Width = 710
+      Height = 460
+      ActivePage = TabSheet1
       Anchors = [akLeft, akTop, akRight, akBottom]
       HotTrack = True
       TabOrder = 0
       OnChange = PageControl1Change
-      ExplicitWidth = 572
-      ExplicitHeight = 354
       object TabSheet1: TTabSheet
         Caption = 'Maps'
       end
@@ -239,20 +237,20 @@ object Form1: TForm1
       Tag = 2
       Left = 480
       Top = 360
-      Width = 95
-      Height = 17
+      Width = 227
+      Height = 106
       Anchors = [akLeft, akTop, akRight, akBottom]
       Smooth = True
       Step = 1
       TabOrder = 1
-      ExplicitWidth = 89
-      ExplicitHeight = 0
+      ExplicitWidth = 93
+      ExplicitHeight = 9
     end
     object VirtualStringTree1: TVirtualStringTree
       Left = 9
       Top = 33
-      Width = 565
-      Height = 340
+      Width = 697
+      Height = 429
       Anchors = [akLeft, akTop, akRight, akBottom]
       Colors.FocusedSelectionColor = clGradientInactiveCaption
       Colors.FocusedSelectionBorderColor = clWindow
@@ -272,6 +270,8 @@ object Form1: TForm1
       OnGetImageIndex = VirtualStringTree1GetImageIndex
       Touch.InteractiveGestures = [igPan, igPressAndTap]
       Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
+      ExplicitWidth = 565
+      ExplicitHeight = 340
       Columns = <
         item
           Position = 0

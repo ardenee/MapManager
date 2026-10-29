@@ -456,6 +456,6 @@ void __fastcall TLogs::LoadFromFile(AnsiString NewLogFile)
 //----------------------------------------------------------------------------
 bool __fastcall TLogs::EditLogEnrty(PFileInfo OldLogEntry, PFileInfo NewLogEntry)
 {
-
+	 return false;
 }
 

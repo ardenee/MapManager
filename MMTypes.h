@@ -144,17 +144,19 @@ enum TMM_GetFileInfoType{
                           MM_GFIT_SFXDATA,
                           MM_GFIT_COPY,
                           MM_GFIT_UZ2,
-                          MM_GFIT_UZ,
+						  MM_GFIT_UZ,
+                          MM_GFIT_UZ3,
 					  };
 
 /*
  enum TMM_GameType{
 		MM_GT_Unreal,
 		MM_GT_Unreal2,
-		MM_GT_Unreal3,
 		MM_GT_UnrealTournament,
 		MM_GT_UnrealTournament2003,
 		MM_GT_UnrealTournament2004,
+		MM_GT_UnrealTournament3,
+		MM_GT_UnrealTournament4,
  };
  */
 
@@ -203,12 +205,15 @@ enum TMM_GameType{
                      MM_GT_XComEnforcer,
                      MM_GT_DeepSpaceNine,
                      MM_GT_NerfArenaBlast,
-                     MM_GT_UnrealTournament2003,
+					 MM_GT_UnrealTournament2003,
                      MM_GT_ArmyOperations,
                      MM_GT_HarryPotterSorcerersStone,
                      MM_GT_HarryPotterChamberSecrets,
                      MM_GT_Unreal2,
-                     MM_GT_SplinterCell
+					 MM_GT_SplinterCell,
+					 MM_GT_UnrealTournament2004,
+					 MM_GT_UnrealTournament3,
+					 MM_GT_UnrealTournament4
                  };
 // ----------------------------------------------------------------------------
 enum TMM_LoadFilesType{

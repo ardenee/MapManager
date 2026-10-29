@@ -20,7 +20,9 @@ void __fastcall TBuddie::SetSectionMarker(TMM_GameType Value)
     	case MM_GT_Unreal               : FSectionMarker="";                                         break;
     	case MM_GT_Unreal2              : FSectionMarker="";                                         break;
     	case MM_GT_UnrealTournament     : FSectionMarker="";                                         break;
-        case MM_GT_UnrealTournament2003 : FSectionMarker="[XInterface.Browser_ServerListPageBuddy]"; break;
+		case MM_GT_UnrealTournament2003 : FSectionMarker="[XInterface.Browser_ServerListPageBuddy]"; break;
+		default                         : FSectionMarker="[XInterface.Browser_ServerListPageBuddy]"; //MM_GT_UnrealTournament2003
+
     }
 }
 //----------------------------------------------------------------------------
@@ -30,9 +32,10 @@ void __fastcall TBuddie::SetBuddieStringFormat(TMM_GameType Value)
     {
     	case MM_GT_Unreal               : FBuddieStringFormat="<:BUDDIE:>";         break;
     	case MM_GT_Unreal2              : FBuddieStringFormat="<:BUDDIE:>";         break;
-    	case MM_GT_UnrealTournament     : FBuddieStringFormat="<:BUDDIE:>";         break;
-        case MM_GT_UnrealTournament2003 : FBuddieStringFormat="Buddies=<:BUDDIE:>"; break;
-    }
+		case MM_GT_UnrealTournament     : FBuddieStringFormat="<:BUDDIE:>";         break;
+		case MM_GT_UnrealTournament2003 : FBuddieStringFormat="Buddies=<:BUDDIE:>"; break;
+		default                         : FBuddieStringFormat="Buddies=<:BUDDIE:>";  // MM_GT_UnrealTournament2003
+	}
 }
 //----------------------------------------------------------------------------
 void __fastcall TBuddie::SetNewBuddieName(const AnsiString Value)
@@ -60,7 +63,7 @@ AnsiString __fastcall TBuddie::DecodeBuddieString(AnsiString BuddieString)
   // 4) <:BUDDIE:>=No1
   // use string replace to remove other string bits? would be safer too!
 
-    AnsiString TmpString = StringReplace("<:BUDDIE:>", "\t", BuddieStringFormat, TReplaceFlags() << rfIgnoreCase);
+	AnsiString TmpString = StringReplace("<:BUDDIE:>", "\t", BuddieStringFormat, TReplaceFlags() << rfIgnoreCase);
 
     int EndOfStart = AnsiPos('\t', TmpString);
 
@@ -77,7 +80,9 @@ AnsiString __fastcall TBuddie::DecodeBuddieString(AnsiString BuddieString)
     }
     
     if(EndOfStart==0 && TmpString.Length()>1) // format 4
-        return BuddieString.Delete(TmpString.Length()-1, BuddieString.Length());
+		return BuddieString.Delete(TmpString.Length()-1, BuddieString.Length());
+
+	return TmpString;
 }
 //----------------------------------------------------------------------------
 int __fastcall TBuddie::GetBussidList(TStrings* BuddieList)
