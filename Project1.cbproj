@@ -95,8 +95,8 @@
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <UWP_CppLogo44>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_44.png</UWP_CppLogo44>
         <UWP_CppLogo150>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_150.png</UWP_CppLogo150>
-        <IncludePath>ThirdParty\d7zip\;mm-setup\;$(IncludePath)</IncludePath>
-        <ILINK_LibraryPath>ThirdParty\d7zip\;mm-setup\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <IncludePath>..\d7zip;..\TUTPackage;$(IncludePath)</IncludePath>
+        <ILINK_LibraryPath>..\d7zip\Win64x\Release;..\TUTPackage\Win64x\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <SanitizedProjectName>Project1</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
@@ -157,7 +157,7 @@
         <UsePackages>false</UsePackages>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <LinkPackageStatics>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackage.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</LinkPackageStatics>
-        <BCC_IncludePath>TUTPackage;ThirdParty\d7zip\generated\Win32;ThirdParty\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
+        <BCC_IncludePath>..\TUTPackage;..\d7zip\generated\Win32;..\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
@@ -166,10 +166,10 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <LinkPackageImports>rtl.bpi;vcl.bpi;VirtualTreesCR.bpi;vclx.bpi;xmlrtl.bpi;vclactnband.bpi;vclimg.bpi;dbrtl.bpi;dbexpress.bpi;DbxCommonDriver.bpi;DBXSqliteDriver.bpi;dsnap.bpi</LinkPackageImports>
-        <BCC_IncludePath>TUTPackage\generated\Win64;ThirdParty\d7zip\generated\Win64;ThirdParty\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
+        <BCC_IncludePath>..\TUTPackage\generated\Win64;..\d7zip\generated\Win64;..\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <ILINK_LibraryPath>C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\Win64\Release;C:\Temp\MapManagerDeps\Win64-units;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>..\Virtual-TreeView\Packages\CBuilder 13\Win64\Release;..\TUTPackage\Win64\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
         <LinkPackageStatics>TUTPackage.lib</LinkPackageStatics>
     </PropertyGroup>
@@ -189,8 +189,8 @@
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64x)'!=''">
-        <ILINK_LibraryPath>C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\Win64x\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
-        <BCC_IncludePath>build\components\Win64x\Release\TUTPackageNative;ThirdParty\build\components\Win64x\Release\MapManagerArchiveNative;TUTPackage\generated\Win64x;ThirdParty\d7zip\generated\Win64x;TUTPackage;ThirdParty\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
+        <ILINK_LibraryPath>..\Virtual-TreeView\Packages\CBuilder 13\Win64x\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <BCC_IncludePath>..\TUTPackage\Win64x\Release;..\d7zip\Win64x\Release;..\TUTPackage\generated\Win64x;..\d7zip\generated\Win64x;..\TUTPackage;..\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <LinkPackageStatics>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackageNative.lib;MapManagerArchiveNative.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</LinkPackageStatics>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -283,9 +283,9 @@
         <ObjFiles Include="$(MSBuildProjectDirectory)\Win64\$(Config)\sevenzip.o" Condition="'$(Platform)'=='Win64'" />
         <ObjFiles Include="$(MSBuildProjectDirectory)\Win32\$(Config)\MMArchiveEngine.obj" Condition="'$(Platform)'=='Win32'" />
         <ObjFiles Include="$(MSBuildProjectDirectory)\Win32\$(Config)\sevenzip.obj" Condition="'$(Platform)'=='Win32'" />
-        <LibFiles Include="C:\Temp\MapManagerDeps\Win64-units\TUTPackage.a" Condition="'$(Platform)'=='Win64'" />
+        <LibFiles Include="..\TUTPackage\Win64\Release\TUTPackage.a" Condition="'$(Platform)'=='Win64'" />
         <DelphiCompile Include="MMArchiveEngine.pas"><BuildOrder>1</BuildOrder></DelphiCompile>
-        <DelphiCompile Include="ThirdParty\d7zip\sevenzip.pas">
+        <DelphiCompile Include="..\d7zip\sevenzip.pas">
             <BuildOrder>0</BuildOrder>
         </DelphiCompile>
         <CppCompile Include="TLogs.cpp">

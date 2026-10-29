@@ -1,47 +1,46 @@
-# Building Map Manager and components in RAD Studio 37.0
+# MapManager - build components in RAD Studio 37.0
 
-## Recommended: use a project group
+## Repositories and locations
 
-In RAD Studio select File > Open Project, then open MapManager-All.groupproj in the DEV repository root. Set Windows 64-bit (Modern) and Release. Choose Build All Projects, or build individual projects in Project Manager.
+The active app source is `C:\Users\arden\source\repos\MapManager`.
+Its GitHub origin remains `https://github.com/ardenee/MapManager.git`.
 
-The projects in build order:
+| Component | GUI project file |
+| --- | --- |
+| TUTPackage (local source, no standalone GitHub) | `C:\Users\arden\source\repos\TUTPackage\TUTPackageNative.dproj` |
+| d7zip, patched for MapManager | `C:\Users\arden\source\repos\d7zip\MapManagerArchiveNative.dproj` |
+| JAM Virtual TreeView | `C:\Users\arden\source\repos\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj` |
+| MapManager app | `C:\Users\arden\source\repos\MapManager\Project1.cbproj` |
 
-1. TUTPackage/TUTPackageNative.dproj - Unreal package reader
-2. ThirdParty/d7zip/MapManagerArchiveNative.dproj - d7zip plus MMArchiveEngine
-3. C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj - JAM Virtual TreeView runtime
-4. Project1.cbproj - Map Manager application
+Open `C:\Users\arden\source\repos\MapManager\MapManager-All.groupproj` in RAD Studio.
+Choose **Win64 Modern / Release** and select Build All Projects. The
+`MapManager-Components.groupproj` group builds only the dependencies.
+You may also open and build each component project independently.
 
-The Virtual TreeView path is the existing DEV checkout and must be adjusted on a different machine. MapManager-Components.groupproj remains available for components only.
+## Generated files
 
-## What the GUI build produces
+- TUTPackage Pascal object/DCU/HPP: `TUTPackage\Win64x\Release`.
+- d7zip Pascal object/DCU/HPP: `d7zip\Win64x\Release`.
+- Virtual TreeView: its own `Packages\CBuilder 13\Win64x\Release`.
+- RAD Studio default shared outputs: `C:\Users\Public\Documents\Embarcadero\Studio\37.0\hpp`, `Bpl`, and `Dcp`.
+- Package link libraries `TUTPackageNative.lib` and `MapManagerArchiveNative.lib`: Embarcadero shared `Dcp\Win64x`.
+- MapManager application `Win64x\Release\Project1.exe` and its C++ objects: the MapManager project folder.
 
-With Delphi Compiler / Output - C/C++ set to generate all files, the TUTPackage and archive .dproj packages emit COFF static libraries in:
+The temporary MapManagerDeps and MapManagerAudit directories are not needed for
+builds and were removed after build verification. Win64x uses COFF libraries,
+not old Win64 ELF .a libraries. The legacy Win32/Win64 helper
+`build\compile-archive-units.cmd` has also been updated for sibling sources.
 
-    C:\Users\Public\Documents\Embarcadero\Studio\37.0\Dcp\Win64x\TUTPackageNative.lib
-    C:\Users\Public\Documents\Embarcadero\Studio\37.0\Dcp\Win64x\MapManagerArchiveNative.lib
+## Notes about separate projects
 
-They also produce BPL, BPI and DCP files. Map Manager uses these static .lib files, not the runtime package BPLs. RAD Studio already includes Dcp/Win64x in the linker library search path.
+Virtual TreeView and d7zip are separate upstream Git checkouts, with local RAD Studio
+modifications preserved. Their upstream remotes were not pushed.
+TUTPackage is local-only without its own Git repository.
 
-Project1.cbproj Win64x Release now uses LinkPackageStatics with TUTPackageNative.lib and MapManagerArchiveNative.lib (plus the existing Win64x VirtualTreesCR.lib). No object search path or manual compilation of MMArchiveEngine.o is necessary.
+MapManager's own Git history still contains the earlier copies of those sources;
+the current checkout references the sibling trees, so a fresh clone requires
+setting them up on the new machine. The patch in external d7zip's `sevenzip.pas`
+and its MapManager-specific `.dproj` / `.dpk` belong to that local checkout.
 
-A missing -l:MapManagerArchiveNative.lib in ld.lld's command line means the IDE has older project settings loaded. Close and reopen Project1.cbproj (or MapManager-All.groupproj). Do not open the historical Project1.bpr or Project1.bdsproj.
-
-## Archive Delphi units in the application project
-
-Although the GUI-buildable MapManagerArchiveNative.dproj produces a COFF static package library, the current clean application link requires the MMArchiveEngine.pas and sevenzip.pas DelphiCompile entries in Project1.cbproj. RAD Studio compiles these automatically as part of the GUI build. Temporarily removing those entries produced unresolved MMArchiveEngine methods/vtable even after rebuilding the package library. Keep them enabled until a standalone-library-only link has been independently certified. This does not require running any external batch script.
-
-## Existing legacy targets
-
-The application build/compile-archive-units.cmd hook remains for Win32 and legacy Win64 only; the Win64 Modern Release application no longer invokes it. Win64 Modern uses COFF .lib, not legacy Win64 ELF .a. The source Project1.res is staged for clean rebuild, and native 64-bit 7z.dll is staged beside the executable when installed.
-
-TMapFileData.cpp/.h are compatibility stubs defining no TFileData methods. The canonical TFileData class remains in TFileData.cpp. Do not restore duplicate source files.
-
-## Verified 29 October 2026
-
-- Separate TUTPackageNative and MapManagerArchiveNative Delphi project builds: PASS.
-- VirtualTreesCR Win64x runtime build: PASS.
-- MapManager-Components.groupproj: PASS.
-- MapManager-All.groupproj (components and application): PASS.
-- Full clean Win64x Release application rebuild without the archive script: PASS.
-
-GUI startup, file installation, archive extraction and undo end-to-end runtime acceptance remain outstanding.
+Keep the application DelphiCompile entries for `MMArchiveEngine.pas` and
+`..\d7zip\sevenzip.pas`. Removing them previously caused linker failures.

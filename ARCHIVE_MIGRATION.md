@@ -1,3 +1,5 @@
+PATH UPDATE (29 October 2026): Active source is C:\Users\arden\source\repos\MapManager. Component source folders are sibling Virtual-TreeView, d7zip, and TUTPackage directories. References below to C:\Temp\MapManagerDeps or MapManagerAudit are historical and may no longer exist. See COMPONENT_BUILD_GUIDE.md for current paths.
+
 # Archive component migration — 29 October 2026
 
 

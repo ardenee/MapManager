@@ -1,3 +1,5 @@
+PATH UPDATE (29 October 2026): Active source is C:\Users\arden\source\repos\MapManager. Component source folders are sibling Virtual-TreeView, d7zip, and TUTPackage directories. References below to C:\Temp\MapManagerDeps or MapManagerAudit are historical and may no longer exist. See COMPONENT_BUILD_GUIDE.md for current paths.
+
 ## Latest - 29 October 2026: Win64 Modern / Release build successful
 
 The modern C++Builder Win64x/Release target and a complete clean Rebuild now pass (exit 0). The modern Delphi components were rebuilt with dcc64 -jf:coffi to create COFF .o files, TUTPackage.lib was created using llvm-lib, and VirtualTreesCR.lib/.bpi were built for Win64x/Release. Project1.cbproj has explicit modern include/object/library paths, a fallback for missing Project1.res during fresh builds, and stages native 64-bit 7z.dll after linking. This supersedes older statements below about Win64x not building. Runtime acceptance remains open; close and reopen the cbproj in an IDE instance started before the changes.

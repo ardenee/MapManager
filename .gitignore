@@ -72,3 +72,6 @@ BUILD_STATUS.md
 
 # Versioned schema templates only; user-generated SQLite databases stay ignored
 !/Database/templates/*.sqlite3
+
+# Per-checkout build verification logs
+/build/logs/

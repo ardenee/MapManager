@@ -1,3 +1,12 @@
+### MapManager and dependency relocation - 29 October 2026 (latest)
+
+- Active DEV Git checkout moved (including .git and unrelated user edits) to C:\Users\arden\source\repos\MapManager; GitHub origin remains https://github.com/ardenee/MapManager.git.
+- Moved the original Virtual TreeView Git checkout and uncommitted RAD Studio project modifications from Temp to C:\Users\arden\source\repos\Virtual-TreeView; likewise moved the separate d7zip upstream Git checkout to C:\Users\arden\source\repos\d7zip, retaining patched sevenzip.pas and manual GUI package projects.
+- Extracted TUTPackage sources and the standalone GUI .dproj/.dpk from MapManager to C:\Users\arden\source\repos\TUTPackage (no standalone GitHub); its previous Temp objects are under TUTPackage\Win32\Debug and TUTPackage\Win64\Release.
+- Updated app .cbproj, both project groups, external Delphi .dproj/.dpk and helper .cmd to refer to sibling directories. Compiler output now goes in source project folders or standard Embarcadero locations.
+- Combined GUI project group Build and separate Win64x Release app Rebuild both pass (exit code 0) from new locations. The RAD Studio IDE was open with an earlier project path during the relocation; reopen the new MapManager-All.groupproj before further GUI builds.
+- Historical Temp audit/build logs were purged on request after successful verification; current instructions are in COMPONENT_BUILD_GUIDE.md.
+
 ### Settings SQLite migration and automatic database creation - 29 October 2026 (latest)
 
 - RECOVERED: Original working settings.sqlite3 in old Map Manager/mm-setup/Win32/Debug with 12 historical tables, including Settings, GameSettings, FileTypes, Menus, filters, icons, and cache lookup types. Original cache.sqlite3 Files table recovered from two historical datasets (1491/6338 records). Original settings.sqlite3.sql is an incomplete SQL-only script; the mistakenly renamed settings.sqlite3 text copy in DEV has been restored to settings.sqlite3.sql byte-for-byte.

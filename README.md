@@ -119,3 +119,5 @@ On startup, the application automatically creates these files if missing, under 
 Existing files are never overwritten by startup. The settings component saves to SQLite when settings change and during form-close destruction. For the recovered schema, the original in-memory XML binding objects remain while the disk persistence is SQLite. This is not yet a wholesale replacement of every XML-bound UI interface.
 
 The application still uses XML for its separate historical logs subsystem; that migration and manual GUI close/reopen acceptance remain outstanding. See Database/MIGRATION.md and Database/SCHEMA.md.
+
+**Source relocation (29 October 2026):** The active MapManager checkout and the three component projects are sibling folders under `C:\Users\arden\source\repos`. See [COMPONENT_BUILD_GUIDE.md](COMPONENT_BUILD_GUIDE.md) for GUI build instructions and output paths.
