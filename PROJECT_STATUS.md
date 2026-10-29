@@ -1,3 +1,12 @@
+### Native package GUI confirmation and shared TUTPackage library list - 29 October 2026 (resolved)
+
+- User confirmed the RAD Studio Win64 Modern / Release GUI group build works using native Delphi VirtualTreesCR.dproj. The 22 missing VirtualTrees .o failures of the old C++Builder runtime path are closed for this active GUI build.
+- Confirmed TUTPackageNative.lib, TUTPackageNative.bpi in the standard Embarcadero Studio 37.0 Dcp/Win64x directory and TUTPackageNative.bpl in Bpl/Win64x. The old TUTPackage.lib under TUTPackage/Win32/Debug belongs to a legacy build.
+- Project1.cbproj still hardcoded TUTPackage.lib in the platform-neutral AllPackageLibs property; corrected the shared default to TUTPackageNative.lib and MapManagerArchiveNative.lib, matching the existing Win64x Release LinkPackageStatics.
+- Preserved legacy TUTPackage.lib explicitly under Win32 Debug/Release and legacy Win64 Debug/Release AllPackageLibs overrides, to avoid silently changing those targets.
+- Project XML and property presence were checked. No build was run following the correction, per user's testing preference; interactive RAD Studio reload required if the project is already loaded.
+- Existing unrelated source edits were not changed.
+
 ### Native Delphi VirtualTreesCR Win64 Modern runtime - 29 October 2026 (awaiting IDE verification)
 
 - Successive GUI build logs repeated 22 missing VirtualTrees.*.o object errors from the mixed C++Builder package. Output path fixes, custom target-order changes and standalone command-line successes had not fixed GUI building.

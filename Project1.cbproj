@@ -89,7 +89,7 @@
         <ProjectType>CppVCLApplication</ProjectType>
         <PackageImports>CloudService;emsclient;emsclientfiredac;FireDAC;FireDACCommon;FireDACCommonDriver;FireDACIBDriver;FireDACSqliteDriver;inet;RESTBackendComponents;RESTComponents;soapmidas;soaprtl;soapserver;$(PackageImports)</PackageImports>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <AllPackageLibs>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackage.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackageNative.lib;MapManagerArchiveNative.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</AllPackageLibs>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <Multithreaded>true</Multithreaded>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
@@ -153,6 +153,7 @@
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\debug\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <AllPackageLibs>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackage.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</AllPackageLibs>
         <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
         <UsePackages>false</UsePackages>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
@@ -165,6 +166,7 @@
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
+        <AllPackageLibs>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackage.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</AllPackageLibs>
         <LinkPackageImports>rtl.bpi;vcl.bpi;VirtualTreesCR.bpi;vclx.bpi;xmlrtl.bpi;vclactnband.bpi;vclimg.bpi;dbrtl.bpi;dbexpress.bpi;DbxCommonDriver.bpi;DBXSqliteDriver.bpi;dsnap.bpi</LinkPackageImports>
         <BCC_IncludePath>..\TUTPackage\generated\Win64;..\d7zip\generated\Win64;..\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -181,10 +183,12 @@
         <TASM_Debugging>None</TASM_Debugging>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <AllPackageLibs>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackage.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</AllPackageLibs>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
+        <AllPackageLibs>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackage.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</AllPackageLibs>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
     </PropertyGroup>
