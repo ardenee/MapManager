@@ -4,6 +4,15 @@
 
 > **Status — 29 October 2026:** Source recovery in progress. **Win64 Modern / Release now passes a clean build**, and legacy Win64 Debug also builds under RAD Studio 37.0. The GUI, full installer/runtime workflows, and Win32 full build have not yet been certified.
 
+**Current RAD Studio integration (29 October 2026):** The user confirms
+the native Delphi component packages and MapManager Win64 Modern / Release
+IDE build appear to be working. Component patches for standalone Virtual
+TreeView and d7zip checkouts are versioned in [build/patches](build/patches)
+and described in [COMPONENT_BUILD_GUIDE.md](COMPONENT_BUILD_GUIDE.md).
+TUTPackage remains local-only and is not yet recoverable from this GitHub
+repository alone. Functional installation, persistence and rollback
+acceptance remain separate from successful compilation.
+
 ## Project status
 
 **Win64 Modern Release update (29 October 2026):** C++Builder 37.0 bcc64x now builds the full application successfully, including a clean Rebuild, with platform-specific COFF dependencies and 64-bit 7z.dll staged alongside the executable. RAD Studio must reopen Project1.cbproj after project-file modifications; the earlier IDE instance had loaded outdated file lists. Runtime functionality still requires acceptance testing.

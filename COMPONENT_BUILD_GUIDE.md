@@ -30,7 +30,7 @@ Why: the C++Builder wrapper's RAD Studio Win64x GUI build consistently failed
 to generate 22 Delphi object files before linking; object-path and build-order
 workarounds did not resolve it. The native Delphi package uses the same
 package format that works for TUTPackage and d7zip. The new native VTV
-package is not yet build-verified; the user will test from the IDE.
+package was subsequently reported to build successfully by the user in RAD Studio 37.0 Win64 Modern / Release.
 
 The older VirtualTreesCR.cbproj and VirtualTreesCD.cbproj remain in the
 Virtual TreeView source tree, untouched by this switch, for other targets.
@@ -90,7 +90,7 @@ fresh Virtual TreeView checkout; do not apply it again on the active DEV.
 Generated .hpp files must be refreshed by rebuilding the native Delphi
 VirtualTreesCR package before building Project1. Do not edit generated
 headers or work around the missing VirtualTreesR.lib by adding an unrelated
-legacy library. These changes are statically validated, not yet GUI tested.
+legacy library. The user subsequently confirmed the IDE build is working.
 
 ## Native VirtualTreesCR Delphi compiler corrections (29 October 2026)
 
@@ -102,5 +102,25 @@ to TThread.Synchronize. The native Delphi project define no longer appends
 an empty DCC_Define (avoiding a doubled semicolon in the compiler command).
 
 All fixes are included in build/patches/VirtualTreesCR-Native-Win64x.patch.
-No compile or IDE rebuild has been run following these fixes; the next
-Win64 Modern / Release component-group build is the user acceptance check.
+The user subsequently reported the Win64 Modern / Release component and application builds working. Full runtime behavior remains to be validated separately.
+
+
+## Pinned external dependencies for a new DEV checkout
+
+For a fresh standalone Virtual TreeView clone at JAM-Software upstream revision
+2a8aef8, apply MapManager's build/patches/VirtualTreesCR-Native-Win64x.patch
+from the Virtual-TreeView root before loading the RAD Studio project group.
+This patch adds VirtualTreesCR.dproj/.dpk and the Pascal source corrections.
+
+For a fresh d7zip clone at geoffsmith82 upstream revision 38bee12, apply
+MapManager's build/patches/d7zip-MapManagerArchiveNative-RAD37.patch from the
+d7zip root. The patch adds MapManagerArchiveNative.dproj/.dpk and removes
+the redundant Delphi PLATFORM annotation in sevenzip.pas. Both patch files
+have been checked against the unchanged upstream Git indexes.
+
+TUTPackage is currently **local-only** in the sibling folder; its source
+files are not tracked in the MapManager repository and are ignored in the
+unrelated parent Git working tree. Thus this GitHub sync preserves the
+MapManager code and the two third-party integrations, but does not yet
+make a clean machine capable of rebuilding without access to TUTPackage.
+Do not commit the generated binary .lib/.bpl/.hpp files.

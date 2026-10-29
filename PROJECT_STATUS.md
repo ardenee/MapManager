@@ -1,3 +1,13 @@
+### GitHub synchronization and RAD Studio Win64x build confirmation - 29 October 2026
+
+- User reports the MapManager application and its components appear to be building/working again in the RAD Studio 37.0 Win64 Modern / Release IDE workflow. This closes the immediate component/linker build investigation based on the user's confirmation; full runtime workflow acceptance (especially archive installs and rollback) remains separately unverified.
+- The nine remaining MapManager application source and DFM edits have been included for GitHub synchronization, covering file details, Unreal/game enum additions, tree refresh defaults, buddy formats and GUI layout.
+- Native VirtualTreesCR integration including Pascal source/header fixes is retained in build/patches/VirtualTreesCR-Native-Win64x.patch; clean-index application check passed against the separate JAM Virtual TreeView checkout.
+- Native d7zip archive integration is now captured in build/patches/d7zip-MapManagerArchiveNative-RAD37.patch, including the local sevenzip.pas adjustment plus MapManagerArchiveNative.dproj/.dpk; clean-index application check passed against the separate geoffsmith82/d7zip checkout.
+- Both third-party Git remotes point to maintainers' repositories; local modifications were not pushed to the upstream maintainers. Build outputs, personal settings and binaries are not included in MapManager Git.
+- TUTPackage exists as a local, ignored folder inside a different parent working tree, with no separately versioned TUTPackage source repo here. Its source is not backed up by this MapManager commit; preserving it in GitHub would require an explicit source-vendoring/repository decision.
+- No new build or runtime test was executed during GitHub synchronization.
+
 ### VirtualTreesCR native Delphi rebuild errors - 29 October 2026 (pending user retest)
 
 - IDE rebuild of MapManager component group failed in VirtualTreesCR.dproj on VirtualTrees.BaseTree.pas(24) E2029 and VirtualTrees.WorkerThread.pas(194) E2250. TUTPackageNative had only its two existing nonfatal hints, and MapManagerArchiveNative compiled.

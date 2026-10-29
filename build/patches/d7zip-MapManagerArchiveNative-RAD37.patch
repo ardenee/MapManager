@@ -1,0 +1,158 @@
+diff --git a/MapManagerArchiveNative.dpk b/MapManagerArchiveNative.dpk
+new file mode 100644
+index 0000000..5b03645
+--- /dev/null
++++ b/MapManagerArchiveNative.dpk
+@@ -0,0 +1,14 @@
++package MapManagerArchiveNative;
++
++{$RUNONLY}
++
++requires
++  rtl,
++  vcl,
++  vclimg;
++
++contains
++  sevenzip in 'sevenzip.pas',
++  MMArchiveEngine in '..\MapManager\MMArchiveEngine.pas';
++
++end.
+diff --git a/MapManagerArchiveNative.dproj b/MapManagerArchiveNative.dproj
+new file mode 100644
+index 0000000..a662681
+--- /dev/null
++++ b/MapManagerArchiveNative.dproj
+@@ -0,0 +1,110 @@
++<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++    <PropertyGroup>
++        <ProjectGuid>{399B8B89-513E-4FAB-9491-9931996ED857}</ProjectGuid>
++        <MainSource>MapManagerArchiveNative.dpk</MainSource>
++        <ProjectVersion>20.3</ProjectVersion>
++        <FrameworkType>VCL</FrameworkType>
++        <Base>True</Base>
++        <Config Condition="'$(Config)'==''">Release</Config>
++        <Platform Condition="'$(Platform)'==''">Win64x</Platform>
++        <TargetedPlatforms>1048577</TargetedPlatforms>
++        <AppType>Package</AppType>
++        <GenPackage>true</GenPackage>
++        <GenDll>true</GenDll>
++        <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
++        <ProjectName Condition="'$(ProjectName)'==''">MapManagerArchiveNative</ProjectName>
++    </PropertyGroup>
++    <PropertyGroup>
++        <DCC_Namespace>Winapi;System;System.Win;Vcl;Data;Xml;Datasnap;$(DCC_Namespace)</DCC_Namespace>
++        <DCC_UnitSearchPath>.;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
++        <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
++        <DCC_ExeOutput>$(Platform)\$(Config)</DCC_ExeOutput>
++        <DCC_HppOutput>$(Platform)\$(Config)</DCC_HppOutput>
++    </PropertyGroup>
++    <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
++        <Base>true</Base>
++    </PropertyGroup>
++    <PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
++        <Cfg_1>true</Cfg_1>
++        <CfgParent>Base</CfgParent>
++        <Base>true</Base>
++    </PropertyGroup>
++    <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
++        <Cfg_2>true</Cfg_2>
++        <CfgParent>Base</CfgParent>
++        <Base>true</Base>
++    </PropertyGroup>
++    <PropertyGroup Condition="'$(Base)'!=''">
++        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
++        <GenDll>true</GenDll>
++        <GenPackage>true</GenPackage>
++        <SanitizedProjectName>MapManagerArchiveNative</SanitizedProjectName>
++    </PropertyGroup>
++    <ItemGroup>
++        <DelphiCompile Include="$(MainSource)">
++            <MainSource>MainSource</MainSource>
++        </DelphiCompile>
++        <DCCReference Include="rtl.dcp" />
++        <DCCReference Include="vcl.dcp" />
++        <DCCReference Include="vclimg.dcp" />
++        <DCCReference Include="sevenzip.pas" />
++        <DCCReference Include="..\MapManager\MMArchiveEngine.pas" />
++        <BuildConfiguration Include="Base">
++            <Key>Base</Key>
++        </BuildConfiguration>
++        <BuildConfiguration Include="Debug">
++            <Key>Cfg_1</Key>
++            <CfgParent>Base</CfgParent>
++        </BuildConfiguration>
++        <BuildConfiguration Include="Release">
++            <Key>Cfg_2</Key>
++            <CfgParent>Base</CfgParent>
++        </BuildConfiguration>
++    </ItemGroup>
++    <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" />
++    <ProjectExtensions>
++        <Borland.Personality>Delphi.Personality.12</Borland.Personality>
++        <Borland.ProjectType>Package</Borland.ProjectType>
++        <BorlandProject>
++            <Delphi.Personality>
++                <Source>
++                    <Source Name="MainSource">MapManagerArchiveNative.dpk</Source>
++                </Source>
++                <VersionInfo>
++                    <VersionInfo Name="IncludeVerInfo">True</VersionInfo>
++                    <VersionInfo Name="AutoIncBuild">False</VersionInfo>
++                    <VersionInfo Name="MajorVer">1</VersionInfo>
++                    <VersionInfo Name="MinorVer">0</VersionInfo>
++                    <VersionInfo Name="Release">0</VersionInfo>
++                    <VersionInfo Name="Build">0</VersionInfo>
++                    <VersionInfo Name="Debug">False</VersionInfo>
++                    <VersionInfo Name="PreRelease">False</VersionInfo>
++                    <VersionInfo Name="Special">False</VersionInfo>
++                    <VersionInfo Name="Private">False</VersionInfo>
++                    <VersionInfo Name="DLL">False</VersionInfo>
++                    <VersionInfo Name="Locale">1033</VersionInfo>
++                    <VersionInfo Name="CodePage">1252</VersionInfo>
++                </VersionInfo>
++                <VersionInfoKeys>
++                    <VersionInfoKeys Name="CompanyName" />
++                    <VersionInfoKeys Name="FileDescription" />
++                    <VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
++                    <VersionInfoKeys Name="InternalName" />
++                    <VersionInfoKeys Name="LegalCopyright" />
++                    <VersionInfoKeys Name="LegalTrademarks" />
++                    <VersionInfoKeys Name="OriginalFilename" />
++                    <VersionInfoKeys Name="ProductName" />
++                    <VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
++                    <VersionInfoKeys Name="Comments" />
++                </VersionInfoKeys>
++            </Delphi.Personality>
++            <Platforms>
++                <Platform value="Win32">True</Platform>
++                <Platform value="Win64">False</Platform>
++                <Platform value="Win64x">True</Platform>
++            </Platforms>
++        </BorlandProject>
++        <ProjectFileVersion>12</ProjectFileVersion>
++    </ProjectExtensions>
++    <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" />
++</Project>
+diff --git a/sevenzip.pas b/sevenzip.pas
+index 0bf11df..e2b2d00 100644
+--- a/sevenzip.pas
++++ b/sevenzip.pas
+@@ -17,7 +17,7 @@
+ // Uploaded to GitHub at https://github.com/danielmarschall/d7zip
+ 
+ // Current version by Daniel Marschall, 15 Feb 2025 with the following changes:
+-// - Marked unit as "platform"
++// - Windows-only unit; the redundant PLATFORM hint is omitted in Map Manager
+ // - Used units are now fully qualified names
+ 
+ // Current version by Daniel Marschall, 15 May 2024 with the following changes:
+@@ -46,7 +46,7 @@
+ //                          But this is complex, because we have things like FFileTime, TPropVariant, etc.!
+ 
+ 
+-unit sevenzip platform;
++unit sevenzip;
+ {$ALIGN ON}
+ {$MINENUMSIZE 4}
+ {$WARN SYMBOL_PLATFORM OFF}
