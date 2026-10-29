@@ -1,0 +1,6 @@
+.exe
+.rar
+.ut2
+.ut2mod
+.uz2
+.zip
