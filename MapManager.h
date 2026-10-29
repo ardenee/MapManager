@@ -28,8 +28,8 @@
 #include <Data.SqlExpr.hpp>
 #include <Data.DbxSqlite.hpp>
 #include <Datasnap.DBClient.hpp>
-#include "VirtualTrees.AncestorVCL.hpp"
-#include "VirtualTrees.BaseAncestorVCL.hpp"
+#include "VirtualTrees.AncestorVcl.hpp"
+#include "VirtualTrees.BaseAncestorVcl.hpp"
 #include "VirtualTrees.BaseTree.hpp"
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

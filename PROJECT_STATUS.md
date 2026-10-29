@@ -1,3 +1,12 @@
+### Win64x native VirtualTreeView generated-header fixes - 29 October 2026 (awaiting IDE rebuild)
+
+- Latest Project1 Win64x Release GUI log reached ld.lld and failed on a single missing VirtualTreesR.lib, despite explicitly linking the existing VirtualTreesCR.lib. This came from a hidden auto-link directive emitted by upstream Source/VirtualTrees.BaseTree.pas, not from Project1.cbproj.
+- Upstream Pascal source emits #pragma comment(lib, VirtualTreesCR) only under BCB, otherwise VirtualTreesR. The new Delphi-native VirtualTreesCR.dproj does not define BCB, so its generated VirtualTrees.BaseTree.hpp forced the incorrect VirtualTreesR.lib.
+- Added project-specific MAPMANAGER_VTV_NATIVE to VirtualTreesCR.dproj and changed the BaseTree.pas conditional to choose VirtualTreesCR under BCB OR MAPMANAGER_VTV_NATIVE; standalone Delphi VirtualTreesR package remains unchanged by default.
+- Repeated bcc64x non-portable-include-path warnings were caused by Pascal declarations and uses referring to VirtualTrees.(Base)AncestorVCL while files and newly generated headers use ...AncestorVcl. Normalized casing across the five affected Virtual TreeView Pascal files and the two explicit MapManager.h includes. Existing generated .hpp files were NOT manually edited.
+- Updated reproducible build/patches/VirtualTreesCR-Native-Win64x.patch to include the native Delphi package additions and Pascal source fixes. Checked its applicability against the separate Virtual TreeView clean Git index and statically verified project XML, compiler symbol, unit spellings and application includes.
+- User requested to run GUI build themselves. No compiler or GUI build was performed after this correction. Preserve nine unrelated uncommitted MapManager source edits.
+
 ### Remove obsolete TUTPackage.lib from application project - 29 October 2026
 
 - Per user request, **removed every TUTPackage.lib reference** from the active Project1.cbproj, including all Win32/legacy-Win64 platform overrides. The old library is no longer an input to any application project configuration.

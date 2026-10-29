@@ -69,3 +69,25 @@ all 22 VTV source units present. This is not a build test.
 
 Save any source edits individually, then close and reopen
 MapManager-All.groupproj to load the new project structure in RAD Studio.
+
+
+## Native Virtual TreeView generated header and linker names (29 October 2026)
+
+The native Delphi VirtualTreesCR package defines MAPMANAGER_VTV_NATIVE under
+its Base compiler settings. Source/VirtualTrees.BaseTree.pas emits
+VirtualTreesCR instead of the upstream Delphi package's VirtualTreesR
+auto-link pragma when this symbol is present. This prevents Project1 from
+implicitly requesting an unbuilt VirtualTreesR.lib after the linker already
+selects VirtualTreesCR.lib.
+
+Pascal unit names/imports were also normalized to Vcl rather than VCL for
+VirtualTrees.AncestorVcl and VirtualTrees.BaseAncestorVcl, matching the
+physical source and generated header filenames. MapManager.h uses this
+same casing. The source changes, plus the native Delphi package project,
+are stored in build/patches/VirtualTreesCR-Native-Win64x.patch for a
+fresh Virtual TreeView checkout; do not apply it again on the active DEV.
+
+Generated .hpp files must be refreshed by rebuilding the native Delphi
+VirtualTreesCR package before building Project1. Do not edit generated
+headers or work around the missing VirtualTreesR.lib by adding an unrelated
+legacy library. These changes are statically validated, not yet GUI tested.

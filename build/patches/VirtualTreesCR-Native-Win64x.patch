@@ -2,7 +2,7 @@ diff --git a/Packages/CBuilder 13/VirtualTreesCR.dpk b/Packages/CBuilder 13/Virt
 new file mode 100644
 index 0000000..0cedab0
 --- /dev/null
-+++ b/Packages/CBuilder 13/VirtualTreesCR.dpk
++++ b/Packages/CBuilder 13/VirtualTreesCR.dpk	
 @@ -0,0 +1,35 @@
 +package VirtualTreesCR;
 +
@@ -41,10 +41,10 @@ index 0000000..0cedab0
 +end.
 diff --git a/Packages/CBuilder 13/VirtualTreesCR.dproj b/Packages/CBuilder 13/VirtualTreesCR.dproj
 new file mode 100644
-index 0000000..58e4fc1
+index 0000000..a85a811
 --- /dev/null
-+++ b/Packages/CBuilder 13/VirtualTreesCR.dproj
-@@ -0,0 +1,131 @@
++++ b/Packages/CBuilder 13/VirtualTreesCR.dproj	
+@@ -0,0 +1,132 @@
 +<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 +    <PropertyGroup>
 +        <ProjectGuid>{AEBF21B8-807D-4ABF-8A2D-F1C38D1C9F28}</ProjectGuid>
@@ -83,6 +83,7 @@ index 0000000..58e4fc1
 +    </PropertyGroup>
 +    <PropertyGroup Condition="'$(Base)'!=''">
 +        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
++        <DCC_Define>MAPMANAGER_VTV_NATIVE;$(DCC_Define)</DCC_Define>
 +        <GenDll>true</GenDll>
 +        <GenPackage>true</GenPackage>
 +        <SanitizedProjectName>VirtualTreesCR</SanitizedProjectName>
@@ -176,3 +177,71 @@ index 0000000..58e4fc1
 +    </ProjectExtensions>
 +    <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" />
 +</Project>
+diff --git a/Source/VirtualTrees.AncestorVcl.pas b/Source/VirtualTrees.AncestorVcl.pas
+index d0739a9..09ec2e7 100644
+--- a/Source/VirtualTrees.AncestorVcl.pas
++++ b/Source/VirtualTrees.AncestorVcl.pas
+@@ -1,4 +1,4 @@
+-unit VirtualTrees.AncestorVCL;
++unit VirtualTrees.AncestorVcl;
+ 
+ {$SCOPEDENUMS ON}
+ 
+diff --git a/Source/VirtualTrees.BaseAncestorVcl.pas b/Source/VirtualTrees.BaseAncestorVcl.pas
+index 8eba812..a6d03d3 100644
+--- a/Source/VirtualTrees.BaseAncestorVcl.pas
++++ b/Source/VirtualTrees.BaseAncestorVcl.pas
+@@ -1,4 +1,4 @@
+-unit VirtualTrees.BaseAncestorVCL;
++unit VirtualTrees.BaseAncestorVcl;
+ 
+ {$SCOPEDENUMS ON}
+ 
+diff --git a/Source/VirtualTrees.BaseTree.pas b/Source/VirtualTrees.BaseTree.pas
+index b03ebe7..e02f156 100644
+--- a/Source/VirtualTrees.BaseTree.pas
++++ b/Source/VirtualTrees.BaseTree.pas
+@@ -17,7 +17,7 @@ interface
+ {$HPPEMIT '#include <objidl.h>'}
+ {$HPPEMIT '#include <oleidl.h>'}
+ {$HPPEMIT '#include <oleacc.h>'}
+-{$ifdef BCB}
++{$IF DEFINED(BCB) OR DEFINED(MAPMANAGER_VTV_NATIVE)}
+   {$HPPEMIT '#pragma comment(lib, "VirtualTreesCR")'}
+ {$else}
+   {$HPPEMIT '#pragma comment(lib, "VirtualTreesR")'}
+@@ -40,7 +40,7 @@ uses
+ {$IFDEF VT_FMX}
+   , VirtualTrees.BaseAncestorFMX
+ {$ELSE}
+-  , VirtualTrees.BaseAncestorVCL
++  , VirtualTrees.BaseAncestorVcl
+ {$ENDIF}
+   ;
+ 
+diff --git a/Source/VirtualTrees.DrawTree.pas b/Source/VirtualTrees.DrawTree.pas
+index 0fb1e38..8981b41 100644
+--- a/Source/VirtualTrees.DrawTree.pas
++++ b/Source/VirtualTrees.DrawTree.pas
+@@ -11,7 +11,7 @@ uses
+ {$IFDEF VT_FMX}
+   VirtualTrees.AncestorFMX,
+ {$ELSE}
+-  VirtualTrees.AncestorVCL
++  VirtualTrees.AncestorVcl
+ {$ENDIF}
+   ;
+ 
+diff --git a/Source/VirtualTrees.pas b/Source/VirtualTrees.pas
+index 7701904..e1c29a0 100644
+--- a/Source/VirtualTrees.pas
++++ b/Source/VirtualTrees.pas
+@@ -70,7 +70,7 @@ uses
+ {$IFDEF VT_FMX}
+   VirtualTrees.AncestorFMX,
+ {$ELSE}
+-  VirtualTrees.AncestorVCL
++  VirtualTrees.AncestorVcl
+ {$ENDIF}
+   ;
+  
