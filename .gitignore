@@ -69,3 +69,6 @@ BUILD_STATUS.md
 # Generated package wrapper headers
 /TUTPackage/generated/Win64x/TUTPackageNative.hpp
 /ThirdParty/d7zip/generated/Win64x/MapManagerArchiveNative.hpp
+
+# Versioned schema templates only; user-generated SQLite databases stay ignored
+!/Database/templates/*.sqlite3

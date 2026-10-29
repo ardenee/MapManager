@@ -1,5 +1,6 @@
 //#include <Registry.hpp>
 #include "TMMSettings.h"
+#include "MMDatabase.h"
 #include "StrUtils.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -21,53 +22,46 @@ __fastcall TMMSettings::TMMSettings()
     fLastGameType  = 0;
     fSettingsFile  = fProgramFolder + "Settings\\Settings.xml";
 
-    // XML remains the active settings store until the SQLite migration and
-    // complete schema have been implemented. Never create an empty SQLite
-    // database or depend on the IDE's current working directory.
+    // The first launch imports the legacy XML, then the settings document is
+    // loaded and saved exclusively inside the per-user SQLite database.
+    const bool firstRun = !FileExists(MMDatabase::DatabasePath(L"settings.sqlite3"));
+    MMDatabase::EnsureAllDatabases();
     SQLConnection1 = new TSQLConnection(0);
     SQLQuery1      = new TSQLQuery(0);
     SQLDataSet1    = new TSQLDataSet(0);
     SQLConnection1->DriverName = "Sqlite";
-    SQLQuery1->SQLConnection   = SQLConnection1;
-    SQLDataSet1->SQLConnection = SQLConnection1;
     SQLConnection1->LoginPrompt = false;
-    const UnicodeString databaseFile =
-        IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + L"settings.sqlite3";
-    SQLConnection1->Params->Add(L"Database=" + databaseFile);
-
-    // The recovered settings.sqlite3.sql does not contain a Settings table.
-    // Only use a pre-existing, schema-compatible database; otherwise continue
-    // with the original XML settings without showing a misleading SQLite error.
-    if (FileExists(databaseFile))
-    {
-        try
-        {
-            SQLConnection1->Connected = true;
-            SQLQuery1->SQL->Text =
-                L"SELECT name FROM sqlite_master WHERE type='table' AND name='Settings'";
-            SQLQuery1->Open();
-            const bool schemaReady = !SQLQuery1->IsEmpty();
-            SQLQuery1->Close();
-            if (!schemaReady)
-                SQLConnection1->Connected = false;
-        }
-        catch (EDatabaseError& E)
-        {
-            SQLConnection1->Connected = false;
-            OutputDebugStringW((UnicodeString(L"MapManager: ignoring invalid settings database ") +
-                databaseFile + L": " + E.Message).c_str());
-        }
-    }
-
-    if (SQLConnection1->Connected)
-        GetSettings();
-    // LoadSettings() always reads the existing XML source of truth.
-	LoadSettings();
+    SQLConnection1->Params->Add(L"Database=" +
+        MMDatabase::DatabasePath(L"settings.sqlite3"));
+    SQLQuery1->SQLConnection = SQLConnection1;
+    SQLDataSet1->SQLConnection = SQLConnection1;
+    SQLConnection1->Connected = true;
+    SQLQuery1->SQL->Text = L"SELECT XmlData FROM SettingsDocument WHERE Id=1";
+    SQLQuery1->Open();
+    if (SQLQuery1->IsEmpty())
+        throw Exception(L"Settings database is missing its SettingsDocument record.");
+    const UnicodeString savedXml = SQLQuery1->Fields->Fields[0]->AsString;
+    SQLQuery1->Close();
+    if (firstRun && FileExists(fSettingsFile))
+        fXMLSSettingsFile = LoadXMLDocument(fSettingsFile);
+    else
+        fXMLSSettingsFile = LoadXMLData(savedXml);
+    if (!fXMLSSettingsFile)
+        throw Exception(L"Unable to load Map Manager settings from SQLite.");
+    LoadSettings();
+    // Complete first-run import before allowing any user changes.
+    if (firstRun)
+        SaveSettings();
 }
 //----------------------------------------------------------------------------
 __fastcall TMMSettings::~TMMSettings()
 {
-    this->SaveSettings();
+    // On form close TMapManager deletes this component; save first.
+    SaveSettings();
+    delete SQLDataSet1;
+    delete SQLQuery1;
+    SQLConnection1->Connected = false;
+    delete SQLConnection1;
 }
 //----------------------------------------------------------------------------
 void __fastcall TMMSettings::SetStringValue(const int Index, AnsiString Value)
@@ -213,61 +207,11 @@ void __fastcall TMMSettings::OnSettingsChangedEvent(TObject* Sender)
 //----------------------------------------------------------------------------
 void __fastcall TMMSettings::LoadSettings()
 {
-	//UnicodeString query = "Select LastSeletedGame from Settings;";
-    if (SQLConnection1->Connected)
-    {
-	try
-	{
-		SQLQuery1->SQL->Text = "Select LastSeletedGame from Settings";
-		SQLQuery1->ExecSQL(true);
-		SQLQuery1->Open();
-	}
-	catch (Exception& E)
-	{
-		ShowMessage("TMMSettings::LoadSettings()\nSelect Exception\n" + E.Message);
-		//return;
-	}
-
-
-	TStringList* fields;
-
-	if (!SQLQuery1->IsEmpty())
-	{
-		  SQLQuery1->First();
-		  fields = new TStringList;
-
-		  try{
-				SQLQuery1->GetFieldNames(fields);
-
-				while (!SQLQuery1->Eof)
-				{
-					  for (int i = 0; i < fields->Count; ++i)
-					  {
-						//fLastGameType = SQLQuery1->FieldByName(fields->Strings[i])->AsInteger;
-					  }
-					   SQLQuery1->Next();
-				}
-		  }
-		  catch (Exception& E)
-		  {
-			ShowMessage("TMMSettings::LoadSettings()\nSelect Exception\n" + E.Message);
-			//return;
-		  }
-
-			fields->Free();
-	}
-
-	SQLQuery1->Close();
-    }
-
-	fXMLSSettingsFile = LoadXMLDocument(fSettingsFile);
-	OnSettingsChanged = NULL; // stop events from running when loading!!
-
-	if(fXMLSSettingsFile)
-	{
-		fXMLSSettingsFile->Active     = true;
-		fXMLSSettingsFile->StandAlone = "yes";
-	}
+    // The XML DOM is an in-memory compatibility facade; the canonical data is
+    // SQLite SettingsDocument.XmlData. The legacy file is only read on import.
+    if (!fXMLSSettingsFile)
+        throw Exception(L"Settings database did not provide an XML document.");
+    OnSettingsChanged = NULL;
 
 	// Get All Games
     fGames = GetGames(fXMLSSettingsFile);
@@ -382,7 +326,117 @@ void __fastcall TMMSettings::SaveSettings()
     GameData->Set_ScreenShotExt(fScreenShotExt);
     GameData->Set_CacheFile(fCacheFile);
 
-    fXMLSSettingsFile->SaveToFile(fSettingsFile);
+    // SQLite, not the legacy XML file, is the persistence layer.
+    // Write the complete profile/menu/table/icon document so none of the
+    // older generated XML-bound UI interfaces lose their data.
+    try
+    {
+        SQLQuery1->Close();
+        SQLQuery1->SQL->Text = L"BEGIN IMMEDIATE";
+        SQLQuery1->ExecSQL(true);
+        SQLQuery1->SQL->Text =
+            L"UPDATE SettingsDocument SET XmlData = :XmlData WHERE Id=1";
+        SQLQuery1->Params->ParamByName(L"XmlData")->AsWideString =
+            fXMLSSettingsFile->XML->Text;
+        SQLQuery1->ExecSQL(false);
+        SQLQuery1->SQL->Text =
+            L"UPDATE Settings SET LastSeletedGame = :GameType";
+        SQLQuery1->Params->ParamByName(L"GameType")->AsInteger = fLastGameType;
+        SQLQuery1->ExecSQL(false);
+
+        // Keep the relational GameSettings row for the selected game in sync
+        // with the complete SettingsDocument snapshot, in the same transaction.
+        static const wchar_t * const gameColumns[] = {
+            L"ArchiveFolder", L"ArchiveSubFolders", L"CacheFolder", L"CacheFile", L"CacheMode", L"ColArrange", L"ColorCodeText", L"DemoExt", L"DemosFolder", L"FilterRequired", L"GameEXE", L"GameFolder", L"GameMode", L"GameTag", L"InstallMode", L"InstallType", L"LogFile", L"LoadArchivesType", L"MapsExt", L"ScreenShotExt", L"MapFolder", L"MusicExt", L"MusicFolder", L"MapSubFolders", L"ProgramFolder", L"PlayGameString", L"RegKey", L"ScreenShotsFolder", L"ServerEXE", L"SmartBackup", L"SmartGameTypeInstall", L"SmartUninstall", L"TexturesExt", L"TextureFolder", L"UserFile"
+        };
+        const UnicodeString gameValues[] = {
+            UnicodeString(fArchiveFolder),
+            IntToStr(static_cast<int>(fArchiveSubFolders)),
+            UnicodeString(fCacheFolder),
+            UnicodeString(fCacheFile),
+            IntToStr(static_cast<int>(fCacheMode)),
+            IntToStr(static_cast<int>(fColArrange)),
+            IntToStr(static_cast<int>(fColorCodeText)),
+            UnicodeString(fDemoExt),
+            UnicodeString(fDemosFolder),
+            IntToStr(static_cast<int>(fFilterRequired)),
+            UnicodeString(fGameEXE),
+            UnicodeString(fGameFolder),
+            IntToStr(static_cast<int>(fGameMode)),
+            UnicodeString(fGameTag),
+            IntToStr(static_cast<int>(fInstallMode)),
+            IntToStr(static_cast<int>(fInstallType)),
+            UnicodeString(fLogFile),
+            IntToStr(static_cast<int>(fLoadArchivesType)),
+            UnicodeString(fMapsExt),
+            UnicodeString(fScreenShotExt),
+            UnicodeString(fMapFolder),
+            UnicodeString(fMusicExt),
+            UnicodeString(fMusicFolder),
+            IntToStr(static_cast<int>(fMapSubFolders)),
+            UnicodeString(fProgramFolder),
+            UnicodeString(fPlayGameString),
+            UnicodeString(fRegKey),
+            UnicodeString(fScreenShotsFolder),
+            UnicodeString(fServerEXE),
+            IntToStr(static_cast<int>(fSmartBackup)),
+            IntToStr(static_cast<int>(fSmartGameTypeInstall)),
+            IntToStr(static_cast<int>(fSmartUninstall)),
+            UnicodeString(fTexturesExt),
+            UnicodeString(fTextureFolder),
+            UnicodeString(fUserFile)
+        };
+        UnicodeString profileSql = L"UPDATE GameSettings SET ";
+        for (int i = 0; i < static_cast<int>(sizeof(gameColumns)/sizeof(gameColumns[0])); ++i)
+        {
+            if (i) profileSql += L", ";
+            profileSql += L"\"" + UnicodeString(gameColumns[i]) +
+                L"\" = :Field" + IntToStr(i);
+        }
+        SQLQuery1->SQL->Text = profileSql + L" WHERE gameid = :GameId";
+        for (int i = 0; i < static_cast<int>(sizeof(gameColumns)/sizeof(gameColumns[0])); ++i)
+            SQLQuery1->Params->ParamByName(L"Field" + IntToStr(i))->AsWideString =
+                gameValues[i];
+        SQLQuery1->Params->ParamByName(L"GameId")->AsInteger = fLastGameType;
+        SQLQuery1->ExecSQL(false);
+        // The original XML includes seven complex per-game collections which
+        // have no faithful counterpart in the 2005 relational schema. Keep
+        // those XML fragments in the GameNestedData table as well as in the
+        // canonical SettingsDocument so UI changes never get lost.
+        static const wchar_t * const nestedSections[] = {
+            L"MenuTypes", L"InstallTypes", L"Icons", L"DisplayMenus",
+            L"Servers", L"Tables", L"TablesAlignment"
+        };
+        for (const wchar_t * section : nestedSections)
+        {
+            const Xml::Xmlintf::_di_IXMLNode node =
+                fGameData->ChildNodes->FindNode(UnicodeString(section));
+            if (!node)
+                continue;
+            SQLQuery1->SQL->Text =
+                L"INSERT OR REPLACE INTO GameNestedData"
+                L" (GameId, Section, XmlData) VALUES (:GameId, :Section, :XmlData)";
+            SQLQuery1->Params->ParamByName(L"GameId")->AsInteger = fLastGameType;
+            SQLQuery1->Params->ParamByName(L"Section")->AsWideString =
+                UnicodeString(section);
+            SQLQuery1->Params->ParamByName(L"XmlData")->AsWideString = node->XML;
+            SQLQuery1->ExecSQL(false);
+        }
+        SQLQuery1->SQL->Text = L"COMMIT";
+        SQLQuery1->ExecSQL(true);
+    }
+    catch (Exception& E)
+    {
+        try
+        {
+            SQLQuery1->Close();
+            SQLQuery1->SQL->Text = L"ROLLBACK";
+            SQLQuery1->ExecSQL(true);
+        }
+        catch (...) {}
+        OnSettingsChanged = OnSettingsChangedEvent;
+        throw Exception(L"Unable to save Map Manager SQLite settings: " + E.Message);
+    }
     OnSettingsChanged = OnSettingsChangedEvent;
 }
 //----------------------------------------------------------------------------

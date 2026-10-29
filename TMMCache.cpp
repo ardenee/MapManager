@@ -3,6 +3,7 @@
 #include <Registry.hpp>
 //---------------------------------------------------------------------------
 #include "TMMCache.h"
+#include "MMDatabase.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //----------------------------------------------------------------------------
@@ -26,25 +27,10 @@ __fastcall TMMCache::TMMCache(TMMEventManager* pEventManager)
     SQLConnection1->DriverName = "Sqlite";
     SQLConnection1->LoginPrompt = false;
     SQLQuery1->SQLConnection = SQLConnection1;
-    const UnicodeString databaseFile =
-        IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + L"cache.sqlite3";
+    const UnicodeString databaseFile = MMDatabase::EnsureDatabase(L"cache.sqlite3");
     SQLConnection1->Params->Add(L"Database=" + databaseFile);
+    SQLConnection1->Connected = true;
 
-    // The cache schema/migration is not ready for first-run initialization.
-    // An absent database is normal; existing cache.ini remains available.
-    if (FileExists(databaseFile))
-    {
-        try
-        {
-            SQLConnection1->Connected = true;
-        }
-        catch (EDatabaseError& E)
-        {
-            SQLConnection1->Connected = false;
-            OutputDebugStringW((UnicodeString(L"MapManager: ignoring unavailable cache database ") +
-                databaseFile + L": " + E.Message).c_str());
-        }
-    }
 
 
 	fFileDiscriptions->Sorted = true;

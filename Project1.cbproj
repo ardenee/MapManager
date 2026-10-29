@@ -1512,6 +1512,12 @@
               DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\Settings\Settings.xml"
               Condition="Exists('$(MSBuildProjectDirectory)\Settings\Settings.xml') And !Exists('$(MSBuildProjectDirectory)\Win64x\$(Config)\Settings\Settings.xml')" />
     </Target>
+    <Target Name="MapManagerStageDatabaseTemplatesWin64x" BeforeTargets="_CheckLinkDependencies" Condition="'$(Platform)'=='Win64x'">
+        <MakeDir Directories="$(MSBuildProjectDirectory)\Win64x\$(Config)\Database\templates" />
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\Database\templates\settings.sqlite3;$(MSBuildProjectDirectory)\Database\templates\cache.sqlite3;$(MSBuildProjectDirectory)\Database\templates\logs.sqlite3"
+              DestinationFolder="$(MSBuildProjectDirectory)\Win64x\$(Config)\Database\templates"
+              SkipUnchangedFiles="true" />
+    </Target>
     <Target Name="MapManagerStage7ZipWin64Runtime" AfterTargets="_PerformLink" Condition="'$(Platform)'=='Win64x'">
         <Copy SourceFiles="C:\Program Files\7-Zip\7z.dll" DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\7z.dll" SkipUnchangedFiles="true" Condition="Exists('C:\Program Files\7-Zip\7z.dll')"/>
     </Target>

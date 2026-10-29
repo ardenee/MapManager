@@ -1,3 +1,14 @@
+### Settings SQLite migration and automatic database creation - 29 October 2026 (latest)
+
+- RECOVERED: Original working settings.sqlite3 in old Map Manager/mm-setup/Win32/Debug with 12 historical tables, including Settings, GameSettings, FileTypes, Menus, filters, icons, and cache lookup types. Original cache.sqlite3 Files table recovered from two historical datasets (1491/6338 records). Original settings.sqlite3.sql is an incomplete SQL-only script; the mistakenly renamed settings.sqlite3 text copy in DEV has been restored to settings.sqlite3.sql byte-for-byte.
+- Database/build_templates.py constructs versioned real SQLite templates for settings, cache, and logs from Database/legacy_settings.sql and the complete Settings/Settings.xml. The existing historical settings database schema is preserved and extended for five XML scalar fields absent from GameSettings. All 17 profiles, 35 scalar values per profile, and 119 nested section rows are present. Complete original XML structure is also stored in SettingsDocument.
+- MMDatabase.h ensures all three databases are copied on first run into %LOCALAPPDATA%/MapManager (writable per-user directory). It never overwrites an existing database. Project1.cbproj stages the templates beside the Win64x executable for first run; no Python or SQL script runs on application startup.
+- TMMSettings.cpp reads from SettingsDocument after migration; imports legacy Settings.xml only on first run. It no longer saves a Settings.xml file. SaveSettings writes the canonical document, selected game, active game's 35 scalar fields and seven nested sections in one transaction via correctly parameterized dbExpress ExecSQL(false). The TMMSettings destructor, called from existing form-close TMapManager destructor, calls SaveSettings.
+- TMMCache.cpp initializes and opens a real cache Files SQLite database automatically. A logs.sqlite3 database is created with an empty LogEntries table, but the existing logs XML code has NOT yet been migrated.
+- VALIDATED: Win64x Release Rebuild (0 errors); template integrity; 17 source XML profiles and 119 nested groups parity; SQL long-text parameter binding Delphi smoke; first-run isolated app launched and saved three databases; independent second launch without any XML file or database templates uses existing SQLite successfully; transactional save/reload in isolated DB. Actual interactive GUI close and logs migration are still open.
+- Source of truth: Database/MIGRATION.md and Database/SCHEMA.md. No unrelated uncommitted DEV code was included in this migration.
+
+
 ### First-run database popup and XML staging - 29 October 2026
 
 - At startup TMMSettings.cpp and TMMCache.cpp attempted to connect to Database=settings.sqlite3 and Database=cache.sqlite3 using relative paths. Neither SQLite file was present in DEV. SQLite/dbExpress produced the text "unable to open database file", which is not an application string.
