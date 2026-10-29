@@ -1,0 +1,43 @@
+diff --git a/Packages/CBuilder 13/VirtualTreesCR.cbproj b/Packages/CBuilder 13/VirtualTreesCR.cbproj
+index 3f30a94..bddff27 100644
+--- a/Packages/CBuilder 13/VirtualTreesCR.cbproj
++++ b/Packages/CBuilder 13/VirtualTreesCR.cbproj
+@@ -6,7 +6,7 @@
+         <MainSource>VirtualTreesCR.cpp</MainSource>
+         <Base>True</Base>
+         <Config Condition="'$(Config)'==''">Release</Config>
+-        <Platform Condition="'$(Platform)'==''">Win32</Platform>
++        <Platform Condition="'$(Platform)'==''">Win64x</Platform>
+         <ProjectName Condition="'$(ProjectName)'==''">VirtualTreesCR</ProjectName>
+         <TargetedPlatforms>1048579</TargetedPlatforms>
+         <AppType>Package</AppType>
+@@ -47,7 +47,7 @@
+         <Base>true</Base>
+     </PropertyGroup>
+     <PropertyGroup Condition="'$(Base)'!=''">
+-        <DllSuffix>$(Auto)</DllSuffix>
++        <DllSuffix></DllSuffix>
+         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+         <DynamicRTL>true</DynamicRTL>
+         <UsePackages>true</UsePackages>
+@@ -262,4 +262,20 @@
+     <Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
+     <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
+     <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
++<!-- 2026-SDK: local recovery workspace only -->
++
++<PropertyGroup>
++<BCC_IncludePath>C:\Program Files (x86)\Embarcadero\Studio\37.0\include\windows\sdk;$(BCC_IncludePath)</BCC_IncludePath>
++</PropertyGroup>
++    <!-- The Win64 Modern linker expects the resource under the platform
++         intermediate directory. RC sometimes emits it in the project root. -->
++    <Target Name="StageVirtualTreesCRResourceWin64x"
++            BeforeTargets="_CheckLinkDependencies"
++            Condition="'$(Platform)'=='Win64x' And '$(_DoingStaticPackageBuild)'!='true'">
++        <MakeDir Directories="$(MSBuildProjectDirectory)\Win64x\$(Config)" />
++        <Copy SourceFiles="$(MSBuildProjectDirectory)\VirtualTreesCR.res"
++              DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\VirtualTreesCR.res"
++              Condition="Exists('$(MSBuildProjectDirectory)\VirtualTreesCR.res')"
++              SkipUnchangedFiles="true" />
++    </Target>
+ </Project>

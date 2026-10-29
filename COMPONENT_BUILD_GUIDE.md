@@ -61,3 +61,47 @@ individually before closing any IDE session with unsaved edits.
 
 Win64x Release component-group and full-application group MSBuild builds passed,
 but the *IDE's own Save All action* still needs interactive confirmation.
+
+If the IDE shows Duplicate configuration 'Release', close the failed group and
+reopen the project group after updating the external Delphi .dproj files. The
+previous error arose from two PropertyGroup declarations per Release/Debug
+configuration and has been corrected locally on DEV. To validate the projects
+before opening RAD Studio, run:
+
+    py -3 build\validate-rad-projects.py
+
+Command-line builds do not test the IDE's own project-loading or Save All path.
+
+## Virtual TreeView Win64 Modern package and static library
+
+The VirtualTreesCR.cbproj project generates VirtualTreesCR.bpl and also
+Win64x/Release/VirtualTreesCR.lib, needed by the MapManager executable.
+Do not disable the Generate static package library option. RAD Studio
+uses its TLIB task (llvm-ar.exe for Win64 Modern) to build the library.
+
+The dependency checkout contains a StageVirtualTreesCRResourceWin64x
+pre-link target. It stages the project-root resource compiled by RC
+into Win64x/Release/VirtualTreesCR.res, where the Win64x linker expects
+it. This fixes a reproducible full-rebuild error.
+
+The full VTV Rebuild and complete MapManager-All group Build passed
+in the RAD Studio command-line environment with zero errors, including
+the TLIB static library generation. The earlier GUI TLIB exit-code-1
+error was not reproduced separately; retry in the IDE to confirm.
+If it recurs, preserve the first llvm-ar or tlib stderr line.
+
+
+For a fresh clone of the standalone Virtual TreeView Git checkout,
+apply the MapManager-owned RAD Studio 37.0 integration patch
+(build/patches/VirtualTreesCR-Win64x-RAD37.patch) from the clean
+Virtual-TreeView source checkout. It captures the default Win64x platform,
+the runtime BPL naming fix, local SDK include path and the resource staging
+target. Do not reapply it to the already modified DEV checkout.
+
+The Delphi component packages must have Delphi Compiler / Output - C/C++
+set to All. RAD Studio's IDE can regenerate the .dproj files during Save All,
+so this option is now stored in their Base configuration (the standard
+IDE-native location). build/validate-rad-projects.py checks that both
+packages still have the setting and their Release/Debug configurations
+remain unique. Both .lib files were regenerated in a clean Win64x Release
+build on 29 October 2026.

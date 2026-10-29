@@ -1,3 +1,28 @@
+### RAD Studio native Delphi package output restored - 29 October 2026
+
+- RAD Studio's own Save All rewrote the external TUTPackageNative.dproj and MapManagerArchiveNative.dproj into native ProjectVersion 20.3 format, removing the C++ package library-output option. The existing .lib files were stale as a result.
+- Restored DCC_CBuilderOutput=All to each external Delphi project's Base PropertyGroup, avoiding duplicate Release/Debug configuration groups. Updated build/validate-rad-projects.py to accept the option in the IDE-native Base position.
+- Forced /t:Rebuild for both Delphi packages PASS: TUTPackageNative.lib and MapManagerArchiveNative.lib (plus generated .hpp files) refreshed in their canonical shared and project-local output directories.
+- Complete MapManager-All Win64x Release group Build repeated after fresh package libraries: PASS with 0 errors, only the two inherited ut_packages hints.
+- Preserved a reproducible patch for the independent Virtual TreeView checkout in build/patches/VirtualTreesCR-Win64x-RAD37.patch. Verified the patch applies cleanly against that checkout's unmodified Git index. The active local checkout already contains the patch and was not overwritten or pushed upstream.
+
+### Virtual TreeView Win64 Modern TLIB and clean rebuild - 29 October 2026 (latest)
+
+- GUI Win64x Release successfully linked VirtualTreesCR.bpl but then reported TLIB error exit code 1. The Win64x TLIB task uses llvm-ar.exe to build VirtualTreesCR.lib, required by MapManager.
+- An isolated forced MakeStaticPackage build succeeded, including llvm-ar and all 24 object modules. An independent VTV full Rebuild exposed a second concrete problem: the resource compiler placed VirtualTreesCR.res in the source root while the linker expected Win64x/Release/VirtualTreesCR.res.
+- Updated sibling Virtual-TreeView/Packages/CBuilder 13/VirtualTreesCR.cbproj with a StageVirtualTreesCRResourceWin64x pre-link target that copies the resource into the Win64x Release intermediate directory, without regenerating or overwriting source files.
+- Full VirtualTreesCR Win64x Release Rebuild PASSED, including linker and the TLIB/llvm-ar static library stage; 0 errors. Full MapManager-All Win64x Release group Build PASSED, 0 errors, two nonfatal ut_packages.pas hints.
+- The TLIB GUI exit-code-1 symptom did not reproduce in command-line tests and cannot yet be conclusively attributed to the resource issue; an interactive IDE rebuild is required to verify GUI behavior. Do not turn off static package generation because the MapManager application links VirtualTreesCR.lib. Preserve unrelated MapManager DEV edits.
+- The repaired Virtual TreeView project belongs to the separate local dependency checkout. Its upstream Git remote was not pushed.
+
+### RAD Studio duplicate configuration correction - 29 October 2026 (latest)
+
+- The previous Delphi project metadata edit mistakenly retained TWO Release and TWO Debug PropertyGroup declarations in TUTPackageNative.dproj and MapManagerArchiveNative.dproj. Although MSBuild tolerated them, RAD Studio rejected both projects with "Duplicate configuration 'Release'" and removed them from the GUI group.
+- Both external Delphi .dproj files now have a single Release and Debug declaration each, with the C++ output option merged into the corresponding property group, and unique Base/Debug/Release BuildConfiguration entries.
+- Added build/validate-rad-projects.py to guard against this error, validate the Delphi project personality metadata, and check project-group source references.
+- Complete Win64x Release MapManager-All project group builds with zero errors, and validation script passes. IDE project reopen and Save All still require interactive confirmation; a successful MSBuild build does not verify RAD Studio's project loader.
+- TUTPackage is local-only. d7zip is a separate upstream Git checkout; its local .dproj changes were not pushed upstream.
+
 ### Delphi package project metadata and Virtual TreeView name alignment - 29 October 2026
 
 - Diagnosed the GUI project's mixed configurations: hand-authored TUTPackageNative.dproj and MapManagerArchiveNative.dproj had no BuildConfiguration records, causing RAD Studio to use Base while the runtime VirtualTreesCR.cbproj defaulted to Win32. Both Delphi package files now use the standard Base/Debug/Release configuration keys and Win64x configuration inheritance found in Embarcadero-generated projects.
