@@ -1,132 +1,209 @@
 # Map Manager
 
-**Map Manager** is the recovery and modernization of a legacy Windows C++Builder/VCL application for organizing Unreal and Unreal Tournament game files. The recovered source contains modules for browsing, cataloguing and installing maps and archives; viewing Unreal packages, textures, music, demos and screenshots; handling favourites, servers, logs and file operations.
+**Map Manager** is the recovery and modernization of a Windows C++Builder/VCL
+application for browsing, cataloguing, installing and managing Unreal and Unreal
+Tournament content: maps, packages, textures, music, demos, screenshots,
+favourites, servers, logs and files.
 
-> **Status — 29 October 2026:** Source recovery in progress. **Win64 Modern / Release now passes a clean build**, and legacy Win64 Debug also builds under RAD Studio 37.0. The GUI, full installer/runtime workflows, and Win32 full build have not yet been certified.
+## Current status - 29 October 2026
 
-**Current RAD Studio integration (29 October 2026):** The user confirms
-the native Delphi component packages and MapManager Win64 Modern / Release
-IDE build appear to be working. Component patches for standalone Virtual
-TreeView and d7zip checkouts are versioned in [build/patches](build/patches)
-and described in [COMPONENT_BUILD_GUIDE.md](COMPONENT_BUILD_GUIDE.md).
-TUTPackage remains local-only and is not yet recoverable from this GitHub
-repository alone. Functional installation, persistence and rollback
-acceptance remain separate from successful compilation.
+**Primary target:** RAD Studio 13 / Studio 37.0, **Win64 Modern / Release**
+(`Win64x` / `Release`).
 
-## Project status
+The developer has confirmed that the three native Delphi component packages and
+the full Map Manager application build in the RAD Studio IDE. This is a
+**successful build milestone, not production/runtime certification**.
 
-**Win64 Modern Release update (29 October 2026):** C++Builder 37.0 bcc64x now builds the full application successfully, including a clean Rebuild, with platform-specific COFF dependencies and 64-bit 7z.dll staged alongside the executable. RAD Studio must reopen Project1.cbproj after project-file modifications; the earlier IDE instance had loaded outdated file lists. Runtime functionality still requires acceptance testing.
+| Area | State |
+| --- | --- |
+| Win64 Modern / Release | **IDE build/link reported working** |
+| Virtual TreeView | Native Delphi `VirtualTreesCR.dproj` and `VirtualTreesCR.lib` |
+| TUTPackage Unreal reader | Native Delphi `TUTPackageNative.dproj` / `TUTPackageNative.lib` |
+| d7zip archive integration | Native Delphi `MapManagerArchiveNative.dproj` / `MapManagerArchiveNative.lib` |
+| Win32 / legacy Win64 | Historical targets; not the currently certified build configuration |
+| SQLite settings | Implementation and migration tests exist; GUI, logs and persistence acceptance remain |
+| Functional/release testing | **Incomplete:** install/undo, archive failure handling, UI, fresh deployment and rollback |
 
-**RAD Studio IDE note (29 October 2026):** If the IDE still reports the old MMArchiveEngine unresolved methods or duplicate TFileData symbols after the command-line Win64 build succeeds, close the currently loaded project and reopen Project1.cbproj in RAD Studio. The IDE was started before the project-file fixes and built an obsolete duplicate unit from cached project state. The redundant TMapFileData source/header were removed after preserving their unique method in TFileData.cpp.
+See [PROJECT_STATUS.md](PROJECT_STATUS.md) for evidence, [ARCHIVE_MIGRATION.md](ARCHIVE_MIGRATION.md)
+for archive changes, and [COMPONENT_BUILD_GUIDE.md](COMPONENT_BUILD_GUIDE.md)
+for RAD Studio configuration details.
 
-| Subsystem | Status | Evidence / outstanding work |
-| --- | --- | --- |
-| Historical source recovery | Recovered | Selected 2017-era `mm-setup2` baseline; original source and archives preserved separately |
-| Virtual TreeView UI component | Build **passed** | C++Builder 13 Win32 runtime and design-time packages compiled using RAD Studio 37.0; design-time package registered |
-| TUTPackage Unreal reader | Build **passed** | `ut_packages`, `ut_umods`, `ut_uz` and `utpkgnat_ut2004` compiled; `TUTPackage.lib` built for Win32 |
-| d7zip / 7z.dll | Standalone **tests passed** | ZIP, RAR and 7z listing/extraction passed; ZIP and 7z creation/read-back passed, all in-process. RAR5 not independently tested |
-| Archive consolidation | **Source migration implemented; runtime acceptance pending** | Legacy ZipBuilder/TDFUnRar references removed; ZIP/RAR/7z listing and extraction use MMArchiveEngine.pas and in-process d7zip. Standalone Win32/Win64 tests pass; application installer and rollback need acceptance testing |
-| Settings XML to SQLite | **Storage migration implemented; GUI close test pending** | Recovered original SQLite schema and 17 XML profiles. First run creates settings/cache/logs DBs in per-user LocalAppData, imports the original XML, then loads and saves configuration through SQLite. All profiles/menus/icons/tables are preserved; logs XML migration is separate |
-| Application build | **Win64 Modern Release clean rebuild PASS; runtime pending** | Modern COFF d7zip/TUTPackage and Virtual TreeView packages compiled; Project1.exe (x64) links in both normal and clean builds. Legacy Win64 Debug also builds. Win32 and UI runtime not yet certified |
-| Functional/regression testing | **Not complete** | Application startup, UI, persistence, installation, logging, rollback and end-to-end archive handling remain to be verified |
+> **Clean-clone limitation:** The compatible modified `TUTPackage` source and
+> `TUTPackageNative.dproj/.dpk` remain in a local development folder and are
+> **not yet published to GitHub**. A new contributor must obtain that same
+> source tree separately before the complete project can be compiled.
+> Cloning just the three Git repositories below is currently insufficient.
 
-See [PROJECT_STATUS.md](PROJECT_STATUS.md) for test evidence, blockers and next acceptance gates. File-by-file replacements and outstanding parity gates are documented in [ARCHIVE_MIGRATION.md](ARCHIVE_MIGRATION.md).
+## Building on Windows - Win64 Modern / Release
 
-**Current Win64 build update (29 October 2026):** SDK 10.0.26100.4654 has been repaired and the patched headers have been installed. Virtual TreeView Win64 and the full Map Manager Win64 Debug application now build. Application runtime and archive install/undo are not yet verified; see [SDK and Win64 setup](RAD_STUDIO_SDK_AND_WIN64.md).
+### Prerequisites
 
-## Dependencies
+- [RAD Studio / C++Builder 13 (Studio 37.0)](https://www.embarcadero.com/products/rad-studio),
+  including the Win64 Modern C++Builder toolchain, Delphi compiler,
+  VCL, XML, dbExpress and DataSnap components referenced by the project.
+- A compatible Windows SDK. Development used SDK `10.0.26100.4654` with
+  **local SDK compatibility fixes**, detailed in
+  [RAD_STUDIO_SDK_AND_WIN64.md](RAD_STUDIO_SDK_AND_WIN64.md). A pristine SDK
+  installation on another PC has not been independently confirmed.
+- Git and Python 3 (for the project configuration validator).
+- A matching **64-bit** `7z.dll` from 7-Zip, available separately.
+- The compatible modified `TUTPackage` project and source files.
 
-Initial target is **Windows Win32**. This repository is not yet a reproducible, standalone build.
+The RAD Studio project groups rely on the following **sibling layout**. The
+workspace itself can be on any drive:
 
-| Dependency | Use | Notes |
-| --- | --- | --- |
-| [Embarcadero RAD Studio / C++Builder 37.0](https://www.embarcadero.com/products/rad-studio) | Build C++Builder/VCL application and Delphi units | Win32 C++Builder (Clang), Delphi compiler and Windows SDK needed. Development version installed at `C:\Program Files (x86)\Embarcadero\Studio\37.0` |
-| [JAM Virtual TreeView](https://github.com/JAM-Software/Virtual-TreeView) | Main tree/list display | Build CBuilder 13 Win32 `VirtualTreesCR` runtime and `VirtualTreesCD` design-time packages; generated `VirtualTrees.hpp` and libraries must be discoverable |
-| [d7zip](https://github.com/geoffsmith82/d7zip) | Unified archive interface | MPL 1.1 Delphi source at `ThirdParty/d7zip/sevenzip.pas`, included in `Project1.cbproj`; Win32 generated C++ header included |
-| [7-Zip](https://www.7-zip.org/) | Native codecs, in-process | Tested official 7-Zip 26.05 **32-bit** `7z.dll`. Obtain a matching DLL separately and put beside the application executable. **Never call `7z.exe` in the application.** |
-| [TUTPackage / UT Packages](https://sourceforge.net/projects/utpackages/) | Legacy Unreal package, UMOD and UZ readers | Recovered MPL 1.1 Delphi source at `TUTPackage/`, originally by Antonio Cordero Balcazar and contributors |
-| Embarcadero RTL/VCL, XML, dbExpress, DataSnap | UI, XML/settings, SQLite | Project references `rtl`, `vcl`, `vclx`, `vclimg`, `xmlrtl`, `dbrtl`, `dbexpress`, `DbxCommonDriver`, `DBXSqliteDriver`, `dsnap` and related RAD Studio units |
-| **Legacy only:** ZipBuilder and TDFUnRar | Old ZIP/RAR handlers | Still called in source; replace after verifying equivalent functionality through d7zip |
+```
+workspace/
++-- MapManager/           # This Git repository
++-- TUTPackage/           # Required; unpublished local dependency
+|   +-- TUTPackageNative.dproj
+|   +-- TUTPackageNative.dpk
+|   +-- ut_packages.pas
+|   +-- ut_umods.pas
+|   +-- ut_uz.pas
+|   +-- utpkgnat_ut2004.pas
++-- d7zip/                # Pinned upstream + integration patch
++-- Virtual-TreeView/     # Pinned upstream + integration patch
+```
 
-### Current developer setup
+### 1. Clone and patch the external sources
 
-1. Install RAD Studio 37.0 with Win32 C++Builder/Delphi compiler support and a compatible Windows SDK.
-2. Build JAM Virtual TreeView's CBuilder 13 Win32 runtime/design packages and configure the runtime library and generated C++ header paths. Virtual TreeView's source is **not** vendored here.
-3. Download the official **32-bit** `7z.dll` matching the Win32 build. It is intentionally excluded from Git.
-4. Open `Project1.cbproj`. The project contains historical and recovery-era machine-specific paths that still need cleanup, and it does **not** currently complete a full build. The Delphi d7zip unit is already listed in the project.
-5. Rebuild TUTPackage Delphi units where required. Link/runtime compatibility with the application is still unverified.
+Run in **PowerShell** from a new workspace folder:
 
-## Modernization roadmap
+```powershell
+mkdir MapManager-workspace
+cd MapManager-workspace
 
-### Phase 1 — clean Win32 application build
+git clone https://github.com/ardenee/MapManager.git
+git clone https://github.com/JAM-Software/Virtual-TreeView.git
+git clone https://github.com/geoffsmith82/d7zip.git
 
-- Fix C++Builder compiler/SDK and generated-header incompatibilities without changing installed RAD Studio system headers.
-- Make project paths portable, remove stale dependencies once replaced, and verify a clean GUI launch.
-- Establish a fixed, documented acceptance-test checklist and avoid repeating passing tests without new evidence.
+# Tested upstream revisions for the integration patches.
+git -C Virtual-TreeView checkout 2a8aef8
+git -C d7zip checkout 38bee12
 
-### Phase 2 — archive consolidation (source replacement implemented; acceptance pending)
+# Both patch paths are relative to the dependency repositories.
+git -C Virtual-TreeView apply ../MapManager/build/patches/VirtualTreesCR-Native-Win64x.patch
+git -C d7zip apply ../MapManager/build/patches/d7zip-MapManagerArchiveNative-RAD37.patch
+```
 
-Replace ZipBuilder + TDFUnRar with **one in-process** d7zip + `7z.dll` implementation; no WinRAR or 7-Zip executable launched at runtime.
+The two patches have been verified to apply against those pinned, unmodified
+upstream Git indexes. Do not apply them twice. Newer upstream revisions may
+need different patches; do not push Map Manager-specific fixes into the
+maintainers' upstream repositories by accident.
 
-- List, inspect and extract ZIP, RAR/RAR5 and 7z; select the correct archive handler by content rather than filename extension alone.
-- Support ZIP and 7z creation where needed (RAR read/extract only), passwords, file metadata, progress, cancellation, error reporting and multipart archives where available.
-- Validate archived paths against traversal, absolute paths, symlinks/reparse points, collisions and unsafe overwrites; extract to a staging location before installing game content.
-- Preserve game-specific UMOD/UZ logic, installer logging, rollback and file operations.
-- Remove old archive libraries only after real-file and failure-path acceptance tests pass.
+**Supply TUTPackage:** Place the compatible source folder beside MapManager
+as `workspace/TUTPackage/`. It must include `TUTPackageNative.dproj`,
+`TUTPackageNative.dpk`, and the four Pascal files shown above. The original
+[UT Packages SourceForge project](https://sourceforge.net/projects/utpackages/)
+is useful for source provenance, **not a verified drop-in replacement**
+for the modified local RAD Studio 13 package.
 
-### Phase 3 — XML-to-SQLite migration
+### 2. Dependency changes made during modernization
 
-- Inventory XML-backed settings, categories, file lists, favourites, history, logs and other persisted data.
-- Define and version SQLite schema; implement fresh-install database creation, schema upgrades and default seed data.
-- Import existing XML without losing entries, references or ordering. Validate data counts and feature parity.
-- Route storage through transactional SQLite access; retire XML writers only after rollback-safe verification.
-- The existing `settings.sqlite3.sql` is a recovered starting point, **not** a validated complete migration.
+| Dependency | Current integration |
+| --- | --- |
+| **Virtual TreeView** | The component group now uses `VirtualTreesCR.dproj/.dpk` (all 22 original Pascal units), **not** the old mixed C++Builder `VirtualTreesCR.cbproj` runtime. The patched Delphi package generates the BPL/BPI, static `VirtualTreesCR.lib` and C++ `.hpp` files. |
+| **VTV compiler/link fixes** | `MAPMANAGER_VTV_NATIVE` selects `VirtualTreesCR` rather than the obsolete `VirtualTreesR.lib` in generated link directives. The patch also corrects `IF`/`IFEND`, the `Synchronize` callback type, and `VCL`/`Vcl` header-name casing. |
+| **d7zip** | The patch adds `MapManagerArchiveNative.dproj/.dpk` for upstream `sevenzip.pas` plus MapManager's `MMArchiveEngine.pas`, and removes its unnecessary `platform` unit annotation. |
+| **TUTPackage** | Its local native Delphi package builds the Unreal package/UMOD/UZ readers. **Win64x links `TUTPackageNative.lib`**, never the obsolete Win32 `TUTPackage.lib`. |
+| **7-Zip** | The app uses a separate `7z.dll` in-process for ZIP/RAR/7z. It does **not** invoke `7z.exe` to process archives. |
 
-### Phase 4 — functionality and release
+On the tested installation, package `.lib` and `.bpi` outputs are generated
+under `C:\Users\Public\Documents\Embarcadero\Studio\37.0\Dcp\Win64x`, and
+`.bpl` outputs under `...\Bpl\Win64x`. Native Delphi `.hpp` and `.dcu`
+outputs also appear in dependency-local `Win64x\Release` directories.
+Do not commit compiled libraries or generated headers.
 
-- Verify map, texture, music, demo, screenshot, server and archive views; search/filter, file operations and installers.
-- Verify progress/cancellation, favourites, logs and undo/rollback under real and malformed inputs.
-- Test fresh startup, SQLite migration and deployment with no previous configuration.
-- Produce repeatable Win32 builds, licence notices and a development release only after all gates pass.
+### 3. Validate and build the projects
 
-## Repository layout
+From `workspace/MapManager`:
 
-- `Project1.cbproj` / `Project1.cpp` — recovered C++Builder project and entry point.
-- `MapManager.*` and `TMM*.cpp/.h` — recovered forms and application modules.
-- `TUTPackage/` — historical Unreal Delphi readers and C++Builder headers.
-- `ThirdParty/d7zip/` — MPL 1.1 source wrapper, header, licence and setup notes.
-- `ThirdParty/7Zip/License.txt` — upstream licence details for the separately obtained DLL.
-- `settings.sqlite3.sql` — historical schema/seed reference.
-- `PROJECT_STATUS.md` — build blockers, evidence and next gates.
+```powershell
+py -3 build\validate-rad-projects.py
+```
 
-Historical archives, local configuration, private settings and compiled binaries are intentionally excluded from Git.
+This validates the Delphi project metadata, group references and all 22
+Virtual TreeView source-unit paths. **It does not compile any components.**
 
-## Licensing and attribution
+In RAD Studio:
 
-- **d7zip**: Mozilla Public License 1.1; original notices and full license included under `ThirdParty/d7zip`.
-- **TUTPackage**: Mozilla Public License 1.1; original developer Antonio Cordero Balcazar and source notices retained, full licence under `TUTPackage/License.txt`.
-- **Virtual TreeView**: separately downloaded and licensed according to its upstream repository.
-- **7-Zip DLL**: separately downloaded; redistribution, including RAR decoding, is subject to applicable upstream 7-Zip/unRAR notices.
-- The legacy Map Manager application source is being recovered; do not infer rights to redistribute proprietary Unreal game assets.
+1. Open `MapManager-All.groupproj` (or `MapManager-Components.groupproj`
+   if only rebuilding the dependencies).
+2. Set **Win64 Modern / Release** (`Win64x` / `Release`).
+3. Build `TUTPackageNative.dproj`, `MapManagerArchiveNative.dproj` and
+   `VirtualTreesCR.dproj`, then `Project1.cbproj`. Building the whole
+   application group follows that dependency order.
+4. The application output is `MapManager\Win64x\Release\Project1.exe`.
 
-**SDK/build update (29 October 2026):** The Windows SDK patcher and Win64 Virtual TreeView runtime package build successfully. Win64 Debug Map Manager now compiles and links; legacy code warnings and runtime acceptance remain. See [SDK and Win64 diagnostics](RAD_STUDIO_SDK_AND_WIN64.md).
+After externally editing any `.dproj`, `.cbproj` or `.groupproj` file,
+save unsaved source work, close the project group and reopen it so the IDE
+does not use stale project metadata.
 
-**GUI Win64 Modern Release builds:** Open [MapManager-All.groupproj](MapManager-All.groupproj) in RAD Studio for TUTPackage, d7zip/MMArchiveEngine, Virtual TreeView and the application. The application links static libraries generated by those projects without a manual archive script. See [COMPONENT_BUILD_GUIDE.md](COMPONENT_BUILD_GUIDE.md).
+### 4. Supply the runtime DLL
 
-**First-run SQLite popup (29 October 2026):** The SQLite driver reports 'unable to open database file' when the missing settings.sqlite3 or cache.sqlite3 is opened. Fresh startup now leaves missing files unopened and uses XML settings; the Win64x build stages Settings/Settings.xml only if absent. This does NOT complete the SQLite migration. See PROJECT_STATUS.md.
+The `Project1.cbproj` Win64x post-link target attempts to copy
+`C:\Program Files\7-Zip\7z.dll` to the application output directory, **only
+if that input file exists**. If the DLL was not staged, place the matching
+**x64** `7z.dll` beside `Project1.exe` manually. The runtime DLL is not
+committed to Git.
 
-## SQLite settings migration
+### Troubleshooting
 
-The original database schema was recovered from the historical Map Manager/mm-setup/Win32/Debug SQLite files. A working settings template includes 17 game profiles, 35 scalar values per profile and all seven nested settings sections. The source XML is imported once on first run; subsequent launches read the SQLite settings document without requiring an XML file.
+| Issue | Diagnosis / action |
+| --- | --- |
+| Missing `VirtualTreesR.lib` | Stale generated `VirtualTrees.BaseTree.hpp` may still request the old package. Rebuild native `VirtualTreesCR.dproj` and confirm that the header requests `VirtualTreesCR`. Do not patch generated headers by hand. |
+| Missing `VirtualTrees.*.o` | The wrong runtime wrapper was built. The current group must reference `VirtualTreesCR.dproj`, not `VirtualTreesCR.cbproj`. |
+| Nonportable include-case warnings | Regenerate the patched `VirtualTrees.*.hpp` files; the Pascal `Vcl` unit names must match header filename casing. |
+| Missing `TUTPackage.lib` | It is a **Win32 legacy name**. Win64x requires `TUTPackageNative.lib` in the standard RAD Studio DCP search path. |
+| Missing `TUTPackageNative.dproj` | The unpublished sibling `TUTPackage` source tree has not been supplied. |
+| Missing `7z.dll` | Install/supply the right x64 DLL; the post-link copy only runs if the default source path exists. |
+| Command-line build differs from IDE | Reload project group metadata; check actual compiler/linker input paths before applying global SDK or output-directory workarounds. |
 
-On startup, the application automatically creates these files if missing, under %LOCALAPPDATA%/MapManager:
+## Architecture and remaining work
 
-- settings.sqlite3 - all settings, menus, icons, profiles and relational snapshot tables
-- cache.sqlite3 - historical Files cache schema (initially empty)
-- logs.sqlite3 - LogEntries schema prepared for the separate logs migration
+The source includes game-specific Unreal package readers, VCL forms for
+browsing content, a consolidated `MMArchiveEngine.pas` archive layer, and
+a partially modernized settings/logging system.
 
-Existing files are never overwritten by startup. The settings component saves to SQLite when settings change and during form-close destruction. For the recovered schema, the original in-memory XML binding objects remain while the disk persistence is SQLite. This is not yet a wholesale replacement of every XML-bound UI interface.
+- **Archive handling:** Active source replaced legacy ZipBuilder/TDFUnRar
+  integration with d7zip and a 64-bit `7z.dll`. Standalone ZIP, 7z and RAR
+  tests have passed. RAR5, hostile archive paths, interactive installation,
+  failure recovery, cancellation and uninstall/undo still require acceptance.
+- **Settings and persistence:** SQLite settings/cache/logs databases are
+  created under `%LOCALAPPDATA%\MapManager`. XML migration, schema/profile
+  coverage and isolated persistence tests exist, but interactive GUI
+  close/reopen, log migration and clean-machine deployment remain open.
+- **Game/UI features:** Map, file, texture, music, demo and screenshot views,
+  favourites, servers, file operations, history and caching need application
+  regression testing.
+- **Release readiness:** A successful Win64x build is only the first gate.
+  Functional acceptance, installer verification, error paths, deployment
+  and full dependency-source reproducibility are outstanding.
 
-The application still uses XML for its separate historical logs subsystem; that migration and manual GUI close/reopen acceptance remain outstanding. See Database/MIGRATION.md and Database/SCHEMA.md.
+See [Database/MIGRATION.md](Database/MIGRATION.md),
+[Database/SCHEMA.md](Database/SCHEMA.md),
+[PROJECT_STATUS.md](PROJECT_STATUS.md) and
+[ARCHIVE_MIGRATION.md](ARCHIVE_MIGRATION.md).
 
-**Source relocation (29 October 2026):** The active MapManager checkout and the three component projects are sibling folders under `C:\Users\arden\source\repos`. See [COMPONENT_BUILD_GUIDE.md](COMPONENT_BUILD_GUIDE.md) for GUI build instructions and output paths.
+## Repository contents and licensing
+
+This repository tracks Map Manager source, RAD Studio project groups,
+documentation, and **patches for pinned upstream dependencies**.
+Developer-specific settings, archives, databases, generated binaries and
+compiler outputs are deliberately ignored. The original Virtual TreeView
+and d7zip repositories are **not vendored**. The modified TUTPackage source
+is not yet publicly backed up by this repository.
+
+- [Virtual TreeView](https://github.com/JAM-Software/Virtual-TreeView):
+  use its upstream license and attribution.
+- [d7zip](https://github.com/geoffsmith82/d7zip):
+  Mozilla Public License 1.1; preserve upstream copyright notices.
+- [UT Packages](https://sourceforge.net/projects/utpackages/):
+  recovered Pascal source by Antonio Cordero Balcazar and contributors;
+  existing local source carries MPL 1.1 licensing.
+- [7-Zip](https://www.7-zip.org/):
+  separately obtained runtime; heed upstream 7-Zip and RAR/unRAR
+  redistribution licensing. Do not commit third-party DLLs without review.
+- Unreal game content is not distributed with the source; users must have
+  appropriate rights to use or redistribute their own assets.
