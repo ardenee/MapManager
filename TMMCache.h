@@ -54,7 +54,7 @@ public:
 
 
     // wrapers for the TMMFiles class
-    void __fastcall TMMCache::MakeListViewTable(TListColumns* pCols);
+    void __fastcall MakeListViewTable(TListColumns* pCols);
     void       __fastcall UninstallFiles          (PFileList    pFileList);
     void       __fastcall RenameFiles             (PFileList    pFileList);
     void       __fastcall DeleteFiles             (PFileList    pFileList);

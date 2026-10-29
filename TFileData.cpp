@@ -78,6 +78,11 @@ void __fastcall TFileData::DecodeFileInfoString(AnsiString FileInfoString)
     FileLocation = ExtractFilePath(FileName);
 }
 //----------------------------------------------------------------------------
+void __fastcall TFileData::DecodeMapInfoString(AnsiString FileInfoString)
+{
+    DecodeFileInfoString(FileInfoString);
+}
+//----------------------------------------------------------------------------
 bool __fastcall TFileData::ValidFileInfoString(AnsiString FileInfoString)
 {
     bool Result = false;

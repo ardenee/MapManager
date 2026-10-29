@@ -2,9 +2,13 @@
 
 **Map Manager** is the recovery and modernization of a legacy Windows C++Builder/VCL application for organizing Unreal and Unreal Tournament game files. The recovered source contains modules for browsing, cataloguing and installing maps and archives; viewing Unreal packages, textures, music, demos and screenshots; handling favourites, servers, logs and file operations.
 
-> **Status — 29 October 2026:** Source recovery in progress. The **Win64 Debug application now compiles and links** under RAD Studio 37.0 (verified 29 October 2026). The GUI and complete installer/runtime workflows have **not yet been validated**; the Win32 full build is not certified.
+> **Status — 29 October 2026:** Source recovery in progress. **Win64 Modern / Release now passes a clean build**, and legacy Win64 Debug also builds under RAD Studio 37.0. The GUI, full installer/runtime workflows, and Win32 full build have not yet been certified.
 
 ## Project status
+
+**Win64 Modern Release update (29 October 2026):** C++Builder 37.0 bcc64x now builds the full application successfully, including a clean Rebuild, with platform-specific COFF dependencies and 64-bit 7z.dll staged alongside the executable. RAD Studio must reopen Project1.cbproj after project-file modifications; the earlier IDE instance had loaded outdated file lists. Runtime functionality still requires acceptance testing.
+
+**RAD Studio IDE note (29 October 2026):** If the IDE still reports the old MMArchiveEngine unresolved methods or duplicate TFileData symbols after the command-line Win64 build succeeds, close the currently loaded project and reopen Project1.cbproj in RAD Studio. The IDE was started before the project-file fixes and built an obsolete duplicate unit from cached project state. The redundant TMapFileData source/header were removed after preserving their unique method in TFileData.cpp.
 
 | Subsystem | Status | Evidence / outstanding work |
 | --- | --- | --- |
@@ -14,7 +18,7 @@
 | d7zip / 7z.dll | Standalone **tests passed** | ZIP, RAR and 7z listing/extraction passed; ZIP and 7z creation/read-back passed, all in-process. RAR5 not independently tested |
 | Archive consolidation | **Source migration implemented; runtime acceptance pending** | Legacy ZipBuilder/TDFUnRar references removed; ZIP/RAR/7z listing and extraction use MMArchiveEngine.pas and in-process d7zip. Standalone Win32/Win64 tests pass; application installer and rollback need acceptance testing |
 | XML → SQLite | **Partial** | Legacy XML and partially implemented SQLite paths exist; recovered `settings.sqlite3.sql` is a reference only, first-run initialization/import/parity incomplete |
-| Application build | **Win64 Debug build passed; runtime pending** | C++Builder 37.0 compiled and linked Project1.exe (x64) on DEV. Linked the Delphi archive objects and retained RAD Studio default runtime libraries. Win32 full build and app startup not yet certified |
+| Application build | **Win64 Modern Release clean rebuild PASS; runtime pending** | Modern COFF d7zip/TUTPackage and Virtual TreeView packages compiled; Project1.exe (x64) links in both normal and clean builds. Legacy Win64 Debug also builds. Win32 and UI runtime not yet certified |
 | Functional/regression testing | **Not complete** | Application startup, UI, persistence, installation, logging, rollback and end-to-end archive handling remain to be verified |
 
 See [PROJECT_STATUS.md](PROJECT_STATUS.md) for test evidence, blockers and next acceptance gates. File-by-file replacements and outstanding parity gates are documented in [ARCHIVE_MIGRATION.md](ARCHIVE_MIGRATION.md).

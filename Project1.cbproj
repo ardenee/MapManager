@@ -189,6 +189,9 @@
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64x)'!=''">
+        <BCC_IncludePath>TUTPackage\generated\Win64x;ThirdParty\d7zip\generated\Win64x;ThirdParty\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
+        <LinkPackageStatics>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</LinkPackageStatics>
+        <ILINK_LibraryPath>C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\Win64x\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
     </PropertyGroup>
     <ItemGroup>
@@ -274,6 +277,9 @@
             <DependentOn>TFiles.h</DependentOn>
             <BuildOrder>54</BuildOrder>
         </CppCompile>
+        <ObjFiles Include="$(MSBuildProjectDirectory)\Win64x\$(Config)\MMArchiveEngine.o" Condition="'$(Platform)'=='Win64x'" />
+        <ObjFiles Include="$(MSBuildProjectDirectory)\Win64x\$(Config)\sevenzip.o" Condition="'$(Platform)'=='Win64x'" />
+        <LibFiles Include="$(MSBuildProjectDirectory)\Win64x\$(Config)\TUTPackage.lib" Condition="'$(Platform)'=='Win64x'" />
         <ObjFiles Include="$(MSBuildProjectDirectory)\Win64\$(Config)\MMArchiveEngine.o" Condition="'$(Platform)'=='Win64'" />
         <ObjFiles Include="$(MSBuildProjectDirectory)\Win64\$(Config)\sevenzip.o" Condition="'$(Platform)'=='Win64'" />
         <ObjFiles Include="$(MSBuildProjectDirectory)\Win32\$(Config)\MMArchiveEngine.obj" Condition="'$(Platform)'=='Win32'" />
@@ -1492,8 +1498,20 @@
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
-    <Target Name="MapManagerArchiveDelphiObjects" BeforeTargets="_CheckLinkDependencies" Condition="'$(Platform)'=='Win32' Or '$(Platform)'=='Win64'">
+    <Target Name="MapManagerArchiveDelphiObjects" BeforeTargets="_CheckLinkDependencies" Condition="'$(Platform)'=='Win32' Or '$(Platform)'=='Win64' Or '$(Platform)'=='Win64x'">
         <Exec Command="&quot;$(MSBuildProjectDirectory)\build\compile-archive-units.cmd&quot; &quot;$(Platform)&quot; &quot;$(Config)&quot;"/>
+        <!-- The Modern Win64 clean target removes Project1.res but does not
+             regenerate the legacy source resource before the linker runs. -->
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\Project1.res"
+              DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\Project1.res"
+              Condition="'$(Platform)'=='Win64x' And Exists('$(MSBuildProjectDirectory)\Project1.res') And !Exists('$(MSBuildProjectDirectory)\Win64x\$(Config)\Project1.res')" />
+    </Target>
+    <!-- The 64-bit 7-Zip runtime is loaded inside the executable; never invoke 7z.exe. -->
+    <Target Name="MapManagerStage7ZipWin64Runtime" AfterTargets="_PerformLink" Condition="'$(Platform)'=='Win64x'">
+        <Copy SourceFiles="C:\Program Files\7-Zip\7z.dll"
+              DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\7z.dll"
+              SkipUnchangedFiles="true"
+              Condition="Exists('C:\Program Files\7-Zip\7z.dll')" />
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
     <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>

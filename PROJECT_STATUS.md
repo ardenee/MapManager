@@ -1,3 +1,24 @@
+### Win64 Modern / Release clean build passed - 29 October 2026 (current)
+
+- RAD Studio 37.0 C++ Win64x (Modern) Release **Build and clean Rebuild both PASS**, including a successful complete application link (exit 0, no errors). Valid x64 application: Win64x/Release/Project1.exe (14,949,888 bytes). Actual GUI launch, archive install/undo and persistence remain untested.
+- Separate Win64x COFF dependencies are now compiled using dcc64 -jf:coffi; produces MMArchiveEngine.o, sevenzip.o and all four TUTPackage units. TUTPackage.lib created by llvm-lib.exe, instead of trying to link the legacy ELF TUTPackage.a.
+- JAM Virtual TreeView C++Builder 13 Win64x Release runtime package compiled and yields VirtualTreesCR.lib and VirtualTreesCR.bpi; application modern configuration uses Win64x Release search paths.
+- Project1.cbproj includes explicit Win64x Release COFF object/link/header paths, without altering the legacy Win64 or Win32 paths. build/compile-archive-units.cmd now generates these modern dependencies before linker dependency analysis.
+- Modern compiler strict C++ requires removing TMMCache:: qualification from an in-class MakeListViewTable declaration (corrected).
+- The historical TMapFileData.cpp/.h were redundant copies defining the same TFileData methods; their one extra DecodeMapInfoString helper was preserved in primary TFileData.cpp before deleting the duplicates. This prevents accidental duplicate classes from being compiled by stale IDE project settings; history remains in Git.
+- A fresh Win64x / Release Rebuild previously failed to find Project1.res because the toolchain cleaned it without reconstructing it. The project now stages the checked-in source resource if the output is absent before linking. The existing app resource pipeline can subsequently write its generated resource.
+- The project post-link step stages the installed official 64-bit 7z.dll into Win64x/Release when available from C:\Program Files\7-Zip\7z.dll; verified both application and DLL PE architecture x64 (0x8664).
+- RAD Studio was open before some project-file changes. If the IDE reports the historical ELF/archive or TFileData duplicate errors, close and reopen Project1.cbproj to reload the actual modern project settings. Do not open historical Project1.bpr or Project1.bdsproj.
+- Verified log: C:\Temp\MapManagerDeps\mapmanager-win64x-release-clean-rebuild.log. Still needs Win64x GUI/runtime and functional acceptance; compiler warnings are tracked separately.
+
+
+### IDE stale-project diagnosis and duplicate-source cleanup - 29 October 2026
+
+- The reported linker errors (unresolved TMMArchiveEngine vtable and duplicate TFileData) match the older pre-fix project configuration. On DEV, RAD Studio bds.exe started at 13:20, before Project1.cbproj's 14:36 modifications. The IDE later recompiled TMapFileData.o at 14:45 although the on-disk cbproj no longer includes TMapFileData.cpp. This strongly indicates an IDE instance holding the older in-memory project configuration.
+- The on-disk Project1.cbproj includes platform-scoped ObjFiles for MMArchiveEngine and sevenzip, a LibFiles reference for Win64 TUTPackage.a, and a before-link dependency compilation target. A command-line Win64 Debug build previously passed with these settings. Reload Project1.cbproj in RAD Studio to load them; opening legacy Project1.bdsproj or Project1.bpr is not equivalent.
+- TMapFileData.cpp and TMapFileData.h were historical duplicate definitions of TFileData. Their unique method, DecodeMapInfoString, was preserved in canonical TFileData.cpp as a delegating method. The redundant source/header have now been deleted (recoverable through Git history), preventing future duplication.
+- No change was made to RAD Studio's running process or unsaved IDE state. A reloaded IDE is required; otherwise the old project remains resident and may continue generating obsolete object files.
+
 # Map Manager — recovery checkpoint
 
 **Date:** 29 October 2026  

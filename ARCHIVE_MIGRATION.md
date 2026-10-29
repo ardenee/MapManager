@@ -10,6 +10,15 @@
 - The older sections below record their original migration state. The full Win64 build is no longer blocked. This does not certify GUI startup, archive install/undo, or XML/SQLite behavior.
 - The project currently references locally compiled TUTPackage Win64 at C:\Temp\MapManagerDeps\Win64-units\TUTPackage.a and installed Virtual TreeView packages; clean-machine reproducibility not yet tested.
 
+## Update - 29 October 2026: Win64 Modern Release compatibility
+
+- Win64x/Release build and clean rebuild PASS (exit 0) in RAD Studio 37.0, producing Project1.exe. This is not the legacy Win64 toolchain.
+- Delphi native inputs require COFF: dcc64 -jf:coffi creates modern-compatible .o files and llvm-lib packages TUTPackage.lib. Older ELF-format Win64 .o/.a files are incompatible.
+- VirtualTreesCR Win64x/Release .lib and .bpi built separately; application includes the modern package in its library search path. Generated modern headers are stored under TUTPackage/generated/Win64x and ThirdParty/d7zip/generated/Win64x.
+- Fresh builds stage Project1.res from the source resource if missing; post-link stages 64-bit 7z.dll when installed in Program Files.
+- Redundant TMapFileData source/header removed after preserving its unique decoding helper in TFileData.cpp. Strict modern Clang declaration in TMMCache.h corrected.
+- The earlier source migration tests are standalone: new full application build success does NOT constitute GUI, installation, undo, or encrypted/RAR5 acceptance.
+
 ## Scope
 
 The recovered C++Builder application previously referenced two external VCL archiver components: ZipBuilder for ZIP and TDFUnRar for RAR. Their headers, object declarations, event callback types, component construction/destruction, C++ method calls, and package search/link references have now been removed from **active project source**.
