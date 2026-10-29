@@ -1,3 +1,13 @@
+### VirtualTreesCR native Delphi rebuild errors - 29 October 2026 (pending user retest)
+
+- IDE rebuild of MapManager component group failed in VirtualTreesCR.dproj on VirtualTrees.BaseTree.pas(24) E2029 and VirtualTrees.WorkerThread.pas(194) E2250. TUTPackageNative had only its two existing nonfatal hints, and MapManagerArchiveNative compiled.
+- The E2029 was introduced by changing an IFDEF block to an IF expression without updating its closing directive. Corrected the closing {$ENDIF} to {$IFEND} in upstream VirtualTrees.BaseTree.pas.
+- Inspected installed RAD Studio 37.0 System.Classes.pas: TThreadProcedure is reference to procedure, and TThread.Synchronize(const AThread: TThread; AThreadProc: TThreadProcedure) exists. Changed the WorkerThread exception-rethrow callback to an explicitly typed TThreadProcedure passed to Synchronize to resolve overload selection; preserved synchronous exception handoff.
+- Simplified native VirtualTreesCR.dproj define to MAPMANAGER_VTV_NATIVE, removing an empty intermediate semicolon in the -D argument.
+- Updated build/patches/VirtualTreesCR-Native-Win64x.patch with the fixes and preserved original Pascal BOM and CRLF. Patch passes clean-index applicability; RAD Studio 37 RTL and project XML statically checked. No compiler build performed, per user's testing preference.
+- Nine unrelated MapManager DEV source edits remain untouched.
+
+
 ### Win64x native VirtualTreeView generated-header fixes - 29 October 2026 (awaiting IDE rebuild)
 
 - Latest Project1 Win64x Release GUI log reached ld.lld and failed on a single missing VirtualTreesR.lib, despite explicitly linking the existing VirtualTreesCR.lib. This came from a hidden auto-link directive emitted by upstream Source/VirtualTrees.BaseTree.pas, not from Project1.cbproj.

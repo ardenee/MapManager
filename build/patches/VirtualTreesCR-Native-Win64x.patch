@@ -41,7 +41,7 @@ index 0000000..0cedab0
 +end.
 diff --git a/Packages/CBuilder 13/VirtualTreesCR.dproj b/Packages/CBuilder 13/VirtualTreesCR.dproj
 new file mode 100644
-index 0000000..a85a811
+index 0000000..880f5d4
 --- /dev/null
 +++ b/Packages/CBuilder 13/VirtualTreesCR.dproj	
 @@ -0,0 +1,132 @@
@@ -83,7 +83,7 @@ index 0000000..a85a811
 +    </PropertyGroup>
 +    <PropertyGroup Condition="'$(Base)'!=''">
 +        <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-+        <DCC_Define>MAPMANAGER_VTV_NATIVE;$(DCC_Define)</DCC_Define>
++        <DCC_Define>MAPMANAGER_VTV_NATIVE</DCC_Define>
 +        <GenDll>true</GenDll>
 +        <GenPackage>true</GenPackage>
 +        <SanitizedProjectName>VirtualTreesCR</SanitizedProjectName>
@@ -198,10 +198,10 @@ index 8eba812..a6d03d3 100644
  {$SCOPEDENUMS ON}
  
 diff --git a/Source/VirtualTrees.BaseTree.pas b/Source/VirtualTrees.BaseTree.pas
-index b03ebe7..e02f156 100644
+index b03ebe7..5337075 100644
 --- a/Source/VirtualTrees.BaseTree.pas
 +++ b/Source/VirtualTrees.BaseTree.pas
-@@ -17,7 +17,7 @@ interface
+@@ -17,11 +17,11 @@ interface
  {$HPPEMIT '#include <objidl.h>'}
  {$HPPEMIT '#include <oleidl.h>'}
  {$HPPEMIT '#include <oleacc.h>'}
@@ -210,6 +210,11 @@ index b03ebe7..e02f156 100644
    {$HPPEMIT '#pragma comment(lib, "VirtualTreesCR")'}
  {$else}
    {$HPPEMIT '#pragma comment(lib, "VirtualTreesR")'}
+-{$endif}
++{$IFEND}
+ {$HPPEMIT '#pragma comment(lib, "Shell32")'}
+ {$HPPEMIT '#pragma comment(lib, "uxtheme")'}
+ {$HPPEMIT '#pragma link "VirtualTrees.Accessibility"'}
 @@ -40,7 +40,7 @@ uses
  {$IFDEF VT_FMX}
    , VirtualTrees.BaseAncestorFMX
@@ -232,6 +237,33 @@ index 0fb1e38..8981b41 100644
  {$ENDIF}
    ;
  
+diff --git a/Source/VirtualTrees.WorkerThread.pas b/Source/VirtualTrees.WorkerThread.pas
+index 4e74d70..ae542e0 100644
+--- a/Source/VirtualTrees.WorkerThread.pas
++++ b/Source/VirtualTrees.WorkerThread.pas
+@@ -142,6 +142,7 @@ var
+   EnterStates: TVirtualTreeStates;
+   lExceptAddr: Pointer;
+   lException: TObject;
++  lExceptionRethrow: TThreadProcedure;
+   lCurrentTree: TBaseVirtualTree;
+ begin
+   TThread.NameThreadForDebugging('VirtualTrees.TWorkerThread');
+@@ -188,10 +189,12 @@ begin
+     begin
+       lExceptAddr := ExceptAddr;
+       lException := AcquireExceptionObject;
+-      TThread.Synchronize(nil, procedure
++      lExceptionRethrow :=
++        procedure
+         begin
+           raise lException at lExceptAddr;
+-        end);
++        end;
++      TThread.Synchronize(nil, lExceptionRethrow);
+       Continue; //the thread should continue to run
+     end;
+   end;//while
 diff --git a/Source/VirtualTrees.pas b/Source/VirtualTrees.pas
 index 7701904..e1c29a0 100644
 --- a/Source/VirtualTrees.pas

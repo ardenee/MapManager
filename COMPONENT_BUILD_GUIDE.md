@@ -91,3 +91,16 @@ Generated .hpp files must be refreshed by rebuilding the native Delphi
 VirtualTreesCR package before building Project1. Do not edit generated
 headers or work around the missing VirtualTreesR.lib by adding an unrelated
 legacy library. These changes are statically validated, not yet GUI tested.
+
+## Native VirtualTreesCR Delphi compiler corrections (29 October 2026)
+
+The earlier native project emitted an E2029 compile error due to an incorrect
+ENDIF closing an IF conditional in VirtualTrees.BaseTree.pas. This was fixed
+to IFEND. An E2250 Synchronize overload ambiguity in
+VirtualTrees.WorkerThread.pas was addressed by passing a typed TThreadProcedure
+to TThread.Synchronize. The native Delphi project define no longer appends
+an empty DCC_Define (avoiding a doubled semicolon in the compiler command).
+
+All fixes are included in build/patches/VirtualTreesCR-Native-Win64x.patch.
+No compile or IDE rebuild has been run following these fixes; the next
+Win64 Modern / Release component-group build is the user acceptance check.
