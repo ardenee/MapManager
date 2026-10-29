@@ -190,10 +190,9 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64x)'!=''">
         <ILINK_LibraryPath>C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\Win64x\Release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
-        <BCC_IncludePath>TUTPackage\generated\Win64x;ThirdParty\d7zip\generated\Win64x;ThirdParty\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
+        <BCC_IncludePath>build\components\Win64x\Release\TUTPackageNative;ThirdParty\build\components\Win64x\Release\MapManagerArchiveNative;TUTPackage\generated\Win64x;ThirdParty\d7zip\generated\Win64x;TUTPackage;ThirdParty\d7zip;$(BCC_IncludePath)</BCC_IncludePath>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <LinkPackageStatics>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackage.lib;MMArchiveEngine.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</LinkPackageStatics>
-        <BCC_IncludePath>C:\Users\arden\source\repos\MapManager-Recovered\TUTPackage;$(BCC_IncludePath)</BCC_IncludePath>
+        <LinkPackageStatics>rtl.lib;vcl.lib;VirtualTreesCR.lib;vclx.lib;xmlrtl.lib;vclactnband.lib;vclimg.lib;TUTPackageNative.lib;MapManagerArchiveNative.lib;dbrtl.lib;dbexpress.lib;DbxCommonDriver.lib;DBXSqliteDriver.lib;dsnap.lib</LinkPackageStatics>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
@@ -1498,9 +1497,13 @@
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
-    <Target Name="MapManagerArchiveDelphiObjects" BeforeTargets="_CheckLinkDependencies" Condition="'$(Platform)'=='Win32' Or '$(Platform)'=='Win64' Or '$(Platform)'=='Win64x'">
+    <Target Name="MapManagerArchiveDelphiObjects" BeforeTargets="_CheckLinkDependencies" Condition="'$(Platform)'=='Win32' Or '$(Platform)'=='Win64'">
         <Exec Command="&quot;$(MSBuildProjectDirectory)\build\compile-archive-units.cmd&quot; &quot;$(Platform)&quot; &quot;$(Config)&quot;"/>
-        <Copy SourceFiles="$(MSBuildProjectDirectory)\Project1.res" DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\Project1.res" Condition="'$(Platform)'=='Win64x' And Exists('$(MSBuildProjectDirectory)\Project1.res') And !Exists('$(MSBuildProjectDirectory)\Win64x\$(Config)\Project1.res')"/>
+    </Target>
+    <Target Name="MapManagerStageResourceWin64x" BeforeTargets="_CheckLinkDependencies" Condition="'$(Platform)'=='Win64x'">
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\Project1.res"
+              DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\Project1.res"
+              Condition="Exists('$(MSBuildProjectDirectory)\Project1.res') And !Exists('$(MSBuildProjectDirectory)\Win64x\$(Config)\Project1.res')" />
     </Target>
     <Target Name="MapManagerStage7ZipWin64Runtime" AfterTargets="_PerformLink" Condition="'$(Platform)'=='Win64x'">
         <Copy SourceFiles="C:\Program Files\7-Zip\7z.dll" DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\7z.dll" SkipUnchangedFiles="true" Condition="Exists('C:\Program Files\7-Zip\7z.dll')"/>

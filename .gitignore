@@ -65,3 +65,7 @@ BUILD_STATUS.md
 # Generated resources from standalone Delphi package builds
 /TUTPackage/TUTPackageNative.res
 /ThirdParty/d7zip/MapManagerArchiveNative.res
+
+# Generated package wrapper headers
+/TUTPackage/generated/Win64x/TUTPackageNative.hpp
+/ThirdParty/d7zip/generated/Win64x/MapManagerArchiveNative.hpp

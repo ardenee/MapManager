@@ -1,31 +1,43 @@
-# Manual component builds - RAD Studio 37.0
+# Building Map Manager and components in RAD Studio 37.0
 
-Select **Windows 64-bit (Modern) / Release** for the following projects.
+## Recommended: use a project group
 
-| Component | Open in RAD Studio |
-| --- | --- |
-| TUTPackage | TUTPackage/TUTPackageNative.dproj |
-| d7zip + MMArchiveEngine | ThirdParty/d7zip/MapManagerArchiveNative.dproj |
-| JAM Virtual TreeView runtime | C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj |
-| All three runtime components | MapManager-Components.groupproj |
+In RAD Studio select File > Open Project, then open MapManager-All.groupproj in the DEV repository root. Set Windows 64-bit (Modern) and Release. Choose Build All Projects, or build individual projects in Project Manager.
 
-The Virtual TreeView designer project is available beside its runtime project as VirtualTreesCD.cbproj. It is not needed to link Map Manager. The aggregate group uses the existing local Virtual TreeView checkout and will need a path adjustment on another machine.
+The projects in build order:
 
-Each Delphi project is a runtime PACKAGE and builds native .bpl, .bpi, .dcp, .lib outputs. These are found in the Embarcadero Public Documents Bpl/Win64x and Dcp/Win64x directories. Both individual projects and the aggregate group have passed Win64x Release builds.
+1. TUTPackage/TUTPackageNative.dproj - Unreal package reader
+2. ThirdParty/d7zip/MapManagerArchiveNative.dproj - d7zip plus MMArchiveEngine
+3. C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj - JAM Virtual TreeView runtime
+4. Project1.cbproj - Map Manager application
 
-**Important: Map Manager links separate, static native COFF libraries instead of those runtime packages.** To rebuild the exact archive components used by the application, run from the repository root:
+The Virtual TreeView path is the existing DEV checkout and must be adjusted on a different machine. MapManager-Components.groupproj remains available for components only.
 
-    build\compile-archive-units.cmd Win64x Release
+## What the GUI build produces
 
-The script compiles TUTPackage, MMArchiveEngine and sevenzip with dcc64 -jf:coffi and produces:
+With Delphi Compiler / Output - C/C++ set to generate all files, the TUTPackage and archive .dproj packages emit COFF static libraries in:
 
-    Win64x\Release\TUTPackage.lib
-    Win64x\Release\MMArchiveEngine.lib
+    C:\Users\Public\Documents\Embarcadero\Studio\37.0\Dcp\Win64x\TUTPackageNative.lib
+    C:\Users\Public\Documents\Embarcadero\Studio\37.0\Dcp\Win64x\MapManagerArchiveNative.lib
 
-The second library contains MMArchiveEngine.o and sevenzip.o. Project1.cbproj automatically runs this script before linking and includes TUTPackage.lib and MMArchiveEngine.lib in its IDE-native LinkPackageStatics property. The application also links the separately built Win64x VirtualTreesCR.lib. Do not mix legacy Win64 ELF .a files with Win64x COFF .lib files, nor simultaneously link both runtime BPL and static archives.
+They also produce BPL, BPI and DCP files. Map Manager uses these static .lib files, not the runtime package BPLs. RAD Studio already includes Dcp/Win64x in the linker library search path.
 
-For the full app, open **Project1.cbproj** (NOT historical Project1.bpr or Project1.bdsproj), choose Windows 64-bit Modern / Release, and select Rebuild. A native 64-bit 7z.dll is automatically staged into Win64x/Release from the installed 7-Zip DLL when available. No external archive executable is required.
+Project1.cbproj Win64x Release now uses LinkPackageStatics with TUTPackageNative.lib and MapManagerArchiveNative.lib (plus the existing Win64x VirtualTreesCR.lib). No object search path or manual compilation of MMArchiveEngine.o is necessary.
 
-**TMapFileData.cpp / .h:** Stub compatibility files are present solely for IDEs that retain an old source list. The canonical TFileData implementation, including DecodeMapInfoString, is in TFileData.cpp. Never restore old duplicated implementations from other source folders.
+A missing -l:MapManagerArchiveNative.lib in ld.lld's command line means the IDE has older project settings loaded. Close and reopen Project1.cbproj (or MapManager-All.groupproj). Do not open the historical Project1.bpr or Project1.bdsproj.
 
-Verified 29 October 2026: both component Delphi projects, the aggregate project group, and a clean Win64x Release application rebuild pass. End-to-end GUI and installer/undo runtime acceptance remains outstanding.
+## Existing legacy targets
+
+The application build/compile-archive-units.cmd hook remains for Win32 and legacy Win64 only; the Win64 Modern Release application no longer invokes it. Win64 Modern uses COFF .lib, not legacy Win64 ELF .a. The source Project1.res is staged for clean rebuild, and native 64-bit 7z.dll is staged beside the executable when installed.
+
+TMapFileData.cpp/.h are compatibility stubs defining no TFileData methods. The canonical TFileData class remains in TFileData.cpp. Do not restore duplicate source files.
+
+## Verified 29 October 2026
+
+- Separate TUTPackageNative and MapManagerArchiveNative Delphi project builds: PASS.
+- VirtualTreesCR Win64x runtime build: PASS.
+- MapManager-Components.groupproj: PASS.
+- MapManager-All.groupproj (components and application): PASS.
+- Full clean Win64x Release application rebuild without the archive script: PASS.
+
+GUI startup, file installation, archive extraction and undo end-to-end runtime acceptance remain outstanding.

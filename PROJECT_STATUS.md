@@ -1,3 +1,10 @@
+### Native RAD Studio GUI project builds - 29 October 2026 (latest)
+
+- Win64x Release Project1.cbproj now links TUTPackageNative.lib and MapManagerArchiveNative.lib from standalone Delphi .dproj package builds. Both reside in RAD Studio's standard Dcp/Win64x search path. The issue was the absent -l:MapManagerArchiveNative.lib linker INPUT, not an object search directory.
+- Disabled automatic archive batch compilation for Win64x only; retained the hook for Win32 and legacy Win64. Moved Project1.res staging to a separate pre-link target. Full clean Win64x Release application rebuild with GUI-built static package libraries PASSED (exit 0) without the archive batch.
+- Created MapManager-All.groupproj for the GUI, building TUTPackageNative.dproj, MapManagerArchiveNative.dproj, VirtualTreesCR.cbproj and Project1.cbproj in sequence. Aggregate Build PASSED (exit 0).
+- Manual GUI instructions in COMPONENT_BUILD_GUIDE.md supersede prior Win64x batch instructions. Runtime application features remain untested.
+
 ### Manual component IDE projects and IDE-stable archive linkage - 29 October 2026
 
 - Added standalone RAD Studio Delphi package .dproj/.dpk pairs for TUTPackageNative and MapManagerArchiveNative plus MapManager-Components.groupproj pointing to existing third-party VirtualTreesCR.cbproj. Both packages and the aggregate group pass Win64x Release builds.
