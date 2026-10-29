@@ -1,5 +1,5 @@
 diff --git a/Packages/CBuilder 13/VirtualTreesCR.cbproj b/Packages/CBuilder 13/VirtualTreesCR.cbproj
-index 3f30a94..1a89fe8 100644
+index 3f30a94..27d05fd 100644
 --- a/Packages/CBuilder 13/VirtualTreesCR.cbproj
 +++ b/Packages/CBuilder 13/VirtualTreesCR.cbproj
 @@ -6,7 +6,7 @@
@@ -31,26 +31,23 @@ index 3f30a94..1a89fe8 100644
          <BPILibOutputDir>.\$(Platform)\$(Config)</BPILibOutputDir>
          <BCC_wpar>false</BCC_wpar>
          <BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
-@@ -262,4 +269,36 @@
+@@ -259,7 +266,33 @@
+         </BorlandProject>
+         <ProjectFileVersion>12</ProjectFileVersion>
+     </ProjectExtensions>
++    <!-- CodeGear.Cpp.Targets appends its native Link dependencies to
++         LinkDependsOnTargets while it is imported. Prepend the native
++         static-object pass here (before that import) so Win64x Delphi
++         .o objects exist before the runtime BPL is linked.
++         Its nested static package build has _DoingStaticPackageBuild=true
++         and therefore uses the untouched native dependency list. -->
++    <PropertyGroup Condition="'$(Platform)'=='Win64x' And '$(_DoingStaticPackageBuild)'!='true'">
++        <LinkDependsOnTargets>$(LinkDependsOnTargets);MakeStaticPackage;</LinkDependsOnTargets>
++    </PropertyGroup>
      <Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
      <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
      <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
 +
-+    <!-- RAD Studio normally executes MakeStaticPackage after Link, but the
-+         Win64x runtime ld.lld needs the Delphi-generated .o files before
-+         it links. Explicitly insert the native static-package pass into
-+         Link's dependency chain, after _ResolveOutput/PreLinkEvent but
-+         before _PerformLink. The nested static build (_DoingStaticPackageBuild)
-+         retains the unmodified normal link dependencies. -->
-+    <PropertyGroup Condition="'$(Platform)'=='Win64x' And '$(_DoingStaticPackageBuild)'!='true'">
-+        <LinkDependsOnTargets>
-+            _ResolveOutput;
-+            CreateDirectories;
-+            PreLinkEvent;
-+            MakeStaticPackage;
-+            _PerformLink;
-+        </LinkDependsOnTargets>
-+    </PropertyGroup>
 +<!-- 2026-SDK: local recovery workspace only -->
 +
 +<PropertyGroup>

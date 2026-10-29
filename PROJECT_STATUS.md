@@ -1,3 +1,11 @@
+### Virtual TreeView Win64 Modern MSBuild target evaluation correction - 29 October 2026 (untested GUI)
+
+- Latest user IDE build still reports missing VirtualTrees.*.o files. The prior LinkDependsOnTargets override was AFTER CodeGear.Cpp.Targets Import and did not affect the already established Link target dependencies.
+- Confirmed installed RAD Studio 37.0 CodeGear.Cpp.Targets appends native Link dependencies to the LinkDependsOnTargets property during import; it also schedules MakeStaticPackage after Link by default.
+- Moved a Win64x-only LinkDependsOnTargets declaration BEFORE the CodeGear.Cpp.Targets import: it prepends MakeStaticPackage, then the native import adds _ResolveOutput, CreateDirectories, PreLinkEvent, and _PerformLink. Nested static builds are excluded with _DoingStaticPackageBuild=true.
+- Updated the local VirtualTreesCR.cbproj in the sibling Virtual-TreeView checkout and the versioned integration patch build/patches/VirtualTreesCR-Win64x-RAD37.patch.
+- Static XML syntax and patch applicability checked. No build or IDE test performed, per user preference. Await user's Win64x Release GUI rebuild. Unrelated DEV files preserved.
+
 ### Virtual Trees Win64x missing Delphi .o follow-up - 29 October 2026 (unverified)
 
 - User IDE build after the earlier BeforeTargets=_CheckLinkDependencies target STILL reports 22 missing VirtualTrees.*.o files under Win64x/Release, confirming the earlier hook did not ensure the static-package build ran ahead of the runtime linker.

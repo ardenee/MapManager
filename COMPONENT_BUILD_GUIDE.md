@@ -131,3 +131,15 @@ The local VirtualTreesCR.cbproj now explicitly includes MakeStaticPackage
 before _PerformLink in LinkDependsOnTargets, guarded so the nested static
 package project is unaffected. This update is unverified; test it from
 the IDE before declaring the GUI linker issue resolved.
+
+
+### Win64x static-object dependency ordering
+
+For RAD Studio 37.0, the MSBuild property LinkDependsOnTargets must be
+initialized BEFORE importing CodeGear.Cpp.Targets. A previous property group
+placed after the import had no effect in the IDE build. The updated local
+VirtualTreesCR.cbproj prepends the native MakeStaticPackage target before
+the import, then RAD Studio appends its normal link targets. The nested static
+build is excluded from this override to prevent recursion.
+
+This change has not been build-tested; the next IDE build is the verification.
