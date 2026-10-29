@@ -1505,6 +1505,13 @@
               DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\Project1.res"
               Condition="Exists('$(MSBuildProjectDirectory)\Project1.res') And !Exists('$(MSBuildProjectDirectory)\Win64x\$(Config)\Project1.res')" />
     </Target>
+    <Target Name="MapManagerStageLegacyXMLWin64x" BeforeTargets="_CheckLinkDependencies" Condition="'$(Platform)'=='Win64x'">
+        <!-- Preserve existing runtime settings. Only stage the recovered XML
+             when no user-specific settings file exists in the output folder. -->
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\Settings\Settings.xml"
+              DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\Settings\Settings.xml"
+              Condition="Exists('$(MSBuildProjectDirectory)\Settings\Settings.xml') And !Exists('$(MSBuildProjectDirectory)\Win64x\$(Config)\Settings\Settings.xml')" />
+    </Target>
     <Target Name="MapManagerStage7ZipWin64Runtime" AfterTargets="_PerformLink" Condition="'$(Platform)'=='Win64x'">
         <Copy SourceFiles="C:\Program Files\7-Zip\7z.dll" DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\7z.dll" SkipUnchangedFiles="true" Condition="Exists('C:\Program Files\7-Zip\7z.dll')"/>
     </Target>

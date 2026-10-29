@@ -1,3 +1,12 @@
+### First-run database popup and XML staging - 29 October 2026
+
+- At startup TMMSettings.cpp and TMMCache.cpp attempted to connect to Database=settings.sqlite3 and Database=cache.sqlite3 using relative paths. Neither SQLite file was present in DEV. SQLite/dbExpress produced the text "unable to open database file", which is not an application string.
+- The recovered settings.sqlite3.sql does not yet define the Settings table required by GetSettings. It is an incomplete historical migration, NOT a deployable application schema.
+- Settings startup now uses the executable's absolute database location, only attempts SQLite if a file exists, and checks the Settings table. If missing or invalid, it falls back to XML without a startup popup. Cache startup likewise only connects to an existing SQLite file. Failure of an existing SQLite file is reported to OutputDebugStringW for developers.
+- LoadSettings only runs the preliminary SQLite query if the schema is validated. The existing Settings/Settings.xml remains authoritative for current settings and persistence.
+- Win64 Modern builds stage the recovered XML into Win64x/<Config>/Settings/Settings.xml only when absent. An existing user-edited XML is not overwritten. No blank SQLite files were created or schema inferred.
+- A complete Win64x Release application Rebuild passed with exit code 0 and no compile/link errors after these changes. GUI startup is not yet interactively verified. XML-to-SQLite migration and cache schema remain incomplete.
+
 ### Win64 Modern / Release compiler warning cleanup - 29 October 2026
 
 - W1005: d7zip's Windows-only sevenzip unit was explicitly declared PLATFORM; removed the redundant hint in the local vendor copy, without changing platform-specific code or using a global suppression.

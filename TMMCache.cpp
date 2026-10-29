@@ -23,20 +23,28 @@ __fastcall TMMCache::TMMCache(TMMEventManager* pEventManager)
 	SQLConnection1 = new TSQLConnection(0);
 	SQLQuery1      = new TSQLQuery(0);
 	//SQLDataSet1    = new TSQLDataSet(0);
-	SQLConnection1->DriverName = "Sqlite";
-	SQLConnection1->Params->Add("Database=cache.sqlite3");
-	SQLConnection1->LoginPrompt = false;
+    SQLConnection1->DriverName = "Sqlite";
+    SQLConnection1->LoginPrompt = false;
+    SQLQuery1->SQLConnection = SQLConnection1;
+    const UnicodeString databaseFile =
+        IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + L"cache.sqlite3";
+    SQLConnection1->Params->Add(L"Database=" + databaseFile);
 
-	try
-	{
-		SQLConnection1->Connected = true;
-		SQLQuery1->SQLConnection  = SQLConnection1;
-	}
-	catch (EDatabaseError& E)
-	{
-		// change to status bar and logs
-	   ShowMessage("Exception raised with message\n" + E.Message);
-	}
+    // The cache schema/migration is not ready for first-run initialization.
+    // An absent database is normal; existing cache.ini remains available.
+    if (FileExists(databaseFile))
+    {
+        try
+        {
+            SQLConnection1->Connected = true;
+        }
+        catch (EDatabaseError& E)
+        {
+            SQLConnection1->Connected = false;
+            OutputDebugStringW((UnicodeString(L"MapManager: ignoring unavailable cache database ") +
+                databaseFile + L": " + E.Message).c_str());
+        }
+    }
 
 
 	fFileDiscriptions->Sorted = true;

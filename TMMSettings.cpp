@@ -21,30 +21,47 @@ __fastcall TMMSettings::TMMSettings()
     fLastGameType  = 0;
     fSettingsFile  = fProgramFolder + "Settings\\Settings.xml";
 
-	SQLConnection1 = new TSQLConnection(0);
-	SQLQuery1      = new TSQLQuery(0);
-	SQLDataSet1    = new TSQLDataSet(0);
-	SQLConnection1->DriverName = "Sqlite";
-	SQLConnection1->Params->Add("Database=settings.sqlite3");
-	SQLConnection1->LoginPrompt = false;
+    // XML remains the active settings store until the SQLite migration and
+    // complete schema have been implemented. Never create an empty SQLite
+    // database or depend on the IDE's current working directory.
+    SQLConnection1 = new TSQLConnection(0);
+    SQLQuery1      = new TSQLQuery(0);
+    SQLDataSet1    = new TSQLDataSet(0);
+    SQLConnection1->DriverName = "Sqlite";
+    SQLQuery1->SQLConnection   = SQLConnection1;
+    SQLDataSet1->SQLConnection = SQLConnection1;
+    SQLConnection1->LoginPrompt = false;
+    const UnicodeString databaseFile =
+        IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) + L"settings.sqlite3";
+    SQLConnection1->Params->Add(L"Database=" + databaseFile);
 
-	try
-	{
-		SQLConnection1->Connected  = true;
-		SQLQuery1->SQLConnection   = SQLConnection1;
-		SQLDataSet1->SQLConnection = SQLConnection1;
-		//SQLQuery1->DataSource =
+    // The recovered settings.sqlite3.sql does not contain a Settings table.
+    // Only use a pre-existing, schema-compatible database; otherwise continue
+    // with the original XML settings without showing a misleading SQLite error.
+    if (FileExists(databaseFile))
+    {
+        try
+        {
+            SQLConnection1->Connected = true;
+            SQLQuery1->SQL->Text =
+                L"SELECT name FROM sqlite_master WHERE type='table' AND name='Settings'";
+            SQLQuery1->Open();
+            const bool schemaReady = !SQLQuery1->IsEmpty();
+            SQLQuery1->Close();
+            if (!schemaReady)
+                SQLConnection1->Connected = false;
+        }
+        catch (EDatabaseError& E)
+        {
+            SQLConnection1->Connected = false;
+            OutputDebugStringW((UnicodeString(L"MapManager: ignoring invalid settings database ") +
+                databaseFile + L": " + E.Message).c_str());
+        }
+    }
 
-	}
-	catch (EDatabaseError& E)
-	{
-		// change to status bar and logs
-	   ShowMessage("TMMSettings::TMMSettings()\n" + E.Message);
-	   // create DB file here
-	}
-
-	GetSettings(); // loads lastgametype only
-
+    if (SQLConnection1->Connected)
+        GetSettings();
+    // LoadSettings() always reads the existing XML source of truth.
 	LoadSettings();
 }
 //----------------------------------------------------------------------------
@@ -197,6 +214,8 @@ void __fastcall TMMSettings::OnSettingsChangedEvent(TObject* Sender)
 void __fastcall TMMSettings::LoadSettings()
 {
 	//UnicodeString query = "Select LastSeletedGame from Settings;";
+    if (SQLConnection1->Connected)
+    {
 	try
 	{
 		SQLQuery1->SQL->Text = "Select LastSeletedGame from Settings";
@@ -239,6 +258,7 @@ void __fastcall TMMSettings::LoadSettings()
 	}
 
 	SQLQuery1->Close();
+    }
 
 	fXMLSSettingsFile = LoadXMLDocument(fSettingsFile);
 	OnSettingsChanged = NULL; // stop events from running when loading!!
