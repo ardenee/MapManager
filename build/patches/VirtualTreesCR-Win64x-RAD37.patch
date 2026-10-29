@@ -1,5 +1,5 @@
 diff --git a/Packages/CBuilder 13/VirtualTreesCR.cbproj b/Packages/CBuilder 13/VirtualTreesCR.cbproj
-index 3f30a94..bddff27 100644
+index 3f30a94..378bdc0 100644
 --- a/Packages/CBuilder 13/VirtualTreesCR.cbproj
 +++ b/Packages/CBuilder 13/VirtualTreesCR.cbproj
 @@ -6,7 +6,7 @@
@@ -11,7 +11,7 @@ index 3f30a94..bddff27 100644
          <ProjectName Condition="'$(ProjectName)'==''">VirtualTreesCR</ProjectName>
          <TargetedPlatforms>1048579</TargetedPlatforms>
          <AppType>Package</AppType>
-@@ -47,7 +47,7 @@
+@@ -47,11 +47,18 @@
          <Base>true</Base>
      </PropertyGroup>
      <PropertyGroup Condition="'$(Base)'!=''">
@@ -20,7 +20,18 @@ index 3f30a94..bddff27 100644
          <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
          <DynamicRTL>true</DynamicRTL>
          <UsePackages>true</UsePackages>
-@@ -262,4 +262,20 @@
+         <IntermediateOutputDir>.\$(Platform)\$(Config)</IntermediateOutputDir>
++        <!-- Keep all Win64x objects and resources within this component.
++             RAD Studio IDE builds previously sent Delphi .o files to the
++             global DCP path and C++ .o files into the project root. That
++             differs from the static-package TLIB inputs. -->
++        <DCC_ObjOutput Condition="'$(Platform)'=='Win64x'">$(MSBuildProjectDirectory)\Win64x\$(Config)\</DCC_ObjOutput>
++        <BCC_OutputDir Condition="'$(Platform)'=='Win64x'">$(MSBuildProjectDirectory)\Win64x\$(Config)\</BCC_OutputDir>
++        <BRCC_OutputDir Condition="'$(Platform)'=='Win64x'">$(MSBuildProjectDirectory)\Win64x\$(Config)\</BRCC_OutputDir>
+         <BPILibOutputDir>.\$(Platform)\$(Config)</BPILibOutputDir>
+         <BCC_wpar>false</BCC_wpar>
+         <BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
+@@ -262,4 +269,20 @@
      <Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
      <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
      <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
@@ -37,7 +48,7 @@ index 3f30a94..bddff27 100644
 +        <MakeDir Directories="$(MSBuildProjectDirectory)\Win64x\$(Config)" />
 +        <Copy SourceFiles="$(MSBuildProjectDirectory)\VirtualTreesCR.res"
 +              DestinationFiles="$(MSBuildProjectDirectory)\Win64x\$(Config)\VirtualTreesCR.res"
-+              Condition="Exists('$(MSBuildProjectDirectory)\VirtualTreesCR.res')"
++              Condition="Exists('$(MSBuildProjectDirectory)\VirtualTreesCR.res') And !Exists('$(MSBuildProjectDirectory)\Win64x\$(Config)\VirtualTreesCR.res')"
 +              SkipUnchangedFiles="true" />
 +    </Target>
  </Project>
