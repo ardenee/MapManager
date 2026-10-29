@@ -5,24 +5,67 @@
     <Platform Condition="'$(Platform)'==''">Win64x</Platform>
   </PropertyGroup>
   <ItemGroup>
-    <Projects Include="..\TUTPackage\TUTPackageNative.dproj"><Dependencies /></Projects>
-    <Projects Include="..\d7zip\MapManagerArchiveNative.dproj"><Dependencies /></Projects>
-    <Projects Include="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj"><Dependencies /></Projects>
-    <Projects Include="Project1.cbproj"><Dependencies /></Projects>
+    <Projects Include="..\TUTPackage\TUTPackageNative.dproj">
+      <Dependencies />
+    </Projects>
+    <Projects Include="..\d7zip\MapManagerArchiveNative.dproj">
+      <Dependencies />
+    </Projects>
+    <Projects Include="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj">
+      <Dependencies />
+    </Projects>
+    <Projects Include="Project1.cbproj">
+      <Dependencies />
+    </Projects>
   </ItemGroup>
   <ProjectExtensions>
     <Borland.Personality>Default.Personality.12</Borland.Personality>
-    <Borland.ProjectType/>
+    <Borland.ProjectType />
   </ProjectExtensions>
-  <Target Name="TUTPackageNative"><MSBuild Projects="..\TUTPackage\TUTPackageNative.dproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
-  <Target Name="TUTPackageNative:Clean"><MSBuild Projects="..\TUTPackage\TUTPackageNative.dproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
-  <Target Name="MapManagerArchiveNative"><MSBuild Projects="..\d7zip\MapManagerArchiveNative.dproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
-  <Target Name="MapManagerArchiveNative:Clean"><MSBuild Projects="..\d7zip\MapManagerArchiveNative.dproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
-  <Target Name="VirtualTreesCR"><MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
-  <Target Name="VirtualTreesCR:Clean"><MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
-  <Target Name="MapManagerApp"><MSBuild Projects="Project1.cbproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
-  <Target Name="MapManagerApp:Clean"><MSBuild Projects="Project1.cbproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
-  <Target Name="Build"><CallTarget Targets="TUTPackageNative;MapManagerArchiveNative;VirtualTreesCR;MapManagerApp" /></Target>
-  <Target Name="Clean"><CallTarget Targets="MapManagerApp:Clean;VirtualTreesCR:Clean;MapManagerArchiveNative:Clean;TUTPackageNative:Clean" /></Target>
+  <Target Name="TUTPackageNative">
+    <MSBuild Projects="..\TUTPackage\TUTPackageNative.dproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="TUTPackageNative:Clean">
+    <MSBuild Projects="..\TUTPackage\TUTPackageNative.dproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="MapManagerArchiveNative">
+    <MSBuild Projects="..\d7zip\MapManagerArchiveNative.dproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="MapManagerArchiveNative:Clean">
+    <MSBuild Projects="..\d7zip\MapManagerArchiveNative.dproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="VirtualTreesCR">
+    <MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="VirtualTreesCR:Clean">
+    <MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="MapManagerApp">
+    <MSBuild Projects="Project1.cbproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="MapManagerApp:Clean">
+    <MSBuild Projects="Project1.cbproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="TUTPackageNative:Make">
+    <MSBuild Projects="..\TUTPackage\TUTPackageNative.dproj" Targets="Make" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="MapManagerArchiveNative:Make">
+    <MSBuild Projects="..\d7zip\MapManagerArchiveNative.dproj" Targets="Make" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="VirtualTreesCR:Make">
+    <MSBuild Projects="..\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Make" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="Project1:Make">
+    <MSBuild Projects="Project1.cbproj" Targets="Make" Properties="Config=$(Config);Platform=$(Platform)" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="TUTPackageNative;MapManagerArchiveNative;VirtualTreesCR;MapManagerApp" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="MapManagerApp:Clean;VirtualTreesCR:Clean;MapManagerArchiveNative:Clean;TUTPackageNative:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="TUTPackageNative:Make;MapManagerArchiveNative:Make;VirtualTreesCR:Make;Project1:Make" />
+  </Target>
   <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" />
 </Project>

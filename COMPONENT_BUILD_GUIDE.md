@@ -44,3 +44,20 @@ and its MapManager-specific `.dproj` / `.dpk` belong to that local checkout.
 
 Keep the application DelphiCompile entries for `MMArchiveEngine.pas` and
 `..\d7zip\sevenzip.pas`. Removing them previously caused linker failures.
+
+## Correct GUI build configurations and project-saving
+
+All three components in the project group are configured for **Win64 Modern (Win64x) / Release**.
+TUTPackageNative.dproj and MapManagerArchiveNative.dproj use standard RAD Studio
+BuildConfiguration entries (Base, Debug, Release) and Delphi project metadata.
+VirtualTreesCR.cbproj defaults to Win64x and builds VirtualTreesCR.bpl with no
+version suffix, matching its runtime output.
+
+If the IDE previously showed Base/Win64x for Delphi packages, Win32/Release for
+Virtual TreeView, VirtualTreesCR370.bpl missing, or crashed while saving a Delphi
+project in Xml.XMLIniFile, close and reopen the project group so RAD Studio
+reloads the corrected project files. Save modified .cpp/.pas/.dfm source files
+individually before closing any IDE session with unsaved edits.
+
+Win64x Release component-group and full-application group MSBuild builds passed,
+but the *IDE's own Save All action* still needs interactive confirmation.

@@ -1,3 +1,11 @@
+### Delphi package project metadata and Virtual TreeView name alignment - 29 October 2026
+
+- Diagnosed the GUI project's mixed configurations: hand-authored TUTPackageNative.dproj and MapManagerArchiveNative.dproj had no BuildConfiguration records, causing RAD Studio to use Base while the runtime VirtualTreesCR.cbproj defaulted to Win32. Both Delphi package files now use the standard Base/Debug/Release configuration keys and Win64x configuration inheritance found in Embarcadero-generated projects.
+- Added Delphi.Personality / BorlandProject source and platform information and ProjectFileVersion metadata missing from the hand-authored Delphi project files. The observed IDE crash stack was BaseDelphiProject.SaveFile -> Xml.XMLIniFile.WriteString / FindXmlNodeOrAdd; malformed/missing IDE metadata is a plausible cause, but an actual IDE Save All retest remains required.
+- The MapManager-Components and MapManager-All group files now include the standard RAD Studio ProjectExtensions and Make targets. The runtime VirtualTreesCR project defaults to Win64x and uses a blank DllSuffix instead of $(Auto), matching the actual VirtualTreesCR.bpl produced by the linker. The old Auto suffix had led to a VirtualTreesCR370.bpl package-load mismatch in the IDE.
+- Win64x Release MSBuild component group PASS, complete app group PASS, both zero build errors. The MSBuild-only MTA threading warning MSB4056 is not a C++/Delphi compilation error.
+- When the IDE is already open, save any source edits individually first; then reload the Delphi project files and the entire MapManager-All.groupproj to refresh the IDE's cached metadata. The two Delphi package sources live in separate sibling folders; local external projects were not pushed to upstream GitHub.
+
 ### MapManager and dependency relocation - 29 October 2026 (latest)
 
 - Active DEV Git checkout moved (including .git and unrelated user edits) to C:\Users\arden\source\repos\MapManager; GitHub origin remains https://github.com/ardenee/MapManager.git.
