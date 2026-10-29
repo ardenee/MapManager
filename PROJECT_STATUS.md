@@ -1,3 +1,11 @@
+### Virtual Trees Win64x missing Delphi .o follow-up - 29 October 2026 (unverified)
+
+- User IDE build after the earlier BeforeTargets=_CheckLinkDependencies target STILL reports 22 missing VirtualTrees.*.o files under Win64x/Release, confirming the earlier hook did not ensure the static-package build ran ahead of the runtime linker.
+- Inspected actual installed RAD Studio 37.0 CodeGear.Cpp.Targets: MakeDependsOnTargets schedules MakeObjs;Link;...;MakeStaticPackage. The native MakeStaticPackage pass runs DCC_CBuilderOutput=JPHN and creates the Delphi object inputs; the runtime pass -JL does not emit them into the expected directory.
+- Replaced the ineffective custom BeforeTargets hook with an explicit Win64x-only LinkDependsOnTargets chain: _ResolveOutput;CreateDirectories;PreLinkEvent;MakeStaticPackage;_PerformLink. The nested static pass is excluded via _DoingStaticPackageBuild=true so it retains the original target graph.
+- Corrected the local VirtualTreesCR.cbproj in the separate Virtual-TreeView Git checkout and updated build/patches/VirtualTreesCR-Win64x-RAD37.patch for reproducible application to a clean checkout.
+- No build was run, as requested. IDE verification is pending; if it fails, use the complete command log to determine whether the JPHN/static pass actually executed before ld.lld. The nine unrelated MapManager DEV changes remain untouched.
+
 ### Virtual Trees Win64x Delphi object-file linking - 29 October 2026 (unverified IDE change)
 
 - User's Win64 Modern Release GUI build now emits correctly separated .o paths, but ld.lld still reports missing VirtualTrees.*.o from the expected Virtual-TreeView/Packages/CBuilder 13/Win64x/Release folder.
