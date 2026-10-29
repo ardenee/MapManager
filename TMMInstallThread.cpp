@@ -4,6 +4,8 @@
 //---------------------------------------------------------------------------
 #include <Registry.hpp>
 #include <Dialogs.hpp>
+#include "MMArchiveEngine.hpp"
+#include <Winapi.Windows.hpp>
 //---------------------------------------------------------------------------
 #include "TMMInstallThread.h"
 //---------------------------------------------------------------------------
@@ -21,15 +23,6 @@ __fastcall TMMInstallThread::TMMInstallThread(bool CreateSuspended, TMMLogs* pOw
 
     // Archives
     fUmod                            = new TUMOD();
-
-    fZipBuilder1                     = new TZipBuilder(NULL);
-    fZipBuilder1->Unattended         = true;         // no error mesages, b/c we have our own
-    fZipBuilder1->OnMessage          = InstallError; // message event
-    fZipBuilder1->OnExtractOverwrite = OnZipExtFileExistsEvent;
-
-    fDFUnRar1                        = new TDFUnRar(NULL);
-    fDFUnRar1->OnFileProcessing      = DFUnRar1FileProcessing;
-	//fDFUnRar1->OnOverride            = DFUnRar1Override;
 
     if(fLogs)
         Synchronize(SetSettings);
@@ -58,8 +51,6 @@ void __fastcall TMMInstallThread::DoTerminate()
 //---------------------------------------------------------------------------
 __fastcall TMMInstallThread::~TMMInstallThread()
 {
-    delete fDFUnRar1;
-    delete fZipBuilder1;
     delete fUmod;
     delete fFileList;
     delete fLogList;
@@ -108,6 +99,12 @@ inline int __fastcall TMMInstallThread::GetArchiveType(AnsiString ArchiveExt)
     }
 
     delete Registry;
+    if (functionNumber == 5)
+    {
+        if (SameText(UnicodeString(ArchiveExt), L".zip") ||
+            SameText(UnicodeString(ArchiveExt), L".7z")) return 0;
+        if (SameText(UnicodeString(ArchiveExt), L".rar")) return 1;
+    }
     return functionNumber;
 
    // return StrToIntDef(fLogs->GetDataFor("\\SOFTWARE\\Nasty PC's\\Map Manager\\InstallTypes\\" + GameTag, ArchiveExt), 5);
@@ -115,153 +112,119 @@ inline int __fastcall TMMInstallThread::GetArchiveType(AnsiString ArchiveExt)
 //---------------------------------------------------------------------------
 void __fastcall TMMInstallThread::InstallZip()
 {
-/*
-    if(fZipBuilder1->IsZipSFX(fFileList->Files[fNum]->FileLocation + fFileList->Files[fNum]->FileName)==1) // if we have a valid archive??
-    {
-        fZipBuilder1->ZipFileName = fFileList->Files[fNum]->FileLocation + fFileList->Files[fNum]->FileName; // assign to zip component
-        fArchiveName = fZipBuilder1->ZipFileName;
-        fZipBuilder1->ExtrOptions.Clear();    // clear for default
-        // Logs
-        fStruct = fLogList->AddFile();
-
-        if(fStruct)
-        {   // Main Zip File used ofr logging, always add first!
-            fStruct->FileName     = fFileList->Files[fNum]->FileName;
-            fStruct->FileDate     = fFileList->Files[fNum]->FileDate;
-            fStruct->FileSize     = fFileList->Files[fNum]->FileSize;
-            fStruct->FileLocation = fFileList->Files[fNum]->FileLocation;
-            fStruct->BelongsTo    = -1;
-        }
-        // Logs
-
-        switch(fInstallMode)
-        {
-            case MM_IM_Smart : fZipBuilder1->ExtrOptions << ExtrUpdate;    break;
-            case MM_IM_Force : fZipBuilder1->ExtrOptions << ExtrOverWrite; break;
-        }
-
-        for(int x=0;x<fZipBuilder1->Count;x++) // loop through archive files
-        {
-            ZipDirEntry *zde = (ZipDirEntry *)fZipBuilder1->ZipContents->Items[x];
-            fZipBuilder1->FSpecArgs->Clear(); // clear all info from FSpecArgs
-            fZipBuilder1->FSpecArgs->Add(zde->FileName);
-            fZipBuilder1->ExtrBaseDir = IncludeTrailingPathDelimiter(fGameFolder + GetFileFolder(ExtractFileExt(zde->FileName)));
-            fTmpFileName = fZipBuilder1->ExtrBaseDir + zde->FileName;
-            // Logs
-            fStruct = fLogList->AddFile();
-
-            if(fStruct)
-            {
-                fStruct->FileName     = ExtractFileName(zde->FileName);
-                fStruct->FileDate     = DateTimeToStr(FileDateToDateTime(zde->DateTime));
-                fStruct->FileSize     = FormatFloat("#,##0", zde->UncompressedSize);
-                fStruct->FileLocation = fZipBuilder1->ExtrBaseDir;
-                fStruct->BelongsTo    = 0;// added to make sure it doesnt get cauth in the InsertRecord() block checking for -1
-                fStruct->CRC32        = zde->CRC32;
-            }
-            // Logs
-            fZipBuilder1->Extract();
-            Synchronize(OnFileInstalledEvent);
-        }
-
-        Synchronize(AddLog); // used for archive logging
-    }
-    else
-        Synchronize(MessageError);
-        */
+    InstallPacked();
 }
 //---------------------------------------------------------------------------
 void __fastcall TMMInstallThread::InstallRar()
 {
-    fDFUnRar1->FileName  = fFileList->Files[fNum]->FileLocation + fFileList->Files[fNum]->FileName;
-    fDFUnRar1->Directory = fGameFolder; // default location
-    fDFUnRar1->Mode      = DFRAR_EXTRACT;
-    fArchiveName         = fDFUnRar1->FileName;
-
-    switch(fInstallMode)
-    {
-        case MM_IM_None  : fDFUnRar1->OverrideEvent = OR_NEVER;  break;
-        case MM_IM_Force : fDFUnRar1->OverrideEvent = OR_ALWAYS; break;
-        default          : fDFUnRar1->OverrideEvent = OR_EVENT;  break; // MM_IM_Smart
-    }
-
-    // Logs
-    fStruct = fLogList->AddFile();
-
-    if(fStruct)
-    {
-        fStruct->FileName     = fFileList->Files[fNum]->FileName;
-        fStruct->FileDate     = fFileList->Files[fNum]->FileDate;
-        fStruct->FileSize     = fFileList->Files[fNum]->FileSize;
-        fStruct->FileLocation = fFileList->Files[fNum]->FileLocation;
-        fStruct->CRC32        = fFileList->Files[fNum]->CRC32;
-        fStruct->BelongsTo    = -1;
-    }
-    // Logs
-
-    switch(fInstallType)
-    {
-		case MM_IT_KeepFolders : fDFUnRar1->Extract();  break;
-		default                : fDFUnRar1->Extract(); break;
-    }
-
-    Synchronize(AddLog); // used for archive logging
+    InstallPacked();
 }
 //---------------------------------------------------------------------------
-void __fastcall TMMInstallThread::DFUnRar1FileProcessing(TObject *Sender, const TDFRARHeaderData &hdrData, int status) // event for get info function on rar files
+void __fastcall TMMInstallThread::InstallPacked()
 {
-    if(fInstallType==MM_IT_DropFolders)// Drop folders
+    const UnicodeString archiveName = UnicodeString(fFileList->Files[fNum]->FileLocation + fFileList->Files[fNum]->FileName);
+    TMMArchiveEngine *archive = new TMMArchiveEngine();
+    try
     {
-        fDFUnRar1->Directory = IncludeTrailingPathDelimiter(fGameFolder + GetFileFolder(ExtractFileExt(hdrData.FileName)));
-        fTmpFileName = fDFUnRar1->Directory + ExtractFileName(hdrData.FileName);
-    }
-    else
-        fTmpFileName = fDFUnRar1->Directory + hdrData.FileName;
-
-    if(!hdrData.IsDirectory) // only add files
-    {
-        // Logs
+        archive->Open(archiveName);
+        fArchiveName = AnsiString(archiveName);
         fStruct = fLogList->AddFile();
-
-        if(fStruct)
+        if (fStruct)
         {
-            fStruct->FileName     = ExtractFileName(fTmpFileName);
-            fStruct->FileDate     = DateTimeToStr(hdrData.FileTime);
-			fStruct->FileSize     = hdrData.UnpSize;// FormatFloat("#,##0", hdrData.UnpSize);
-            fStruct->FileLocation = ExtractFilePath(fTmpFileName);
-            fStruct->CRC32        = StrToIntDef(hdrData.FileCRC, 0);
+            fStruct->FileName = fFileList->Files[fNum]->FileName;
+            fStruct->FileDate = fFileList->Files[fNum]->FileDate;
+            fStruct->FileSize = fFileList->Files[fNum]->FileSize;
+            fStruct->FileLocation = fFileList->Files[fNum]->FileLocation;
+            fStruct->CRC32 = fFileList->Files[fNum]->CRC32;
+            fStruct->BelongsTo = -1;
         }
-        // Logs
 
-        Synchronize(OnFileInstalledEvent);
-    }
-}
-//---------------------------------------------------------------------------
-void __fastcall TMMInstallThread::DFUnRar1Override(TObject *Sender, AnsiString FileName, bool &CanOverride, const Untunrar::TRARHeaderData &hdrData)
-{
-    AnsiString tmp = "";
-    switch(fInstallMode)
-    {
-        case MM_IM_Smart : CanOverride = (CompareDateTime(FileDateToDateTime(hdrData.FileTime), FileDateToDateTime(FileAge(FileName)))==1)? true : false; break;// A is earlier than B - older
-        case MM_IM_Force : CanOverride = true; break;                         
-        default          : CanOverride = false;
-    }
-
-//    Synchronize(Test);
-
-    // only rename if newer! this way theres no need to delete the old .old file if not updating
-    if(fSmartBackup==MM_SB_RenameFile && CanOverride) // rename anyway!
-    {
-        if(FileExists(fFileName + ".old")) // so .old file is always the newest 1
-            DeleteFile(fFileName + ".old");
-
-        if(RenameFile(fFileName, fFileName + ".old")) // rename should work replacing the old .old file
-        {//AddFile(AnsiString aFileName, AnsiString aFileSize, AnsiString aFileDate, AnsiString aInstalled, int aNum, int aBelongsTo)
-            fSBLogList->AddFile(fFileName,          hdrData.UnpSize, DateTimeToStr(FileDateToDateTime(hdrData.FileTime)),           "Yes", 0, -1);
-            fSBLogList->AddFile(fFileName + ".old", GetFileSize(fFileName + ".old"),        DateTimeToStr(FileDateToDateTime(FileAge(fFileName + ".old"))), "Yes", 0, 0); // 0 for default
-            Synchronize(AddsbLog); // used for archive logging
+        for (int i = 0; i < archive->Count && !Terminated; ++i)
+        {
+            if (archive->ItemIsFolder[i]) continue;
+            const UnicodeString member = TMMArchiveEngine::SafeRelativePath(archive->ItemPath[i]);
+            const UnicodeString name = ExtractFileName(member);
+            // Game folder mapping is based on the extracted file's extension.
+            const UnicodeString gameBase = IncludeTrailingPathDelimiter(
+                ExpandFileName(UnicodeString(fGameFolder) +
+                    GetFileFolder(AnsiString(ExtractFileExt(name)))));
+            const UnicodeString relative = (fInstallType == MM_IT_DropFolders)
+                ? name : member;
+            const UnicodeString target = ExpandFileName(gameBase + relative);
+            if (!SameText(target.SubString(0, gameBase.Length()), gameBase))
+                throw Exception(L"Archive entry escapes game directory: " + member);
+            fTmpFileName = AnsiString(target);
+            const bool exists = FileExists(target);
+            if (exists)
+            {
+                if (fInstallMode == MM_IM_None)
+                    continue;
+                if (fInstallMode == MM_IM_Smart)
+                {
+                    const int age = FileAge(target);
+                    TDateTime oldDate(0.0);
+                    if (age != -1) oldDate = FileDateToDateTime(age);
+                    if (archive->ItemDate[i] <= oldDate)
+                        continue;
+                }
+            }
+            // Extract into same-directory staging FIRST. No existing file is
+            // removed until d7zip has successfully decoded and verified it.
+            const UnicodeString stage = target + L".mm-stage";
+            if (FileExists(stage))
+                throw Exception(L"Installation staging file already exists: " + stage);
+            archive->ExtractItemToFile(i, stage);
+            bool committed = false;
+            try
+            {
+                if (Terminated) break;
+                if (exists && fSmartBackup == MM_SB_RenameFile)
+                {
+                    const UnicodeString backup = target + L".old";
+                    // Match historical smart-backup layout but never create a
+                    // partial installed file.
+                    if (FileExists(backup) && !DeleteFile(backup))
+                        throw Exception(L"Cannot replace prior backup: " + backup);
+                    if (!RenameFile(target, backup))
+                        throw Exception(L"Cannot back up installed file: " + target);
+                    if (!MoveFileExW(stage.c_str(), target.c_str(), MOVEFILE_WRITE_THROUGH))
+                    {
+                        RenameFile(backup, target); // restore if promotion fails
+                        RaiseLastOSError();
+                    }
+                    fSBLogList->AddFile(AnsiString(target), archive->ItemSize[i],
+                        DateTimeToStr(archive->ItemDate[i]), "Yes", 0, -1);
+                    fSBLogList->AddFile(AnsiString(backup), GetFileSize(AnsiString(backup)),
+                        DateTimeToStr(archive->ItemDate[i]), "Yes", 0, 0);
+                    Synchronize(AddsbLog);
+                }
+                else if (!MoveFileExW(stage.c_str(), target.c_str(),
+                        MOVEFILE_WRITE_THROUGH | (exists ? MOVEFILE_REPLACE_EXISTING : 0)))
+                    RaiseLastOSError();
+                committed = true;
+                if (double(archive->ItemDate[i]) > 0.0)
+                    FileSetDate(target, DateTimeToFileDate(archive->ItemDate[i]));
+                fStruct = fLogList->AddFile();
+                if (fStruct)
+                {
+                    fStruct->FileName = AnsiString(name);
+                    fStruct->FileDate = (double(archive->ItemDate[i]) > 0.0)
+                        ? AnsiString(DateTimeToStr(archive->ItemDate[i])) : AnsiString("");
+                    fStruct->FileSize = archive->ItemSize[i];
+                    fStruct->FileLocation = AnsiString(ExtractFilePath(target));
+                    fStruct->CRC32 = archive->ItemCRC[i];
+                    fStruct->BelongsTo = 0;
+                }
+                Synchronize(OnFileInstalledEvent);
+            }
+            __finally
+            {
+                if (!committed && FileExists(stage)) DeleteFile(stage);
+            }
         }
+        if (!Terminated) Synchronize(AddLog);
     }
+    __finally { delete archive; }
 }
 //---------------------------------------------------------------------------
 void __fastcall TMMInstallThread::InstallMap()
@@ -349,24 +312,6 @@ __int64 __fastcall TMMInstallThread::GetFileSize(AnsiString pfileName)
     FindClose(sr);
 
     return size;
-}
-//---------------------------------------------------------------------------
-void __fastcall TMMInstallThread::OnZipExtFileExistsEvent(TObject *Sender, String ForFile, bool IsOlder, bool &DoOverwrite, int DirIndex)
-{
-    switch(fInstallMode)
-    {
-        case MM_IM_Smart : DoOverwrite = (IsOlder) ? true : false; break;
-        case MM_IM_Force : DoOverwrite = true;                     break;
-    }
-
-    if(fSmartBackup==MM_SB_RenameFile && DoOverwrite) // rename anyway!
-    {
-        if(FileExists(ForFile + ".old")) // so .old file is always the newest 1
-            DeleteFile(ForFile + ".old");
-
-        if(RenameFile(ForFile, ForFile + ".old")) // rename should work replacing the old .old file
-            Synchronize(AddsbLog);
-    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TMMInstallThread::InstallUmod()

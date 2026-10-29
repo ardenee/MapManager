@@ -71,3 +71,20 @@ Detailed instructions: [RAD Studio SDK and Win64 setup](RAD_STUDIO_SDK_AND_WIN64
 - MapManager Win32 build advances beyond SDK errors but remains blocked by DFUnRar.hpp, ZipBuilder.h and TUTPackage C++ header paths.
 - Virtual TreeView Win64 C++ runtime package now builds; VirtualTreesCR.a, VirtualTreesCR.bpi and VirtualTreesCR.bpl generated locally.
 - GUI SDK wizard not independently retested; SDK 28000 remains installed and must not be selected. Select 26100.0 in IDE if prompted.
+
+### Archive component replacement — 29 October 2026
+
+- Removed ZipBuilder and TDFUnRar includes, types, allocations, callbacks, link libraries, and obsolete include paths from active application source. ZIP/RAR/7z now use in-process 7z.dll via MMArchiveEngine.pas and d7zip/sevenzip.pas.
+- Updated two archive listing paths, file-information thread and two installer generations. The newer TMMArchives::Install code path was already disabled, and is still disabled.
+- Extraction rejects directory traversal, ADS, drive-absolute paths, and Windows reserved names, validates reparse-point ancestry, and stages members before promotion. ZIP/7z/RAR4 native smoke tests pass on Win32 and Win64; ZIP-SFX smoke test passes Win32; Win32 malformed path tests pass.
+- Win32 and Win64 MapManagerArchiveDelphiObjects MSBuild targets pass. Full C++ app builds remain blocked by pre-existing TMMSettings.cpp Clang-incompatible try blocks, outside archiver migration.
+- RAR5, encrypted/multipart archives, UI progress/cancellation, and end-to-end installer/undo/log behavior remain unverified. Full integration cannot be marked accepted.
+- Details: ARCHIVE_MIGRATION.md.
+
+### RAD Studio 37.0 exception syntax fix and Win64 linking — 29 October 2026
+
+- Replaced nine active SEH __try keywords with standard C++ try in TMMSettings.cpp, retaining their existing catch (Exception& E) handlers unchanged. Original file backed up to C:\Temp\MapManagerDeps\TMMSettings-before-catch-fix-20261029.cpp.
+- Win64 compilation confirmed it passes the previous E35/E2595 errors at lines 232, 569, 601, 645, 711, 751, 797, 841, 885.
+- Adjusted Win64 Debug library search to prefer VirtualTreeView Win64 Release .bpi; full Win64 link confirmed the previous invalid Win32 VirtualTreesCR.bpi error is no longer present.
+- Detected duplicate TFileData definitions in TFileData.cpp and TMapFileData.cpp; excluded TMapFileData.cpp from the project build without deleting source. Linked Win64 TUTPackage.a as a separate static library, resolving earlier Ut_packages/Ut_umods symbols.
+- Full Win64 application build remains BLOCKED at linker by multiple missing standard runtime/Windows import symbols (GetModuleHandleW, C++ exception / standard library support, etc.). No application runtime acceptance. Build evidence: C:\Temp\MapManagerDeps\mm-archive-migration-win64.log. Current changes remain local/uncommitted.

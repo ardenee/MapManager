@@ -28,10 +28,10 @@ private:
 
     int  __fastcall GetFileFuncType        (AnsiString        pFileExt);
     void __fastcall GetZipInfo             (AnsiString        pFileName);
+    void __fastcall GetPackedInfo(AnsiString pFileName);
     void __fastcall GetRarInfo             (AnsiString        pFileName);
     void __fastcall GetUmodInfo            (AnsiString        pFileName);
     void __fastcall GetUzInfo              (AnsiString        pFileName);
-    void __fastcall DFUnRar1FileProcessing (TObject*          Sender,       const TDFRARHeaderData &hdrData, int status); // event for get info function on rar files
 public:
     __fastcall TMMArchives(TMMEventManager* pEventManager);
     __fastcall ~TMMArchives();         

@@ -3,6 +3,7 @@
 #include <StrUtils.hpp>
 //---------------------------------------------------------------------------
 #include "TMMArchives.h"
+#include "MMArchiveEngine.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma hdrstop
@@ -69,8 +70,15 @@ void __fastcall TMMArchives::StopInstalling()
 //---------------------------------------------------------------------------
 int __fastcall TMMArchives::GetFileFuncType(AnsiString pArchiveExt)
 {
-    //return StrToIntDef(fFiles->GetDataFor("\\SOFTWARE\\Nasty PC's\\Map Manager\\InstallTypes\\" + fFiles->GameTag, ArchiveExt), 5);
-    return 0;
+    if (SameText(UnicodeString(pArchiveExt), L".rar")) return 1;
+    if (SameText(UnicodeString(pArchiveExt), L".umod") ||
+        SameText(UnicodeString(pArchiveExt), L".ut2mod")) return 2;
+    if (SameText(UnicodeString(pArchiveExt), L".uz") ||
+        SameText(UnicodeString(pArchiveExt), L".uz2")) return 3;
+    if (SameText(UnicodeString(pArchiveExt), L".zip") ||
+        SameText(UnicodeString(pArchiveExt), L".7z") ||
+        SameText(UnicodeString(pArchiveExt), L".exe")) return 0;
+    return 5;
 }
 //----------------------------------------------------------------------------
 void __fastcall TMMArchives::GetFileInfo(AnsiString pFileName)
@@ -89,93 +97,41 @@ void __fastcall TMMArchives::GetFileInfo(AnsiString pFileName)
 //----------------------------------------------------------------------------
 void __fastcall TMMArchives::GetZipInfo(AnsiString pFileName)
 {
-/*
-    TZipBuilder* ZipBuilder = new TZipBuilder(NULL);
-
-    if(ZipBuilder->IsZipSFX(FileName)==1) // if we have a valid archive??
-    {
-        ZipBuilder->ZipFileName = FileName;
-        PFileInfo aFileData    = FFileList->AddFile();
-
-        if(aFileData)
-        {
-            FFiles->GetFileInfo(FileName, aFileData);
-
-            for(int x=0;x<ZipBuilder->Count;x++) // loop through archive files
-            {
-                aFileData        = FFileList->AddFile();
-                ZipDirEntry *zde = (ZipDirEntry *)ZipBuilder->ZipContents->Items[x];
-
-                if(aFileData)
-                {
-                    aFileData->FileName = ExtractFileName(zde->FileName);
-                    aFileData->FileSize = FormatFloat("#,##0", zde->UncompressedSize);
-                    aFileData->FileDate = DateTimeToStr(FileDateToDateTime(zde->DateTime));
-                }
-            }
-
-            if(FOnGotFileInfo)
-                FOnGotFileInfo(this, FFileList);
-        }
-    }
-
-    delete ZipBuilder;
-*/
+    GetPackedInfo(pFileName);
 }
 //---------------------------------------------------------------------------
 void __fastcall TMMArchives::GetRarInfo(AnsiString pFileName)
 {
-/*
-    if(FileExists(FileName))
-    {
-        TDFUnRar* DFUnRar1 = new TDFUnRar(NULL);
-        DFUnRar1->OnFileProcessing = DFUnRar1FileProcessing;
-        // set up events!
-        DFUnRar1->FileName   = FileName;
-        DFUnRar1->Mode       = DFRAR_LIST;  
-        PFileInfo aFileData = FFileList->AddFile();
-
-        if(aFileData)
-        {
-            FFiles->GetFileInfo(FileName, aFileData);
-
-            switch(FFiles->TMMSettings::InstallType)
-            {
-                case  0 : DFUnRar1->Extract(true);  break; // keep folders
-                default : DFUnRar1->Extract(false); break;// drop flders keep files only
-            }
-
-            if(FOnGotFileInfo)
-                FOnGotFileInfo(this, FFileList);
-        }
-
-        delete DFUnRar1;
-    }
-*/
+    GetPackedInfo(pFileName);
 }
 //---------------------------------------------------------------------------
-void __fastcall TMMArchives::DFUnRar1FileProcessing(TObject *Sender, const TDFRARHeaderData &hdrData, int status)
+void __fastcall TMMArchives::GetPackedInfo(AnsiString pFileName)
 {
-/*
-    if(!hdrData.IsDirectory)
+    TMMArchiveEngine *archive = new TMMArchiveEngine();
+    try
     {
-        PFileInfo aFileData = FFileList->AddFile();
-
-        if(aFileData)
+        archive->Open(UnicodeString(pFileName));
+        if (!FileList) return;
+        FileList->Clear();
+        PFileInfo file = FileList->AddFile();
+        if (file) TMMFiles::GetFileInfo(pFileName, file);
+        for (int i = 0; i < archive->Count; ++i)
         {
-            if(FFiles->TMMSettings::InstallType == MM_IT_DropFolders) // for display reasons
-                aFileData->FileName = ExtractFileName(hdrData.FileName);
-            else
-                aFileData->FileName = hdrData.FileName;
-
-            aFileData->FileSize = FormatFloat("#,##0", hdrData.UnpSize);
-            aFileData->FileDate = DateTimeToStr(hdrData.FileTime);
+            if (archive->ItemIsFolder[i]) continue;
+            file = FileList->AddFile();
+            if (!file) continue;
+            const UnicodeString member = TMMArchiveEngine::SafeRelativePath(archive->ItemPath[i]);
+            file->FileName = member;
+            file->FileSize = archive->ItemSize[i];
+            file->FileDate = (double(archive->ItemDate[i]) > 0.0)
+                ? AnsiString(DateTimeToStr(archive->ItemDate[i])) : AnsiString("");
+            file->CRC32 = archive->ItemCRC[i];
         }
     }
-*/
+    __finally { delete archive; }
 }
 //---------------------------------------------------------------------------
-// wrapers for the TFiles class
+// wrappers for the TFiles class
 //---------------------------------------------------------------------------
 void __fastcall TMMArchives::GetUmodInfo(AnsiString pFileName)
 {
@@ -280,7 +236,7 @@ int  __fastcall TMMArchives::GetFileIcon(AnsiString pFileExt)
     {     
 		for(int i=0;i<this->PEventManager->XMLSettings->Icons->Count;i++)
 		{
-			if(!pFileExt.AnsiCompareIC(this->PEventManager->XMLSettings->Icons->Get_Item(i)->Text))
+			if(SameText(UnicodeString(pFileExt), UnicodeString(this->PEventManager->XMLSettings->Icons->Get_Item(i)->Text)))
 			{
 
 				fLastIconInfo.Num = StrToIntDef(this->PEventManager->XMLSettings->Icons->Get_Item(i)->Get_id(), fLastIconInfo.Num);
@@ -312,13 +268,15 @@ void __fastcall TMMArchives::GetFileData(AnsiString pFileName)
 
     for(int i=0;i<InstallTypesCount;i++)
     {
-		if(!Ext.AnsiCompareIC(this->PEventManager->XMLSettings->GameData->InstallTypes->Get_Item(i)->Text))
+		if(SameText(UnicodeString(Ext), UnicodeString(this->PEventManager->XMLSettings->GameData->InstallTypes->Get_Item(i)->Text)))
         {
 			action = (TMM_GetFileInfoType) this->PEventManager->XMLSettings->GameData->InstallTypes->Get_Item(i)->Get_id();
             break;
         }
     }
 
+    if (SameText(UnicodeString(Ext), L".7z") && action == MM_GFIT_COPY)
+        action = MM_GFIT_ZIPDATA;
 	GetArchiveData(pFileName, action);
 }
 //----------------------------------------------------------------------------
@@ -341,7 +299,7 @@ void __fastcall TMMArchives::MakeListViewTable(TListColumns* pCols)
         {
             for(int x=0;x<ArchivesTablesAllingment->Count;x++)
             {
-                if(!NewColumn->Caption.Compare(ArchivesTablesAllingment->Get_Item(x)->Text))
+                if(SameText(NewColumn->Caption, UnicodeString(ArchivesTablesAllingment->Get_Item(x)->Text)))
                 {
                     if(ArchivesTablesAllingment->Get_Item(x)->Get_id()==1)
                         NewColumn->Alignment = taRightJustify;

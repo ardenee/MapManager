@@ -1,3 +1,8 @@
+
+## Archive migration update — 29 October 2026
+
+The earlier 'integration pending' section below describes the dependency-only stage. Integration into the application sources is now implemented but not end-to-end validated: all active ZipBuilder/TDFUnRar references have been removed and MMArchiveEngine.pas handles listing/extraction. Native Win32/Win64 ZIP, RAR4 and 7z standalone tests pass. Full app builds are still blocked by unrelated TMMSettings.cpp errors. UI/installer parity has not passed. See ARCHIVE_MIGRATION.md and PROJECT_STATUS.md in the repository root.
+
 # d7zip — Map Manager Win32 installation
 
 Installed and validated on DEV: 2026-10-29

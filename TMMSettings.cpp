@@ -217,7 +217,7 @@ void __fastcall TMMSettings::LoadSettings()
 		  SQLQuery1->First();
 		  fields = new TStringList;
 
-		  __try{
+		  try{
 				SQLQuery1->GetFieldNames(fields);
 
 				while (!SQLQuery1->Eof)
@@ -562,7 +562,7 @@ __int64 __fastcall TMMSettings::GetIntValueFromDB(UnicodeString FieldName, Unico
 	{
 		SQLQuery1->First();
 
-		__try
+		try
 		{
 			Value = SQLQuery1->FieldByName(FieldName)->AsInteger;
 		}
@@ -594,7 +594,7 @@ UnicodeString __fastcall TMMSettings::GetStrValueFromDB(UnicodeString FieldName,
 	{
 		SQLQuery1->First();
 
-		__try
+		try
 		{
 			Value = SQLQuery1->FieldByName(FieldName)->AsString;
 		}
@@ -630,7 +630,7 @@ void __fastcall TMMSettings::GetStrListFromDB(UnicodeString FieldName, UnicodeSt
 		SQLQuery1->First();
 		//fields = new TStringList;
 
-		__try{
+		try{
 			//SQLQuery1->GetFieldNames(fields);
 
 			while(!SQLQuery1->Eof)
@@ -703,7 +703,7 @@ UnicodeString __fastcall TMMSettings::GetFileExtFromDiscription(UnicodeString Di
 	{
 		SQLQuery1->First();
 
-		__try
+		try
 		{
 			//ShowMessage("TMMSettings::GetFileExtFromDiscription\n"+SQLQuery1->FieldByName("value")->AsString);
 			return SQLQuery1->FieldByName("value")->AsString;
@@ -743,7 +743,7 @@ int __fastcall TMMSettings::GetFileIcon(UnicodeString FileExt, TMM_FilesListType
 	{
 		SQLQuery1->First();
 
-		__try
+		try
 		{
 			//ShowMessage("TMMSettings::GetFileIcon\n"+IntToStr(SQLQuery1->FieldByName("iconid")->AsInteger));
 			return SQLQuery1->FieldByName("iconid")->AsInteger;
@@ -786,7 +786,7 @@ void __fastcall TMMSettings::GetFileExts(TStrings* Data, TMM_FilesListType Type)
 	{
 		SQLQuery1->First();
 
-		__try{
+		try{
 
 			while(!SQLQuery1->Eof)
 			{
@@ -830,7 +830,7 @@ void __fastcall TMMSettings::GetFileFilters(TStrings* Data, TMM_FilesListType Ty
 	{
 		SQLQuery1->First();
 
-		__try{
+		try{
 
 			while(!SQLQuery1->Eof)
 			{
@@ -874,7 +874,7 @@ void __fastcall TMMSettings::GetFileDiscriptions(TStrings* Data, TMM_FilesListTy
 	{
 		SQLQuery1->First();
 
-		__try{
+		try{
 
 			while(!SQLQuery1->Eof)
 			{

@@ -38,11 +38,9 @@ object Form1: TForm1
     0000000000000000000000000000000000000000000000000000000000000000
     000000000000000000000000000000000000000000000000000000000000}
   Menu = MainMenu1
-  OldCreateOrder = False
   Position = poMainFormCenter
   OnClose = FormClose
   OnResize = FormResize
-  PixelsPerInch = 96
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 140
@@ -72,6 +70,8 @@ object Form1: TForm1
         Width = 89
       end>
     OnDrawPanel = StatusBar1DrawPanel
+    ExplicitTop = 368
+    ExplicitWidth = 726
   end
   object Panel1: TPanel
     Left = 0
@@ -81,6 +81,7 @@ object Form1: TForm1
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitHeight = 368
     object Splitter2: TSplitter
       Left = 0
       Top = 244
@@ -101,6 +102,7 @@ object Form1: TForm1
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitHeight = 227
       DesignSize = (
         140
         244)
@@ -112,6 +114,7 @@ object Form1: TForm1
         Anchors = [akLeft, akTop, akRight, akBottom]
         Caption = '  Lists  '
         TabOrder = 0
+        ExplicitHeight = 219
         DesignSize = (
           129
           236)
@@ -125,6 +128,7 @@ object Form1: TForm1
           PopupMenu = PopupMenu2
           TabOrder = 0
           OnClick = ListBox1Click
+          ExplicitHeight = 195
         end
       end
     end
@@ -136,6 +140,7 @@ object Form1: TForm1
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitTop = 228
       DesignSize = (
         140
         140)
@@ -173,6 +178,8 @@ object Form1: TForm1
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
+    ExplicitWidth = 585
+    ExplicitHeight = 368
     DesignSize = (
       591
       385)
@@ -186,6 +193,8 @@ object Form1: TForm1
       HotTrack = True
       TabOrder = 0
       OnChange = PageControl1Change
+      ExplicitWidth = 572
+      ExplicitHeight = 354
       object TabSheet1: TTabSheet
         Caption = 'Maps'
       end
@@ -231,11 +240,13 @@ object Form1: TForm1
       Left = 480
       Top = 360
       Width = 95
-      Height = 0
+      Height = 17
       Anchors = [akLeft, akTop, akRight, akBottom]
       Smooth = True
       Step = 1
       TabOrder = 1
+      ExplicitWidth = 89
+      ExplicitHeight = 0
     end
     object VirtualStringTree1: TVirtualStringTree
       Left = 9
@@ -245,13 +256,9 @@ object Form1: TForm1
       Anchors = [akLeft, akTop, akRight, akBottom]
       Colors.FocusedSelectionColor = clGradientInactiveCaption
       Colors.FocusedSelectionBorderColor = clWindow
-      DefaultNodeHeight = 15
+      DefaultNodeHeight = 17
       Header.AutoSizeIndex = -1
-      Header.Font.Charset = DEFAULT_CHARSET
-      Header.Font.Color = clWindowText
-      Header.Font.Height = -11
-      Header.Font.Name = 'MS Sans Serif'
-      Header.Font.Style = []
+      Header.Height = 17
       Header.Options = [hoColumnResize, hoDrag, hoVisible]
       Images = ImageList1
       PopupMenu = PopupMenu1
@@ -263,53 +270,55 @@ object Form1: TForm1
       OnGetText = VirtualStringTree1GetText
       OnPaintText = VirtualStringTree1PaintText
       OnGetImageIndex = VirtualStringTree1GetImageIndex
+      Touch.InteractiveGestures = [igPan, igPressAndTap]
+      Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
       Columns = <
         item
           Position = 0
+          Text = 'FileName'
           Width = 157
-          WideText = 'FileName'
         end
         item
           Alignment = taRightJustify
           Color = 15987699
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coResizable, coShowDropMark, coVisible]
           Position = 1
+          Text = 'File Size'
           Width = 70
-          WideText = 'File Size'
         end
         item
           Alignment = taRightJustify
           Position = 2
+          Text = 'Current Size'
           Width = 70
-          WideText = 'Current Size'
         end
         item
           Alignment = taRightJustify
           Color = 15987699
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coResizable, coShowDropMark, coVisible]
           Position = 3
+          Text = 'File Date'
           Width = 120
-          WideText = 'File Date'
         end
         item
           Alignment = taRightJustify
           Position = 4
+          Text = 'Current Date'
           Width = 120
-          WideText = 'Current Date'
         end
         item
           Alignment = taCenter
           Color = 15987699
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coResizable, coShowDropMark, coVisible]
           Position = 5
+          Text = 'Installed'
           Width = 60
-          WideText = 'Installed'
         end
         item
           Alignment = taCenter
           Position = 6
+          Text = 'CRC32'
           Width = 10
-          WideText = 'CRC32'
         end>
     end
   end
@@ -342,7 +351,7 @@ object Form1: TForm1
     Left = 536
     Top = 64
     Bitmap = {
-      494C01010E001300380010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E001300040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000008080000080
       8000008080000080800000808000008080000080800000808000008080000000

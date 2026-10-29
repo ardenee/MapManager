@@ -9,8 +9,7 @@
 #include "ut_uz.hpp"
 #include "ut_umods.hpp"
 #include "ut_packages.hpp"
-#include "DFUnRar.hpp"
-#include "ZipBuilder.h"
+#include "MMArchiveEngine.hpp"
 
 //---------------------------------------------------------------------------
 class TMMFileInfoThread : public TThread
@@ -26,8 +25,6 @@ private:
     TUZFile*            fEpicUz;
     TPicture*           fPicture;
     TStrings*           fData;
-    TZipBuilder*        fZipBuilder;
-    TDFUnRar*           fDFUnRar;
     TMMGotPicEvent      fOnBeforePictureEnd;
     TMMGotDataListEvent fOnDataListEnd;
     TMMIntEvent         fOnTexturesEnd;
@@ -35,6 +32,7 @@ private:
     void __fastcall GetInfo();     // fOnDataListEnd
     void __fastcall GetTextures(); // fOnTexturesEnd
     void __fastcall GetData();     // fOnDataListEnd 
+    void __fastcall GetPackedData();
     void __fastcall GetZipData();  // fOnDataListEnd
     bool __fastcall GetRARData(bool pJustTest);  // fOnDataListEnd
     void __fastcall GetUMODData(); // fOnDataListEnd
@@ -44,9 +42,7 @@ private:
     void __fastcall GetUZData(); // fOnDataListEnd - could be zip or rar
     void __fastcall BeforeEnd();
 // Zip
-    void __fastcall ZipMessage(TObject *Sender, int ErrCode, UnicodeString Message);
 // rar
-    void __fastcall DFUnRar1FileProcessing(TObject* Sender, const TDFRARHeaderData &hdrData, int status); // event for get info function on rar files
 protected:
     void __fastcall Execute();
     void __fastcall DoTerminate();

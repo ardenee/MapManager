@@ -47,7 +47,7 @@ void __fastcall GetFilesThread::Execute()
 void __fastcall GetFilesThread::BeforeEnd()
 {
     if(FOnBeforeEnd)
-        FOnBeforeEnd(this, FileList, LoadingType);
+        FOnBeforeEnd(this, FileList, static_cast<TMM_FilesListType>(LoadingType));
 }
 //---------------------------------------------------------------------------
 void __fastcall GetFilesThread::FileAdded()
@@ -122,7 +122,7 @@ void __fastcall GetFilesThread::GetFiles()
                         }
 
                         if(FOnFileAdded)
-                            Synchronize(FileAdded);  
+                            Synchronize(FileAdded);
                     }
                     else if((sr.Name!=".") && (sr.Name!="..") && ((sr.Attr & faDirectory)!=0))
                         DirList->Add(DirList->Strings[a] + sr.Name + "\\");
@@ -183,7 +183,7 @@ void __fastcall GetFilesThread::GetFilesByType()
                 do
                 {
                     if((sr.Name!=".") && (sr.Name!="..") && ((sr.Attr & faDirectory)==0))
-                    {      
+                    {
                         if(FileTypes->IndexOf(ExtractFileExt(sr.Name))!=-1) // filter file ext
                         {
                             AStruct = FileList->AddFile();
@@ -205,7 +205,7 @@ void __fastcall GetFilesThread::GetFilesByType()
                         DirList->Add(DirList->Strings[a] + sr.Name + "\\");
                 }
                 while(FindNext(sr)==0);
-                
+
                 FindClose(sr);
             }
         }
@@ -293,7 +293,7 @@ void __fastcall GetFilesThread::GetFilesByFilter()
                         DirList->Add(DirList->Strings[a] + sr.Name + "\\");
                 }
                 while(FindNext(sr)==0);
-                
+
                 FindClose(sr);
             }
         }
@@ -303,7 +303,7 @@ void __fastcall GetFilesThread::GetFilesByFilter()
 // Get Files By File And Filter only
 //---------------------------------------------------------------------------
 void __fastcall GetFilesThread::GetFilesByTypeAndFilter()
-{         
+{
     TSearchRec sr;
     Location = IncludeTrailingPathDelimiter(Location);
     int iCount = FileFilters->Count;
@@ -454,4 +454,3 @@ void __fastcall GetFilesThread::GetFilesByTypeAndFilter()
     }
 }
 //---------------------------------------------------------------------------
-

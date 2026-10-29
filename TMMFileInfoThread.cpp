@@ -28,11 +28,6 @@ __fastcall TMMFileInfoThread::~TMMFileInfoThread()
         fEpicPkg->ReleaseAllObjects();
         
     delete fEpicPkg;
-
-    if(fZipBuilder)
-        delete fZipBuilder;
-
-    delete fDFUnRar;
     delete fEipcUmod;
 
     if(fEpicUz)
@@ -242,47 +237,39 @@ void __fastcall TMMFileInfoThread::GetData()
 //---------------------------------------------------------------------------
 void __fastcall TMMFileInfoThread::GetZipData()
 {
-    fZipBuilder              = new TZipBuilder(NULL);
-    fZipBuilder->Unattended  = true;         // no error mesages, b/c we have our own
-    fZipBuilder->OnMessage   = ZipMessage; // message event
-    fZipBuilder->ZipFileName = fFileName;
-    fData->Add(fFileName);
-
-    for(int x=0;x<fZipBuilder->Count;x++) // loop through archive files
-	{
-	/*
-        ZipDirEntry *zde = (ZipDirEntry *)fZipBuilder->ZipContents->Items[x];
-        fData->Add("File Name|"   + ExtractFileName(zde->FileName));
-        fData->Add("File Folder|" + ExtractFilePath(zde->FileName));
-        fData->Add("File Date|"   + DateTimeToStr(FileDateToDateTime(zde->DateTime)));
-        fData->Add("File Size|"   + FormatFloat("#,##0", zde->UncompressedSize));
-		fData->Add("File CRC|"    + IntToHex((int)zde->CRC32, 8));
-		*/
-    }
-
-    if(fOnDataListEnd)
-        Synchronize(BeforeEnd);
+    GetPackedData();
 }
 //---------------------------------------------------------------------------
 bool __fastcall TMMFileInfoThread::GetRARData(bool pJustTest)
 {
-    fDFUnRar = new TDFUnRar(NULL);
-    fDFUnRar->OnFileProcessing = DFUnRar1FileProcessing;
-
-    fDFUnRar->FileName  = fFileName;
-    fDFUnRar->Mode      = DFRAR_LIST;
-
-   // if(pJustTest)
-    //    return fDFUnRar->Test();
-
-    fDFUnRar->PromptForPass = false;
-    fData->Add(fFileName);
-	//fDFUnRar->Extract(true);     // Text() instead?
-
-	if(fOnDataListEnd)
-        Synchronize(BeforeEnd);
-
+    GetPackedData();
     return true;
+}
+//---------------------------------------------------------------------------
+void __fastcall TMMFileInfoThread::GetPackedData()
+{
+    TMMArchiveEngine *archive = new TMMArchiveEngine();
+    try
+    {
+        archive->Open(UnicodeString(fFileName));
+        fData->Add(fFileName);
+        for (int i = 0; i < archive->Count && !Terminated; ++i)
+        {
+            const UnicodeString name = archive->ItemPath[i];
+            fData->Add(UnicodeString(L"File Name|") + ExtractFileName(name));
+            fData->Add(UnicodeString(L"File Folder|") + ExtractFilePath(name));
+            if (double(archive->ItemDate[i]) > 0.0)
+                fData->Add(UnicodeString(L"File Date|") + DateTimeToStr(archive->ItemDate[i]));
+            fData->Add(UnicodeString(L"File Size|") + IntToStr(archive->ItemSize[i]));
+            fData->Add(UnicodeString(L"File Packed Size|") + IntToStr(archive->ItemPackedSize[i]));
+            fData->Add(UnicodeString(L"File CRC|") + IntToHex((int)archive->ItemCRC[i], 8));
+            if (archive->ItemEncrypted[i])
+                fData->Add("File is password protected");
+        }
+    }
+    __finally { delete archive; }
+    if (fOnDataListEnd && !Terminated)
+        Synchronize(BeforeEnd);
 }
 //---------------------------------------------------------------------------
 void __fastcall TMMFileInfoThread::GetUMODData()
@@ -298,54 +285,7 @@ void __fastcall TMMFileInfoThread::GetUMODData()
 //---------------------------------------------------------------------------
 void __fastcall TMMFileInfoThread::GetSFXData()
 {
-   // if(GetRARData(true))
-   //     fData->Add(fFileName);
-        fZipBuilder              = new TZipBuilder(NULL);
-        fZipBuilder->OnMessage   = ZipMessage; // message event
-        //fZipBuilder->Unattended  = true;         // no error mesages, b/c we have our own  
-        fZipBuilder->ZipFileName = fFileName;
-
-   if(fZipBuilder->IsZipSFX(fFileName)==1)
-   {
-        fData->Add(fFileName);
-
-        for(int x=0;x<fZipBuilder->Count;x++) // loop through archive files
-		{
-		/*
-			ZipDirEntry *zde = (ZipDirEntry *)fZipBuilder->ZipContents->Items[x];
-            fData->Add("File Name|"   + ExtractFileName(zde->FileName));
-            fData->Add("File Folder|" + ExtractFilePath(zde->FileName));
-            fData->Add("File Date|"   + DateTimeToStr(FileDateToDateTime(zde->DateTime)));
-            fData->Add("File Size|"   + FormatFloat("#,##0", zde->UncompressedSize));
-			fData->Add("File CRC|"    + IntToHex((int)zde->CRC32, 8));
-            */
-        }
-   }
-   /*   fZipBuilder              = new TZipBuilder(NULL);
-        //fZipBuilderSFX           = new TZipBuilderSFX(NULL);
-        fZipBuilder->Unattended  = true;         // no error mesages, b/c we have our own
-        fZipBuilder->OnMessage   = ZipMessage; // message event
-        //fZipBuilderSFX->ZipBuilder = fZipBuilder;
-        fZipBuilder->ZipFileName = fFileName;
-        fData->Add(fFileName);
-
-        for(int x=0;x<fZipBuilder->Count;x++) // loop through archive files
-        {
-            ZipDirEntry *zde = (ZipDirEntry *)fZipBuilder->ZipContents->Items[x];
-            //fZipBuilder1->FSpecArgs->Clear(); // clear all info from FSpecArgs
-            //fZipBuilder1->FSpecArgs->Add(zde->FileName);
-            //fZipBuilder1->ExtrBaseDir = IncludeTrailingPathDelimiter(fGameFolder + GetFileFolder(ExtractFileExt(zde->FileName)));
-            //fTmpFileName              = fZipBuilder1->ExtrBaseDir + zde->FileName;
-
-            fData->Add("File Name|"   + ExtractFileName(zde->FileName));
-            fData->Add("File Folder|" + ExtractFilePath(zde->FileName));
-            fData->Add("File Date|"   + DateTimeToStr(FileDateToDateTime(zde->DateTime)));
-            fData->Add("File Size|"   + FormatFloat("#,##0", zde->UncompressedSize));
-            fData->Add("File CRC|"    + IntToHex((int)zde->CRC32, 8));
-        } */
-
-    if(fOnDataListEnd)
-        Synchronize(BeforeEnd);
+    GetPackedData();  // d7zip supports ZIP self-extracting archives in-process
 }
 //---------------------------------------------------------------------------
 void __fastcall TMMFileInfoThread::GetFileData()
@@ -370,32 +310,5 @@ void __fastcall TMMFileInfoThread::GetUZData()
 // stuff
     if(fOnDataListEnd)
         Synchronize(BeforeEnd);
-}
-//---------------------------------------------------------------------------
-// Events
-//---------------------------------------------------------------------------
-void __fastcall TMMFileInfoThread::ZipMessage(TObject *Sender, int ErrCode, UnicodeString Message)
-{
-    ShowMessage(IntToStr(ErrCode) + " ---" + Message);
-}
-//---------------------------------------------------------------------------
-void __fastcall TMMFileInfoThread::DFUnRar1FileProcessing(TObject* Sender, const TDFRARHeaderData &hdrData, int status)
-{
-    if(hdrData.FlagNeedPassword)
-    {
-        fData->Add("File is password protected");
-    }
-    else
-    {
-        fData->Add("File Name|"          + ExtractFileName(hdrData.FileName));
-        if(hdrData.IsDirectory)
-            fData->Add("File Folder|.");
-        else
-            fData->Add("File Folder|"    + ExtractFilePath(hdrData.FileName));
-        fData->Add("File Date|"          + DateTimeToStr(hdrData.FileTime));
-        fData->Add("File UnPacked Size|" + FormatFloat("#,##0", hdrData.UnpSize));
-        fData->Add("File Packed Size|"   + FormatFloat("#,##0", hdrData.PackSize));
-        fData->Add("File CRC|"           + hdrData.FileCRC);
-    }
 }
 //---------------------------------------------------------------------------

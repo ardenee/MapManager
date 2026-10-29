@@ -7,10 +7,9 @@
 //---------------------------------------------------------------------------
 #include "MMTypes.h"
 #include "TLogs.h"
-#include "DFUnRar.hpp"
-#include "ZipBuilder.h"
 #include "TMMFileList.h"
 #include "ut_umods.hpp"
+#include "MMArchiveEngine.hpp"
 //---------------------------------------------------------------------------
 class InstallArchiveThread : public TThread
 {
@@ -27,8 +26,6 @@ private:
     TMM_InstallType    InstallType;
     TMMFileInsEvent    FOnFileInstalled;
     TMMArchiveInsEvent FOnArchiveInstalled;
-    TZipBuilder*       ZipBuilder1;
-    TDFUnRar*          DFUnRar1;
     TUMOD*             umod;
     void __fastcall SetSettings();
     void __fastcall AddLog();
@@ -39,6 +36,7 @@ private:
 protected:
     void       __fastcall Execute                 ();
     void       __fastcall DoTerminate             ();
+    void       __fastcall InstallPacked           ();
     void       __fastcall InstallZip              ();
     void       __fastcall InstallRar              ();
     void       __fastcall InstallUmod             ();
@@ -47,9 +45,6 @@ protected:
     AnsiString __fastcall GetFileFolder           (AnsiString ArchiveExt);
     int        __fastcall GetArchiveType          (AnsiString ArchiveExt);
     void       __fastcall InstallError            (TObject*   Sender, int                    ErrCode,  UnicodeString Message);
-    void       __fastcall DFUnRar1FileProcessing  (TObject*   Sender, const TDFRARHeaderData &hdrData, int status); // event for get info function on rar files
-	void       __fastcall DFUnRar1Override        (TObject*   Sender, UnicodeString             FileName, bool &CanOverride, const Untunrar::TRARHeaderData &hdrData);
-	void       __fastcall OnZipExtFileExistsEvent (TObject*   Sender, String                 ForFile,  bool IsOlder,      bool                           &DoOverwrite, int DirIndex);
     void       __fastcall MessageError             ();
 public:
     __fastcall InstallArchiveThread(bool CreateSuspended, TLogs* AOwner, PFileList AFileList);

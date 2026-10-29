@@ -18,19 +18,19 @@
 #include "VirtualTrees.hpp"
 #include "TMMFileList.h"
 #include <ImgList.hpp>
-#include "DFUnRar.hpp"
 #include <msxmldom.hpp>
 #include <XMLDoc.hpp>
 #include <xmldom.hpp>
 #include <XMLIntf.hpp>
-#include "ZipBuilder.h"
 #include <System.ImageList.hpp>
 #include <Data.DB.hpp>
 #include <Data.FMTBcd.hpp>
 #include <Data.SqlExpr.hpp>
 #include <Data.DbxSqlite.hpp>
 #include <Datasnap.DBClient.hpp>
-//#include "ZipBuilderSFX.h"
+#include "VirtualTrees.AncestorVCL.hpp"
+#include "VirtualTrees.BaseAncestorVCL.hpp"
+#include "VirtualTrees.BaseTree.hpp"
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {

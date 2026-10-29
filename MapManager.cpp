@@ -11,8 +11,9 @@
 #pragma hdrstop
 #pragma package(smart_init)
 #pragma link "VirtualTrees"
-#pragma link "ZipBuilder"
-//#pragma link "ZipBuilderSFX"
+#pragma link "VirtualTrees.AncestorVCL"
+#pragma link "VirtualTrees.BaseAncestorVCL"
+#pragma link "VirtualTrees.BaseTree"
 #pragma resource "*.dfm"
 
 //---------------------------------------------------------------------------

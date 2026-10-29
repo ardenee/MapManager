@@ -3,6 +3,7 @@
 #include <StrUtils.hpp>
 //---------------------------------------------------------------------------
 #include "TArchives.h"
+#include "MMArchiveEngine.hpp"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma hdrstop
@@ -79,6 +80,13 @@ void __fastcall TArchives::GetArchiveInfo(AnsiString FileName)
 {
     //FFileList->Clear();
 
+    const UnicodeString ext = ExtractFileExt(FileName);
+    if (SameText(ext, L".7z") || SameText(ext, L".zip") ||
+        SameText(ext, L".rar"))
+    {
+        GetPackedInfo(FileName);
+        return;
+    }
     switch(GetArchiveFuncType(ExtractFileExt(FileName)))
     {
         case 0  : GetZipInfo(FileName);  break;
@@ -91,87 +99,42 @@ void __fastcall TArchives::GetArchiveInfo(AnsiString FileName)
 //----------------------------------------------------------------------------
 void __fastcall TArchives::GetZipInfo(AnsiString FileName)
 {
-    TZipBuilder* ZipBuilder = new TZipBuilder(NULL);
-
-    if(ZipBuilder->IsZipSFX(FileName)==1) // if we have a valid archive??
-    {
-        ZipBuilder->ZipFileName = FileName;
-        PFileInfo aFileData    = FFileList->AddFile();
-
-        if(aFileData)
-        {
-            FFiles->GetFileInfo(FileName, aFileData);
-
-            for(int x=0;x<ZipBuilder->Count;x++) // loop through archive files
-            {
-                aFileData        = FFileList->AddFile();
-                //ZipDirEntry *zde = (ZipDirEntry *)ZipBuilder->ZipContents->Items[x];
-
-                if(aFileData)
-                {
-				  //  aFileData->FileName = ExtractFileName(zde->FileName);
-				  //  aFileData->FileSize = FormatFloat("#,##0", zde->UncompressedSize);
-                  //  aFileData->FileDate = DateTimeToStr(FileDateToDateTime(zde->DateTime));
-                }
-            }
-
-            if(FOnGotFileInfo)
-                FOnGotFileInfo(this, FFileList);
-        }
-    }
-
-    delete ZipBuilder;
+    GetPackedInfo(FileName);
 }
 //---------------------------------------------------------------------------
 void __fastcall TArchives::GetRarInfo(AnsiString FileName)
 {
-    if(FileExists(FileName))
-    {
-        TDFUnRar* DFUnRar1 = new TDFUnRar(NULL);
-        DFUnRar1->OnFileProcessing = DFUnRar1FileProcessing;
-        // set up events!
-        DFUnRar1->FileName   = FileName;
-        DFUnRar1->Mode       = DFRAR_LIST;  
-        PFileInfo aFileData = FFileList->AddFile();
-
-        if(aFileData)
-        {
-            FFiles->GetFileInfo(FileName, aFileData);
-
-            switch(FFiles->TSettings::InstallType)
-            {
-				case  0 : DFUnRar1->Extract();  break; // keep folders
-                default : DFUnRar1->Extract(); break;// drop flders keep files only
-            }
-
-            if(FOnGotFileInfo)
-                FOnGotFileInfo(this, FFileList);
-        }
-
-        delete DFUnRar1;
-    }
+    GetPackedInfo(FileName);
 }
 //---------------------------------------------------------------------------
-void __fastcall TArchives::DFUnRar1FileProcessing(TObject *Sender, const TDFRARHeaderData &hdrData, int status)
+void __fastcall TArchives::GetPackedInfo(AnsiString FileName)
 {
-    if(!hdrData.IsDirectory)
+    TMMArchiveEngine *archive = new TMMArchiveEngine();
+    try
     {
-        PFileInfo aFileData = FFileList->AddFile();
-
-        if(aFileData)
+        archive->Open(UnicodeString(FileName));
+        FFileList->Clear();
+        PFileInfo file = FFileList->AddFile();
+        if (file) FFiles->GetFileInfo(FileName, file);
+        for (int i = 0; i < archive->Count; ++i)
         {
-            if(FFiles->TSettings::InstallType == MM_IT_DropFolders) // for display reasons
-                aFileData->FileName = ExtractFileName(hdrData.FileName);
-            else
-                aFileData->FileName = hdrData.FileName;
-
-			aFileData->FileSize = hdrData.UnpSize;// FormatFloat("#,##0", hdrData.UnpSize);
-            aFileData->FileDate = DateTimeToStr(hdrData.FileTime);
+            if (archive->ItemIsFolder[i]) continue;
+            file = FFileList->AddFile();
+            if (!file) continue;
+            const UnicodeString member = TMMArchiveEngine::SafeRelativePath(archive->ItemPath[i]);
+            file->FileName = (FFiles->TSettings::InstallType == MM_IT_DropFolders)
+                ? ExtractFileName(member) : member;
+            file->FileSize = archive->ItemSize[i];
+            file->FileDate = (double(archive->ItemDate[i]) > 0.0)
+                ? AnsiString(DateTimeToStr(archive->ItemDate[i])) : AnsiString("");
+            file->CRC32 = archive->ItemCRC[i];
         }
+        if (FOnGotFileInfo) FOnGotFileInfo(this, FFileList);
     }
+    __finally { delete archive; }
 }
 //---------------------------------------------------------------------------
-// wrapers for the TFiles class
+// wrappers for the TFiles class
 //---------------------------------------------------------------------------
 void __fastcall TArchives::GetUmodInfo(AnsiString FileName)
 {

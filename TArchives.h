@@ -24,10 +24,10 @@ private:
     void __fastcall SetStringLists                (const int         Index,       TStrings*               Value);
     int  __fastcall GetArchiveFuncType            (AnsiString        ArchiveExt);
     void __fastcall GetZipInfo                    (AnsiString        FileName);
+    void __fastcall GetPackedInfo(AnsiString FileName);
     void __fastcall GetRarInfo                    (AnsiString        FileName);
     void __fastcall GetUmodInfo                   (AnsiString        FileName);
     void __fastcall GetUzInfo                     (AnsiString        FileName);
-    void __fastcall DFUnRar1FileProcessing        (TObject*          Sender,       const TDFRARHeaderData &hdrData, int status); // event for get info function on rar files
 public:
     __fastcall TArchives(TFiles* Owner);
     __fastcall ~TArchives();

@@ -12,12 +12,12 @@
 | Virtual TreeView UI component | Build **passed** | C++Builder 13 Win32 runtime and design-time packages compiled using RAD Studio 37.0; design-time package registered |
 | TUTPackage Unreal reader | Build **passed** | `ut_packages`, `ut_umods`, `ut_uz` and `utpkgnat_ut2004` compiled; `TUTPackage.lib` built for Win32 |
 | d7zip / 7z.dll | Standalone **tests passed** | ZIP, RAR and 7z listing/extraction passed; ZIP and 7z creation/read-back passed, all in-process. RAR5 not independently tested |
-| Archive consolidation | **Not integrated** | Old ZipBuilder and TDFUnRar calls remain in application; migration to one d7zip/7z.dll backend planned |
+| Archive consolidation | **Source migration implemented; runtime acceptance pending** | Legacy ZipBuilder/TDFUnRar references removed; ZIP/RAR/7z listing and extraction use MMArchiveEngine.pas and in-process d7zip. Standalone Win32/Win64 tests pass; application installer and rollback need acceptance testing |
 | XML → SQLite | **Partial** | Legacy XML and partially implemented SQLite paths exist; recovered `settings.sqlite3.sql` is a reference only, first-run initialization/import/parity incomplete |
 | Application build | **Blocked** | C++Builder/Windows SDK generated-header incompatibilities, including `Winapi.ShlObj.hpp` and `PROPVARIANT`; legacy archive libraries still referenced |
 | Functional/regression testing | **Not complete** | Application startup, UI, persistence, installation, logging, rollback and end-to-end archive handling remain to be verified |
 
-See [PROJECT_STATUS.md](PROJECT_STATUS.md) for test evidence, blockers and next acceptance gates.
+See [PROJECT_STATUS.md](PROJECT_STATUS.md) for test evidence, blockers and next acceptance gates. File-by-file replacements and outstanding parity gates are documented in [ARCHIVE_MIGRATION.md](ARCHIVE_MIGRATION.md).
 
 **Update (29 October 2026):** Win64 unit compilation and native archive listing/extraction and ZIP/7z creation tests now pass for both d7zip and TUTPackage. Win64 application support remains unverified: Virtual TreeView's C++ package is blocked by an unsupported Windows SDK. The RAD Studio SDK patcher also rejects the installed SDK revisions. See [RAD Studio SDK and Win64 setup](RAD_STUDIO_SDK_AND_WIN64.md) for the precise diagnosis, supported installer and remediation steps.
 
@@ -51,7 +51,7 @@ Initial target is **Windows Win32**. This repository is not yet a reproducible, 
 - Make project paths portable, remove stale dependencies once replaced, and verify a clean GUI launch.
 - Establish a fixed, documented acceptance-test checklist and avoid repeating passing tests without new evidence.
 
-### Phase 2 — archive consolidation
+### Phase 2 — archive consolidation (source replacement implemented; acceptance pending)
 
 Replace ZipBuilder + TDFUnRar with **one in-process** d7zip + `7z.dll` implementation; no WinRAR or 7-Zip executable launched at runtime.
 
