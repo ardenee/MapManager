@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{3E941AB1-85B9-4D09-8CC6-C107D7B156D2}</ProjectGuid>
+    <Config Condition="'$(Config)'==''">Release</Config>
+    <Platform Condition="'$(Platform)'==''">Win64x</Platform>
+  </PropertyGroup>
+  <ItemGroup>
+    <Projects Include="TUTPackage\TUTPackageNative.dproj"><Dependencies /></Projects>
+    <Projects Include="ThirdParty\d7zip\MapManagerArchiveNative.dproj"><Dependencies /></Projects>
+    <Projects Include="C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj"><Dependencies /></Projects>
+  </ItemGroup>
+  <Target Name="TUTPackageNative"><MSBuild Projects="TUTPackage\TUTPackageNative.dproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
+  <Target Name="TUTPackageNative:Clean"><MSBuild Projects="TUTPackage\TUTPackageNative.dproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
+  <Target Name="MapManagerArchiveNative"><MSBuild Projects="ThirdParty\d7zip\MapManagerArchiveNative.dproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
+  <Target Name="MapManagerArchiveNative:Clean"><MSBuild Projects="ThirdParty\d7zip\MapManagerArchiveNative.dproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
+  <Target Name="VirtualTreesCR"><MSBuild Projects="C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Build" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
+  <Target Name="VirtualTreesCR:Clean"><MSBuild Projects="C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\VirtualTreesCR.cbproj" Targets="Clean" Properties="Config=$(Config);Platform=$(Platform)" /></Target>
+  <Target Name="Build"><CallTarget Targets="TUTPackageNative;MapManagerArchiveNative;VirtualTreesCR" /></Target>
+  <Target Name="Clean"><CallTarget Targets="TUTPackageNative:Clean;MapManagerArchiveNative:Clean;VirtualTreesCR:Clean" /></Target>
+  <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" />
+</Project>

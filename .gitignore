@@ -61,3 +61,7 @@ BUILD_STATUS.md
 # Per-build root generated outputs; canonical architecture-specific headers are tracked
 /MMArchiveEngine.hpp
 /ThirdParty/d7zip/sevenzip.hpp
+
+# Generated resources from standalone Delphi package builds
+/TUTPackage/TUTPackageNative.res
+/ThirdParty/d7zip/MapManagerArchiveNative.res

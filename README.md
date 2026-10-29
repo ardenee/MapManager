@@ -101,3 +101,5 @@ Historical archives, local configuration, private settings and compiled binaries
 - The legacy Map Manager application source is being recovered; do not infer rights to redistribute proprietary Unreal game assets.
 
 **SDK/build update (29 October 2026):** The Windows SDK patcher and Win64 Virtual TreeView runtime package build successfully. Win64 Debug Map Manager now compiles and links; legacy code warnings and runtime acceptance remain. See [SDK and Win64 diagnostics](RAD_STUDIO_SDK_AND_WIN64.md).
+
+**Manual component builds:** TUTPackage, d7zip/MMArchiveEngine and Virtual TreeView have RAD Studio project files plus an aggregate group. Instructions and static library details: [COMPONENT_BUILD_GUIDE.md](COMPONENT_BUILD_GUIDE.md).

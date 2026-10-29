@@ -47,5 +47,10 @@ if errorlevel 1 exit /b 3
 if not exist "%OUT%\MMArchiveEngine.o" exit /b 4
 if not exist "%OUT%\sevenzip.o" exit /b 4
 if not exist "%OUT%\TUTPackage.lib" exit /b 4
+rem Build an IDE-managed COFF library. RAD Studio may discard custom ObjFiles items
+rem when saving Project1.cbproj, but retains LinkPackageStatics project settings.
+"%LIBTOOL%" /nologo "/out:%OUT%\MMArchiveEngine.lib" "%OUT%\MMArchiveEngine.o" "%OUT%\sevenzip.o"
+if errorlevel 1 exit /b 5
+if not exist "%OUT%\MMArchiveEngine.lib" exit /b 6
 echo MapManager Win64x COFF archive and TUTPackage objects generated
 exit /b 0

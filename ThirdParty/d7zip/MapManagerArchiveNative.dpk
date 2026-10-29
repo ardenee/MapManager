@@ -1,0 +1,14 @@
+package MapManagerArchiveNative;
+
+{$RUNONLY}
+
+requires
+  rtl,
+  vcl,
+  vclimg;
+
+contains
+  sevenzip in 'sevenzip.pas',
+  MMArchiveEngine in '..\..\MMArchiveEngine.pas';
+
+end.

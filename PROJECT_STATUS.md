@@ -1,3 +1,12 @@
+### Manual component IDE projects and IDE-stable archive linkage - 29 October 2026
+
+- Added standalone RAD Studio Delphi package .dproj/.dpk pairs for TUTPackageNative and MapManagerArchiveNative plus MapManager-Components.groupproj pointing to existing third-party VirtualTreesCR.cbproj. Both packages and the aggregate group pass Win64x Release builds.
+- The IDE had saved Project1.cbproj and dropped MMArchiveEngine.o from its ObjFiles, while keeping sevenzip.o. That exactly explained the missing archive facade symbols in the Win64x linker response.
+- Replaced custom Win64x ObjFiles with an IDE-native static COFF MMArchiveEngine.lib (containing MMArchiveEngine.o and sevenzip.o) built by build/compile-archive-units.cmd. LinkPackageStatics now includes MMArchiveEngine.lib and TUTPackage.lib. A clean application Win64x Release Rebuild with the custom Win64x object inputs removed PASSED (exit 0).
+- Introduced harmless TMapFileData.cpp/.h compatibility stubs for an IDE still referencing the historic filename; no duplicate TFileData methods. Canonical methods remain in TFileData.cpp.
+- The standalone .dproj projects produce runtime BPLs and are not the static libraries that Map Manager links. See COMPONENT_BUILD_GUIDE.md. GUI/install/undo runtime acceptance remains open.
+- Unrelated DEV edits to MapManager.dfm, TBuddie.cpp and TMMCache.cpp were kept untouched.
+
 ### Win64 Modern / Release clean build passed - 29 October 2026 (current)
 
 - RAD Studio 37.0 C++ Win64x (Modern) Release **Build and clean Rebuild both PASS**, including a successful complete application link (exit 0, no errors). Valid x64 application: Win64x/Release/Project1.exe (14,949,888 bytes). Actual GUI launch, archive install/undo and persistence remain untested.

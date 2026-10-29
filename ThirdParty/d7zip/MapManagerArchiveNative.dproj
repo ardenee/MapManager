@@ -1,0 +1,44 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{399B8B89-513E-4FAB-9491-9931996ED857}</ProjectGuid>
+    <MainSource>MapManagerArchiveNative.dpk</MainSource>
+    <ProjectVersion>20.0</ProjectVersion>
+    <FrameworkType>VCL</FrameworkType>
+    <Base>True</Base>
+    <Config Condition="'$(Config)'==''">Release</Config>
+    <Platform Condition="'$(Platform)'==''">Win64x</Platform>
+    <TargetedPlatforms>1048579</TargetedPlatforms>
+    <AppType>Package</AppType>
+    <GenPackage>true</GenPackage>
+    <GenDll>true</GenDll>
+    <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+    <Base>true</Base>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Config)'=='Release'">
+    <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Config)'=='Debug'">
+    <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DCC_Namespace>Winapi;System;System.Win;Vcl;Data;Xml;Datasnap;$(DCC_Namespace)</DCC_Namespace>
+    <DCC_UnitSearchPath>.;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+    <DCC_DcuOutput>..\build\components\$(Platform)\$(Config)\MapManagerArchiveNative</DCC_DcuOutput>
+    <DCC_ExeOutput>..\build\components\$(Platform)\$(Config)\MapManagerArchiveNative</DCC_ExeOutput>
+    <DCC_HppOutput>..\build\components\$(Platform)\$(Config)\MapManagerArchiveNative</DCC_HppOutput>
+  </PropertyGroup>
+  <ItemGroup>
+    <DelphiCompile Include="$(MainSource)">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="sevenzip.pas" />
+    <DCCReference Include="..\..\MMArchiveEngine.pas" />
+  </ItemGroup>
+  <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" />
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality.12</Borland.Personality>
+    <Borland.ProjectType>Package</Borland.ProjectType>
+  </ProjectExtensions>
+</Project>
