@@ -66,17 +66,8 @@ void __fastcall LoadFilesThread::Execute()
 //---------------------------------------------------------------------------
 void __fastcall LoadFilesThread::CheckUsage()
 {
-    switch(false)  // switch(TmpProgramData->LoadFilesFlag)
-    {   //there is a thread instance already running
-        case true: Terminate(); break;
-        //no other thread has the semaphore:)
-        case false: break; //Now we have the semaphore  TmpProgramData->LoadFilesFlag = true;
-        //We really need to know, this would be bad
-		default:   Application->MessageBox(L"Terminal Error. Closing Error", L"From thread", MB_OK|MB_ICONERROR);
-                   Application->Terminate(); //Force the application to close
-                   break;
-    }
-    
+    // The former switch(false) was an inactive placeholder, not a real
+    // thread-use check. Keep the existing progress reset without dead code.
     Form1->ProgressBar1->Position = 0;
 }
 //---------------------------------------------------------------------------

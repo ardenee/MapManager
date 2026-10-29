@@ -1,3 +1,12 @@
+### Win64 Modern / Release compiler warning cleanup - 29 October 2026
+
+- W1005: d7zip's Windows-only sevenzip unit was explicitly declared PLATFORM; removed the redundant hint in the local vendor copy, without changing platform-specific code or using a global suppression.
+- W1023: MMArchiveEngine.GetCount compares a UInt32 archive item count to UInt32(High(Integer)) before conversion to Integer.
+- W6452: LoadFilesThread.CheckUsage had switch(false), whose body could only execute the no-op case; removed dead switch while retaining progress reset.
+- RAD Studio Win64x Release TUTPackageNative.dproj and MapManagerArchiveNative.dproj Rebuilds pass. The full Project1.cbproj Win64x Release Rebuild also passes (exit 0), with no W1005, W1023 or W6452. Warnings from the unrelated MSBuild MTA invocation or older TUTPackage hint may remain.
+- A concurrent, uncommitted MMTypes.h edit introduced a missing comma after MM_GT_SplinterCell; corrected locally to enable full-build verification, but MMTypes.h and all other concurrent DEV edits were kept OUT of this warning-cleanup Git commit.
+- Important: Removing the application's DelphiCompile entries for MMArchiveEngine/sevenzip caused unresolved MMArchiveEngine symbols, even with the separately compiled Delphi package .lib available. The entries remain in Project1.cbproj for GUI-based compilation and linking; no external command script is necessary for Win64x. Do not remove these entries until a standalone-library-only full link passes independently.
+
 ### Native RAD Studio GUI project builds - 29 October 2026 (latest)
 
 - Win64x Release Project1.cbproj now links TUTPackageNative.lib and MapManagerArchiveNative.lib from standalone Delphi .dproj package builds. Both reside in RAD Studio's standard Dcp/Win64x search path. The issue was the absent -l:MapManagerArchiveNative.lib linker INPUT, not an object search directory.

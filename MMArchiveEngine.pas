@@ -143,7 +143,7 @@ end;
 function TMMArchiveEngine.GetCount: Integer;
 begin
   if FArchive = nil then Exit(0);
-  if FArchive.NumberOfItems > MaxInt then
+  if FArchive.NumberOfItems > UInt32(High(Integer)) then
     raise ERangeError.Create('Archive has too many entries');
   Result := Integer(FArchive.NumberOfItems);
 end;

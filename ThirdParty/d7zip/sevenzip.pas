@@ -17,7 +17,7 @@
 // Uploaded to GitHub at https://github.com/danielmarschall/d7zip
 
 // Current version by Daniel Marschall, 15 Feb 2025 with the following changes:
-// - Marked unit as "platform"
+// - Windows-only unit; the redundant PLATFORM hint is omitted in Map Manager
 // - Used units are now fully qualified names
 
 // Current version by Daniel Marschall, 15 May 2024 with the following changes:
@@ -46,7 +46,7 @@
 //                          But this is complex, because we have things like FFileTime, TPropVariant, etc.!
 
 
-unit sevenzip platform;
+unit sevenzip;
 {$ALIGN ON}
 {$MINENUMSIZE 4}
 {$WARN SYMBOL_PLATFORM OFF}

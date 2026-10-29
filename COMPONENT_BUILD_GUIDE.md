@@ -26,6 +26,10 @@ Project1.cbproj Win64x Release now uses LinkPackageStatics with TUTPackageNative
 
 A missing -l:MapManagerArchiveNative.lib in ld.lld's command line means the IDE has older project settings loaded. Close and reopen Project1.cbproj (or MapManager-All.groupproj). Do not open the historical Project1.bpr or Project1.bdsproj.
 
+## Archive Delphi units in the application project
+
+Although the GUI-buildable MapManagerArchiveNative.dproj produces a COFF static package library, the current clean application link requires the MMArchiveEngine.pas and sevenzip.pas DelphiCompile entries in Project1.cbproj. RAD Studio compiles these automatically as part of the GUI build. Temporarily removing those entries produced unresolved MMArchiveEngine methods/vtable even after rebuilding the package library. Keep them enabled until a standalone-library-only link has been independently certified. This does not require running any external batch script.
+
 ## Existing legacy targets
 
 The application build/compile-archive-units.cmd hook remains for Win32 and legacy Win64 only; the Win64 Modern Release application no longer invokes it. Win64 Modern uses COFF .lib, not legacy Win64 ELF .a. The source Project1.res is staged for clean rebuild, and native 64-bit 7z.dll is staged beside the executable when installed.
