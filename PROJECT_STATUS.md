@@ -53,3 +53,14 @@
 - Test changes against a bounded list and update statuses after each meaningful test batch.
 
 Dependency details and project roadmap are in [README.md](README.md).
+
+## SDK and Win64 evidence — 29 October 2026
+
+- RAD Studio 37.0 accepts only Windows SDK header builds 10.0.26100.4948, .4654 and .4188; the installed 10.0.26100.0 directory's header revision is rejected by the official SDK patch tool. 10.0.28000.0 is not supported by RAD Studio's current sdk.versions file.
+- Official Microsoft 10.0.26100.4654 SDK installer downloaded and digital signature verified at C:\Temp\MapManagerDeps\WindowsSDK-26100-4654\winsdksetup.exe. **NOT installed**. No installed SDKs removed or system headers patched.
+- Removed the recovery-specific 10.0.19041.0 forced SDK header include paths from Project1.cbproj. This avoids mixing old SDK headers with RAD Studio-managed patched SDK once it is set up.
+- d7zip and all four recovered TUTPackage units compile on Win64. A Win64 TUTPackage.a static archive was built. 64-bit d7zip successfully listed/extracted ZIP/7z/RAR and created/read-back ZIP/7z using the 64-bit 7z.dll.
+- Generated Win64 headers staged under TUTPackage/generated/Win64 and ThirdParty/d7zip/generated/Win64. The Win64 Virtual TreeView C++ package compilation remains blocked on unsupported SDK header stralign.h after Delphi units compile.
+- Full application build and Win64 IDE design-time package registration are **not** completed.
+
+Detailed instructions: [RAD Studio SDK and Win64 setup](RAD_STUDIO_SDK_AND_WIN64.md).

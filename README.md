@@ -19,6 +19,8 @@
 
 See [PROJECT_STATUS.md](PROJECT_STATUS.md) for test evidence, blockers and next acceptance gates.
 
+**Update (29 October 2026):** Win64 unit compilation and native archive listing/extraction and ZIP/7z creation tests now pass for both d7zip and TUTPackage. Win64 application support remains unverified: Virtual TreeView's C++ package is blocked by an unsupported Windows SDK. The RAD Studio SDK patcher also rejects the installed SDK revisions. See [RAD Studio SDK and Win64 setup](RAD_STUDIO_SDK_AND_WIN64.md) for the precise diagnosis, supported installer and remediation steps.
+
 ## Dependencies
 
 Initial target is **Windows Win32**. This repository is not yet a reproducible, standalone build.

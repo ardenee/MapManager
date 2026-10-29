@@ -159,7 +159,7 @@
 <!-- MAPMANAGER-RECOVERY: compiler setup in working copy only -->
 <PropertyGroup Condition="'$(Platform)'=='Win32'">
   <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
-  <BCC_IncludePath>C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared;C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt;C:\Users\arden\source\repos\MapManager-Recovered\TUTPackage;C:\Users\Public\Documents\Embarcadero\Studio\37.0\hpp\Win32;C:\Temp\MapManagerDeps\Virtual-TreeView\Source;$(BCC_IncludePath)</BCC_IncludePath>
+  <BCC_IncludePath>C:\Users\arden\source\repos\MapManager-Recovered\TUTPackage;C:\Users\Public\Documents\Embarcadero\Studio\37.0\hpp\Win32;C:\Temp\MapManagerDeps\Virtual-TreeView\Source;$(BCC_IncludePath)</BCC_IncludePath>
   <ILINK_LibraryPath>C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\Win32\Release;C:\Users\Public\Documents\Embarcadero\Studio\37.0\Dcp;C:\Temp\MapManagerDeps\TUTPackage-Build;$(ILINK_LibraryPath)</ILINK_LibraryPath>
 </PropertyGroup>
 <ItemGroup>
