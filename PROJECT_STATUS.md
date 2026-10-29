@@ -1,3 +1,10 @@
+### Remove obsolete TUTPackage.lib from application project - 29 October 2026
+
+- Per user request, **removed every TUTPackage.lib reference** from the active Project1.cbproj, including all Win32/legacy-Win64 platform overrides. The old library is no longer an input to any application project configuration.
+- The shared Base AllPackageLibs now lists only SDK/common libraries. Base_Win64x AllPackageLibs explicitly adds the correct TUTPackageNative.lib and MapManagerArchiveNative.lib; Win64x Release LinkPackageStatics already correctly specifies both. Thus the native static libraries are selected only for Win64 Modern.
+- Confirmed TUTPackageNative.lib and MapManagerArchiveNative.lib in Embarcadero Studio 37.0 Dcp/Win64x. The old physical Win32/Debug library was not deleted; archived helper scripts or historical documentation can still mention it, but Project1.cbproj does not.
+- Project XML and the key platform-specific properties were validated. User will perform IDE build; no new build was run. Nine unrelated worktree source edits were preserved.
+
 ### Native package GUI confirmation and shared TUTPackage library list - 29 October 2026 (resolved)
 
 - User confirmed the RAD Studio Win64 Modern / Release GUI group build works using native Delphi VirtualTreesCR.dproj. The 22 missing VirtualTrees .o failures of the old C++Builder runtime path are closed for this active GUI build.
