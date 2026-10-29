@@ -2,6 +2,21 @@
 
 Verified on DEV (game-amd): 29 October 2026.
 
+
+## Actual repair completed on DEV — 29 October 2026
+
+After the SDK 10.0.26100.4654 reinstall, the installed shared/winerror.h has CRC32 **1422951324**, exactly the checksum configured in Embarcadero's sdk.versions.
+
+- Ran the RAD Studio official patchsdk.exe using installed 26100 SDK headers and a temporary output folder: **exit 0**, about 138 MB of patched files.
+- Copied generated headers to C:\Program Files (x86)\Embarcadero\Studio\37.0\include\windows\sdk with non-destructive Robocopy. Original excpt.h preserved and backed up in C:\Temp\MapManagerDeps\RADStudio-sdk-before-copy-20261029.
+- MapManager Win32 CLI rebuild advanced beyond previous SDK errors to missing historical components DFUnRar.hpp, ZipBuilder.h and TUTPackage generated header paths. Full app still does not build.
+- JAM Virtual TreeView Win64 C++ runtime package now **builds successfully (exit 0)** after pointing temporary component build files at the patched SDK directory.
+- Win64 component outputs: C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\Win64\Release\VirtualTreesCR.a (6,111,694 bytes), VirtualTreesCR.bpi, and C:\Users\Public\Documents\Embarcadero\Studio\37.0\Bpl\Win64\VirtualTreesCR.bpl (1,273,856 bytes).
+- Windows SDK 10.0.28000 is also still installed. Do **not** select it in the IDE wizard. If prompted, select **Windows 10 SDK 10.0.26100.0** (the UI shows the base SDK directory number, not the servicing build .4654). Restart RAD Studio after patch.
+- GUI SDK wizard not independently retested, and full MapManager Win32/Win64 application integration remains blocked on legacy C++ code.
+
+The earlier recommended SDK reinstall instructions below are historical. **Do not repeat uninstall/reinstall** now that the accepted version and official patcher both passed.
+
 ## Windows SDK mismatch confirmed
 
 RAD Studio's error is: "Unable to determine SDK version. Supported SDK versions: 10.0.26100.4948, 10.0.26100.4654, 10.0.26100.4188."

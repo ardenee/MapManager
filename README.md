@@ -95,3 +95,5 @@ Historical archives, local configuration, private settings and compiled binaries
 - **Virtual TreeView**: separately downloaded and licensed according to its upstream repository.
 - **7-Zip DLL**: separately downloaded; redistribution, including RAR decoding, is subject to applicable upstream 7-Zip/unRAR notices.
 - The legacy Map Manager application source is being recovered; do not infer rights to redistribute proprietary Unreal game assets.
+
+**SDK repair update (29 October 2026):** The newly installed 10.0.26100.4654 SDK matches the RAD Studio version check; its official SDK patcher ran successfully and generated SDK headers are now in the IDE directory. Virtual TreeView Win64 runtime now builds. Map Manager builds remain blocked by historical component/header integration. See [SDK and Win64 diagnostics](RAD_STUDIO_SDK_AND_WIN64.md).

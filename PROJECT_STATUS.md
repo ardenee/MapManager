@@ -64,3 +64,10 @@ Dependency details and project roadmap are in [README.md](README.md).
 - Full application build and Win64 IDE design-time package registration are **not** completed.
 
 Detailed instructions: [RAD Studio SDK and Win64 setup](RAD_STUDIO_SDK_AND_WIN64.md).
+
+### SDK remediation update — 29 October 2026
+
+- Installed SDK .4654 now matches required CRC32, RAD patchsdk exit 0; patched headers copied into RAD Studio 37.0 SDK folder (excpt.h preserved).
+- MapManager Win32 build advances beyond SDK errors but remains blocked by DFUnRar.hpp, ZipBuilder.h and TUTPackage C++ header paths.
+- Virtual TreeView Win64 C++ runtime package now builds; VirtualTreesCR.a, VirtualTreesCR.bpi and VirtualTreesCR.bpl generated locally.
+- GUI SDK wizard not independently retested; SDK 28000 remains installed and must not be selected. Select 26100.0 in IDE if prompted.
