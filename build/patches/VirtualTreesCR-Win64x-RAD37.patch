@@ -1,5 +1,5 @@
 diff --git a/Packages/CBuilder 13/VirtualTreesCR.cbproj b/Packages/CBuilder 13/VirtualTreesCR.cbproj
-index 3f30a94..378bdc0 100644
+index 3f30a94..60c3ea7 100644
 --- a/Packages/CBuilder 13/VirtualTreesCR.cbproj
 +++ b/Packages/CBuilder 13/VirtualTreesCR.cbproj
 @@ -6,7 +6,7 @@
@@ -31,7 +31,7 @@ index 3f30a94..378bdc0 100644
          <BPILibOutputDir>.\$(Platform)\$(Config)</BPILibOutputDir>
          <BCC_wpar>false</BCC_wpar>
          <BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
-@@ -262,4 +269,20 @@
+@@ -262,4 +269,32 @@
      <Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
      <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
      <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
@@ -42,6 +42,18 @@ index 3f30a94..378bdc0 100644
 +</PropertyGroup>
 +    <!-- The Win64 Modern linker expects the resource under the platform
 +         intermediate directory. RC sometimes emits it in the project root. -->
++    <!-- RAD Studio's dynamic-package Delphi pass (-JL) can produce refreshed
++         DCUs without writing the corresponding Win64x .o files. The native
++         MakeStaticPackage pass emits those .o files into DCC_ObjOutput, but
++         the standard package build schedules it only AFTER the runtime link.
++         Make it run first: the Win64x BPL linker then receives up-to-date
++         Delphi objects, not stale copies from the Source directory. -->
++    <Target Name="CompileVirtualTreesObjectsBeforeLink"
++            BeforeTargets="_CheckLinkDependencies"
++            Condition="'$(Platform)'=='Win64x' And '$(_DoingStaticPackageBuild)'!='true'
++                       And '$(ILINK_GenerateLibFile)'=='true'">
++        <CallTarget Targets="MakeStaticPackage" />
++    </Target>
 +    <Target Name="StageVirtualTreesCRResourceWin64x"
 +            BeforeTargets="_CheckLinkDependencies"
 +            Condition="'$(Platform)'=='Win64x' And '$(_DoingStaticPackageBuild)'!='true'">

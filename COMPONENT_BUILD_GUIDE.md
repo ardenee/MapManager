@@ -105,3 +105,16 @@ IDE-native location). build/validate-rad-projects.py checks that both
 packages still have the setting and their Release/Debug configurations
 remain unique. Both .lib files were regenerated in a clean Win64x Release
 build on 29 October 2026.
+
+### Virtual TreeView Delphi objects missing during GUI linking
+
+When ld.lld cannot find VirtualTrees.Accessibility.o and related Delphi
+objects under Win64x/Release, do not copy older .o files from the
+Virtual-TreeView/Source directory. The runtime Delphi package pass can
+refresh .dcu files without emitting the required dynamic-link .o files.
+
+The local VirtualTreesCR.cbproj now invokes RAD Studio's native
+MakeStaticPackage pass before the Win64x runtime link. This is intended
+to generate current Delphi objects in the configured output directory before
+ld.lld needs them; it is guarded to avoid recursion in the static build.
+This GUI build change has NOT yet been tested.

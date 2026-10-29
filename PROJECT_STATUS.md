@@ -1,3 +1,11 @@
+### Virtual Trees Win64x Delphi object-file linking - 29 October 2026 (unverified IDE change)
+
+- User's Win64 Modern Release GUI build now emits correctly separated .o paths, but ld.lld still reports missing VirtualTrees.*.o from the expected Virtual-TreeView/Packages/CBuilder 13/Win64x/Release folder.
+- Direct inspection shows 22 older .o files in Virtual-TreeView/Source and no freshly generated Delphi unit .o files in Win64x/Release; copying the old source objects would risk stale linking.
+- RAD Studio CodeGear.Cpp.Targets defines MakeStaticPackage as a native second build pass with DCC_CBuilderOutput=JPHN and DCC_ObjOutput inherited from the runtime build. Normally this runs after the runtime package link. Added CompileVirtualTreesObjectsBeforeLink in the local VirtualTreesCR.cbproj to call that native pass before _CheckLinkDependencies for Win64x non-static builds. The inner static build is protected by _DoingStaticPackageBuild, preventing recursion.
+- The updated dependency patch is stored in build/patches/VirtualTreesCR-Win64x-RAD37.patch. No build or runtime test was executed after this change, at the user's request; IDE verification is pending.
+- Avoid linking old source-tree .o files; objects should be created by the native static package compilation into the build output path.
+
 ### RAD Studio native Delphi package output restored - 29 October 2026
 
 - RAD Studio's own Save All rewrote the external TUTPackageNative.dproj and MapManagerArchiveNative.dproj into native ProjectVersion 20.3 format, removing the C++ package library-output option. The existing .lib files were stale as a result.
