@@ -1,5 +1,15 @@
 # Archive component migration — 29 October 2026
 
+
+## Update - 29 October 2026: Win64 linker gate closed
+
+- Full RAD Studio 37.0 Win64 Debug build PASSED twice (normal /t:Build and /t:Build with /p:ForceLink=true; both exit 0). Output: Win64/Debug/Project1.exe (x64 PE image).
+- Cause of unresolved Mmarchiveengine TMMArchiveEngine methods/vtable: generated Delphi MMArchiveEngine.o and sevenzip.o existed, but the project did not register them as linker input. Both are now explicit ObjFiles, scoped by target architecture and configuration. Their compilation hook runs before linker dependency analysis.
+- Cause of broad RTL/Windows import failures: setting ILINK_AdditionalLibs to TUTPackage.a prevented C++Builder's default Windows import/RTL libraries. Replaced with platform-scoped LibFiles for TUTPackage.a.
+- TMapFileData.cpp is already excluded from CppCompile because it duplicates TFileData.cpp; stale Win64 Debug TMapFileData.o and .d outputs removed. Source retained.
+- The older sections below record their original migration state. The full Win64 build is no longer blocked. This does not certify GUI startup, archive install/undo, or XML/SQLite behavior.
+- The project currently references locally compiled TUTPackage Win64 at C:\Temp\MapManagerDeps\Win64-units\TUTPackage.a and installed Virtual TreeView packages; clean-machine reproducibility not yet tested.
+
 ## Scope
 
 The recovered C++Builder application previously referenced two external VCL archiver components: ZipBuilder for ZIP and TDFUnRar for RAR. Their headers, object declarations, event callback types, component construction/destruction, C++ method calls, and package search/link references have now been removed from **active project source**.
@@ -26,12 +36,12 @@ Replacement: **MMArchiveEngine.pas** (application-owned Delphi facade) using **T
 4. Malicious ZIP member names (../, nested ../, drive-absolute, slash-absolute, Windows ADS and reserved device names) rejected; no file escaped the extraction directory. Existing targets refused by facade (Win32 fixture tests).
 5. No active ZipBuilder, DFUnRar, ZBldr or TDFRARHeaderData references remain in .cpp/.h/.cbproj/.dfm files (audit).
 6. The old archive-related C++ source files compiled under the Win32 bcc32c toolchain. Full application build then proceeded to *unrelated* TMMSettings.cpp syntax errors under newer Clang; application does not yet link or start.
-7. Win64 full-app build currently fails in TMMSettings.cpp, likewise outside migrated archive code.
+7. Win64 full-app build now compiles and links as of the later 29 October 2026 linker fixes above. Exception syntax in TMMSettings.cpp was repaired; runtime acceptance is still outstanding.
 8. Build hook MapManagerArchiveDelphiObjects invoked directly for Win32 and generated required MMArchiveEngine.obj and sevenzip.obj successfully.
 
 ## Remaining validation and compatibility caveats
 
-- **Full Map Manager has not built or launched.** Actual VCL UI, game folder routing, install/undo and Log XML workflows have not been end-to-end tested. The modern TMMArchives::Install branch was historically disabled; this migration did not re-enable it or recreate its missing application settings.
+- **Full Win64 Debug Map Manager has built but has not been launched or runtime-validated.** Actual VCL UI, game folder routing, install/undo and Log XML workflows have not been end-to-end tested. The modern TMMArchives::Install branch was historically disabled; this migration did not re-enable it or recreate its missing application settings.
 - Encrypted/password-protected files are detected and rejected with a clear error; no UI prompt or password callback has been wired yet. RAR5 format GUID is selected from the RAR5 signature but no genuine RAR5 archive fixture has been accepted yet.
 - Multipart archives and cancellation in the middle of one large compressed member remain unverified. Termination is checked **between** archive members. User-visible per-byte progress remains to implement.
 - The legacy app uses AnsiString for many game paths, so full Unicode filename preservation is not certified.

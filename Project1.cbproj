@@ -171,7 +171,6 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <ILINK_LibraryPath>C:\Temp\MapManagerDeps\Virtual-TreeView\Packages\CBuilder 13\Win64\Release;C:\Temp\MapManagerDeps\Win64-units;$(ILINK_LibraryPath)</ILINK_LibraryPath>
-        <ILINK_AdditionalLibs>TUTPackage.a;$(ILINK_AdditionalLibs)</ILINK_AdditionalLibs>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64x)'!=''">
@@ -275,6 +274,11 @@
             <DependentOn>TFiles.h</DependentOn>
             <BuildOrder>54</BuildOrder>
         </CppCompile>
+        <ObjFiles Include="$(MSBuildProjectDirectory)\Win64\$(Config)\MMArchiveEngine.o" Condition="'$(Platform)'=='Win64'" />
+        <ObjFiles Include="$(MSBuildProjectDirectory)\Win64\$(Config)\sevenzip.o" Condition="'$(Platform)'=='Win64'" />
+        <ObjFiles Include="$(MSBuildProjectDirectory)\Win32\$(Config)\MMArchiveEngine.obj" Condition="'$(Platform)'=='Win32'" />
+        <ObjFiles Include="$(MSBuildProjectDirectory)\Win32\$(Config)\sevenzip.obj" Condition="'$(Platform)'=='Win32'" />
+        <LibFiles Include="C:\Temp\MapManagerDeps\Win64-units\TUTPackage.a" Condition="'$(Platform)'=='Win64'" />
         <DelphiCompile Include="MMArchiveEngine.pas"><BuildOrder>1</BuildOrder></DelphiCompile>
         <DelphiCompile Include="ThirdParty\d7zip\sevenzip.pas">
             <BuildOrder>0</BuildOrder>
@@ -1488,7 +1492,7 @@
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>
-    <Target Name="MapManagerArchiveDelphiObjects" BeforeTargets="_PerformLink" Condition="'$(Platform)'=='Win32' Or '$(Platform)'=='Win64'">
+    <Target Name="MapManagerArchiveDelphiObjects" BeforeTargets="_CheckLinkDependencies" Condition="'$(Platform)'=='Win32' Or '$(Platform)'=='Win64'">
         <Exec Command="&quot;$(MSBuildProjectDirectory)\build\compile-archive-units.cmd&quot; &quot;$(Platform)&quot; &quot;$(Config)&quot;"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>

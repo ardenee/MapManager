@@ -2,7 +2,7 @@
 
 **Map Manager** is the recovery and modernization of a legacy Windows C++Builder/VCL application for organizing Unreal and Unreal Tournament game files. The recovered source contains modules for browsing, cataloguing and installing maps and archives; viewing Unreal packages, textures, music, demos and screenshots; handling favourites, servers, logs and file operations.
 
-> **Status — 29 October 2026:** Source recovery in progress. The **full application does not yet compile or run** under RAD Studio 37.0. Dependency build successes below do not mean that the application is working.
+> **Status — 29 October 2026:** Source recovery in progress. The **Win64 Debug application now compiles and links** under RAD Studio 37.0 (verified 29 October 2026). The GUI and complete installer/runtime workflows have **not yet been validated**; the Win32 full build is not certified.
 
 ## Project status
 
@@ -14,12 +14,12 @@
 | d7zip / 7z.dll | Standalone **tests passed** | ZIP, RAR and 7z listing/extraction passed; ZIP and 7z creation/read-back passed, all in-process. RAR5 not independently tested |
 | Archive consolidation | **Source migration implemented; runtime acceptance pending** | Legacy ZipBuilder/TDFUnRar references removed; ZIP/RAR/7z listing and extraction use MMArchiveEngine.pas and in-process d7zip. Standalone Win32/Win64 tests pass; application installer and rollback need acceptance testing |
 | XML → SQLite | **Partial** | Legacy XML and partially implemented SQLite paths exist; recovered `settings.sqlite3.sql` is a reference only, first-run initialization/import/parity incomplete |
-| Application build | **Blocked** | C++Builder/Windows SDK generated-header incompatibilities, including `Winapi.ShlObj.hpp` and `PROPVARIANT`; legacy archive libraries still referenced |
+| Application build | **Win64 Debug build passed; runtime pending** | C++Builder 37.0 compiled and linked Project1.exe (x64) on DEV. Linked the Delphi archive objects and retained RAD Studio default runtime libraries. Win32 full build and app startup not yet certified |
 | Functional/regression testing | **Not complete** | Application startup, UI, persistence, installation, logging, rollback and end-to-end archive handling remain to be verified |
 
 See [PROJECT_STATUS.md](PROJECT_STATUS.md) for test evidence, blockers and next acceptance gates. File-by-file replacements and outstanding parity gates are documented in [ARCHIVE_MIGRATION.md](ARCHIVE_MIGRATION.md).
 
-**Update (29 October 2026):** Win64 unit compilation and native archive listing/extraction and ZIP/7z creation tests now pass for both d7zip and TUTPackage. Win64 application support remains unverified: Virtual TreeView's C++ package is blocked by an unsupported Windows SDK. The RAD Studio SDK patcher also rejects the installed SDK revisions. See [RAD Studio SDK and Win64 setup](RAD_STUDIO_SDK_AND_WIN64.md) for the precise diagnosis, supported installer and remediation steps.
+**Current Win64 build update (29 October 2026):** SDK 10.0.26100.4654 has been repaired and the patched headers have been installed. Virtual TreeView Win64 and the full Map Manager Win64 Debug application now build. Application runtime and archive install/undo are not yet verified; see [SDK and Win64 setup](RAD_STUDIO_SDK_AND_WIN64.md).
 
 ## Dependencies
 
@@ -96,4 +96,4 @@ Historical archives, local configuration, private settings and compiled binaries
 - **7-Zip DLL**: separately downloaded; redistribution, including RAR decoding, is subject to applicable upstream 7-Zip/unRAR notices.
 - The legacy Map Manager application source is being recovered; do not infer rights to redistribute proprietary Unreal game assets.
 
-**SDK repair update (29 October 2026):** The newly installed 10.0.26100.4654 SDK matches the RAD Studio version check; its official SDK patcher ran successfully and generated SDK headers are now in the IDE directory. Virtual TreeView Win64 runtime now builds. Map Manager builds remain blocked by historical component/header integration. See [SDK and Win64 diagnostics](RAD_STUDIO_SDK_AND_WIN64.md).
+**SDK/build update (29 October 2026):** The Windows SDK patcher and Win64 Virtual TreeView runtime package build successfully. Win64 Debug Map Manager now compiles and links; legacy code warnings and runtime acceptance remain. See [SDK and Win64 diagnostics](RAD_STUDIO_SDK_AND_WIN64.md).

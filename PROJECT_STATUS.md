@@ -1,8 +1,18 @@
 # Map Manager — recovery checkpoint
 
 **Date:** 29 October 2026  
-**Current phase:** source recovery / Win32 dependency modernization  
-**Release readiness:** no buildable or validated application release.
+**Current phase:** Win64 build recovered; runtime and Win32 integration validation outstanding
+**Build status:** Win64 Debug C++Builder build passes (normal and forced-link). **Release readiness:** no runtime-validated release.
+
+### Win64 Debug linker resolved - 29 October 2026 (latest)
+
+- Win64 Debug C++Builder 37.0 full build PASSED (MSBuild exit 0). Win64/Debug/Project1.exe exists and is a valid x64 PE image (~54 MB). App startup has NOT been tested.
+- MMArchiveEngine.o and sevenzip.o existed but were not linked. New ObjFiles entries in Project1.cbproj include both platform-specific Win64 .o and Win32 .obj outputs.
+- An earlier ILINK_AdditionalLibs override disabled RAD Studio's default C++ runtime and Windows import libraries. TUTPackage.a now uses LibFiles, retaining the defaults.
+- Duplicate TMapFileData.cpp was already excluded from CppCompile, and its stale Win64 Debug .o and .d were removed. The source file remains untouched.
+- Archive Delphi compilation hook now executes before _CheckLinkDependencies, not after dependency determination.
+- Win32 full build, Win64 GUI startup, and all archive installer/rollback acceptance tests remain open. Warning cleanup and portable dependency paths remain future work.
+- Latest detailed checkpoint: ARCHIVE_MIGRATION.md.
 
 ## Baseline and preservation
 
